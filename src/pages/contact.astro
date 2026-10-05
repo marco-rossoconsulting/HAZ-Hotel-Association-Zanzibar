@@ -1,0 +1,56 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import EnquiryForm from '@/components/EnquiryForm.astro';
+import Icon from '@/components/Icon.astro';
+import { site } from '@/lib/site';
+---
+
+<BaseLayout title="Contact" description="Contact Hotel Association Zanzibar (HAZ): the Secretariat, the Executive Chairman and the Chief Executive Officer.">
+  <PageHero label="Contact" title="Talk to HAZ" lead="Questions about membership, partnerships, media or policy? Write to us and we will reply soon." />
+
+  <section class="section-tight bg-white">
+    <div class="container grid-12 contact">
+      <div class="c-form">
+        <EnquiryForm
+          name="contact"
+          heading="Send us a message"
+          topics={['Hotel membership', 'Affiliate membership', 'Market Pulse', 'Media enquiry', 'Government and policy', 'Sponsorship', 'Investment', 'Careers and training', 'Other']}
+        />
+      </div>
+      <aside class="c-details" aria-label="Contact details">
+        <div class="cd">
+          <h2 class="h4">Secretariat</h2>
+          <address>
+            {site.address.street}<br />{site.address.poBox}<br />{site.address.locality}, {site.address.country}
+          </address>
+          <a class="cd-link" href={`mailto:${site.email}`}><Icon name="envelope" /> {site.email}</a>
+        </div>
+        {site.contacts.map((c) => (
+          <div class="cd">
+            <h2 class="h4">{c.role}</h2>
+            <p>{c.name}</p>
+            <a class="cd-link" href={`mailto:${c.email}`}><Icon name="envelope" /> {c.email}</a>
+            <a class="cd-link" href={`https://wa.me/${c.whatsapp.replace(/\D/g, '')}`} rel="noopener"><Icon name="whatsapp-logo" /> {c.whatsapp}</a>
+          </div>
+        ))}
+        <div class="cd">
+          <h2 class="h4">Membership applications</h2>
+          <p>Applications go directly to the Executive Chairman.</p>
+          <a class="link-arrow" href="/join/">Join HAZ <Icon name="arrow-right" /></a>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact { row-gap: 3rem; align-items: start; }
+  .c-form { grid-column: 1 / span 7; }
+  .c-details { grid-column: 9 / span 4; display: grid; gap: 0; }
+  .cd { display: grid; gap: 0.4rem; justify-items: start; padding: 1.25rem 0; border-top: 1px solid var(--rule); }
+  .cd:first-child { border-top: 1px solid var(--anthracite); }
+  .cd address { font-style: normal; }
+  .cd-link { display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 500; }
+  @media (max-width: 1023px) { .c-form, .c-details { grid-column: 1 / -1; } }
+</style>

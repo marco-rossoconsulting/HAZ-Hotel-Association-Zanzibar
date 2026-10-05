@@ -1,0 +1,119 @@
+---
+import { Image } from 'astro:assets';
+import logoGold from '@/assets/brand/haz-logo-gold.png';
+import Icon from './Icon.astro';
+import { footerNav, site } from '@/lib/site';
+
+const year = new Date().getFullYear();
+const socials = [
+  { key: 'linkedin', label: 'LinkedIn', icon: 'linkedin-logo' },
+  { key: 'instagram', label: 'Instagram', icon: 'instagram-logo' },
+  { key: 'facebook', label: 'Facebook', icon: 'facebook-logo' },
+  { key: 'whatsappChannel', label: 'WhatsApp Channel', icon: 'whatsapp-logo' },
+  { key: 'youtube', label: 'YouTube', icon: 'youtube-logo' },
+].filter((s) => (site.social as Record<string, string>)[s.key]);
+---
+
+<footer class="site-footer on-dark">
+  <div class="container">
+    <div class="footer-top grid-12">
+      <div class="footer-brand">
+        <a href="/" class="footer-logo" aria-label="Hotel Association Zanzibar, home">
+          <Image src={logoGold} alt="" width={200} layout="fixed" />
+        </a>
+        <p class="footer-line">{site.corporateLine}</p>
+        <p class="footer-desc">{site.oneLine}</p>
+      </div>
+
+      {footerNav.map((group) => (
+        <nav class="footer-col" aria-label={group.label}>
+          <h2 class="footer-h">{group.label}</h2>
+          <ul role="list">
+            {group.children!.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+          </ul>
+        </nav>
+      ))}
+    </div>
+
+    <div class="footer-contact grid-12">
+      <address class="fc-block">
+        <h2 class="footer-h">Secretariat</h2>
+        <p>
+          {site.address.street}<br />
+          {site.address.poBox}, {site.address.locality}, {site.address.country}
+        </p>
+        <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+      </address>
+      {site.contacts.map((c) => (
+        <div class="fc-block">
+          <h2 class="footer-h">{c.role}</h2>
+          <p>{c.name}</p>
+          <p><a href={`mailto:${c.email}`}>{c.email}</a></p>
+          <p><a href={`https://wa.me/${c.whatsapp.replace(/\D/g, '')}`} rel="noopener">WhatsApp {c.whatsapp}</a></p>
+        </div>
+      ))}
+      {socials.length > 0 && (
+        <div class="fc-block">
+          <h2 class="footer-h">Follow HAZ</h2>
+          <ul role="list" class="socials">
+            {socials.map((s) => (
+              <li>
+                <a href={(site.social as Record<string, string>)[s.key]} rel="noopener" target="_blank" aria-label={`${s.label} (opens in a new tab)`}>
+                  <Icon name={s.icon} />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+
+    <div class="footer-bottom">
+      <p class="pillar-signature">People · Place · Prosperity · Together</p>
+      <p class="legal">
+        © {year} Hotel Association Zanzibar · <a href="/privacy/">Privacy</a> · <a href="/media/">Media kit</a>
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { background: var(--ocean); color: var(--muted-on-dark); padding-block: 5rem 2rem; }
+  .footer-top { row-gap: 3rem; padding-bottom: 3.5rem; border-bottom: 1px solid rgba(246, 242, 233, 0.14); }
+  .footer-brand { grid-column: span 5; }
+  .footer-col { grid-column: span 2; }
+  .footer-col:nth-of-type(1) { grid-column: 7 / span 2; }
+  .footer-logo { display: inline-block; padding: 8px 0 18px; }
+  .footer-logo :global(img) { width: 200px; height: auto; }
+  .footer-line { font-family: var(--font-display); font-size: 1.75rem; font-weight: 600; color: var(--ivory-on-dark); line-height: 1.2; }
+  .footer-desc { margin-top: 0.75rem; max-width: 40ch; font-size: 0.95rem; }
+  .footer-h {
+    font-family: var(--font-sans); font-size: var(--step-label); font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--bronze); margin-bottom: 1rem; line-height: 1.3;
+  }
+  .footer-col ul { list-style: none; padding: 0; display: grid; gap: 0.55rem; }
+  .site-footer a { color: var(--ivory-on-dark); text-decoration: none; }
+  .site-footer a:hover { color: #fff; text-decoration: underline; text-underline-offset: 0.25em; }
+  .footer-contact { padding-block: 2.5rem; row-gap: 2rem; font-size: 0.95rem; font-style: normal; border-bottom: 1px solid rgba(246, 242, 233, 0.14); }
+  .fc-block { grid-column: span 3; font-style: normal; }
+  .fc-block p + p { margin-top: 0.2rem; }
+  .socials { list-style: none; padding: 0; display: flex; gap: 0.5rem; }
+  .socials a {
+    display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center;
+    border: 1px solid rgba(246, 242, 233, 0.3); border-radius: 50%; transition: border-color 0.2s, background 0.2s;
+  }
+  .socials a:hover { border-color: var(--bronze); background: rgba(213, 167, 68, 0.12); text-decoration: none; }
+  .footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; padding-top: 2rem; font-size: 0.875rem; }
+  .legal a { color: var(--muted-on-dark); text-decoration: underline; text-underline-offset: 0.2em; }
+  @media (max-width: 1023px) {
+    .footer-brand { grid-column: 1 / -1; }
+    .footer-col, .footer-col:nth-of-type(1) { grid-column: span 4; }
+    .fc-block { grid-column: span 6; }
+  }
+  @media (max-width: 767px) {
+    .footer-top, .footer-contact { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; column-gap: 1.5rem; }
+    .footer-brand { grid-column: 1 / -1 !important; }
+    .footer-col, .footer-col:nth-of-type(1), .fc-block { grid-column: auto !important; }
+    .fc-block:first-child { grid-column: 1 / -1 !important; }
+  }
+</style>

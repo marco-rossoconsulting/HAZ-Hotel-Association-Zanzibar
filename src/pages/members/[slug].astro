@@ -1,0 +1,89 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+import JoinBand from '@/components/JoinBand.astro';
+import { Image } from 'astro:assets';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import badgeDark from '@/assets/brand/badge-dark.png';
+
+export async function getStaticPaths() {
+  const members = await getCollection('members', ({ data }) => !data.hidden);
+  return members.map((m) => ({ params: { slug: m.id }, props: { member: m } }));
+}
+interface Props { member: CollectionEntry<'members'> }
+const { member } = Astro.props;
+const d = member.data;
+const others = (await getCollection('members', ({ data, id }) => !data.hidden && data.region === d.region && id !== member.id))
+  .sort((a, b) => a.data.name.localeCompare(b.data.name, 'en-GB'));
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Hotel',
+  name: d.name,
+  ...(d.website ? { url: d.website } : {}),
+  ...(d.description ? { description: d.description } : {}),
+  address: { '@type': 'PostalAddress', addressLocality: d.area, addressRegion: 'Zanzibar', addressCountry: 'TZ' },
+  memberOf: { '@id': `${Astro.site}#organization` },
+};
+---
+
+<BaseLayout title={`${d.name}, HAZ member hotel`} description={`${d.name}${d.area ? `, ${d.area}` : ''} is a member of Hotel Association Zanzibar (HAZ).`} schema={[schema]}>
+  <section class="mp bg-ivory">
+    <div class="container grid-12 mp-grid">
+      <div class="mp-main">
+        <nav aria-label="Breadcrumb" class="crumbs"><a href="/members/">Member hotels</a> <span aria-hidden="true">/</span> <span>{d.region}</span></nav>
+        {d.logo && <Image src={d.logo} alt={`${d.name} logo`} width={200} class="mp-logo" />}
+        <h1 class="mp-title">{d.name}</h1>
+        <p class="mp-place"><Icon name="map-pin" /> {[d.area, d.region !== 'Beyond Zanzibar' ? 'Zanzibar' : null].filter(Boolean).join(', ')}</p>
+        {d.description && <p class="lead mp-desc">{d.description}</p>}
+        <dl class="mp-facts">
+          <div><dt>Region</dt><dd>{d.region}</dd></div>
+          {d.rooms && <div><dt>Rooms</dt><dd class="tabular">{d.rooms}</dd></div>}
+          {d.membershipYear && <div><dt>Membership year</dt><dd>{d.membershipYear}</dd></div>}
+        </dl>
+        {d.website && (
+          <a class="btn" href={d.website} rel="noopener" target="_blank">Visit website <Icon name="arrow-up-right" /><span class="sr-only"> (opens in a new tab)</span></a>
+        )}
+      </div>
+      <aside class="mp-badge">
+        <Image src={badgeDark} alt="Member of Hotel Association Zanzibar" width={180} />
+        <p class="caption">{d.name} is a member of Hotel Association Zanzibar.</p>
+      </aside>
+    </div>
+  </section>
+
+  {others.length > 0 && (
+    <section class="section-tight bg-white" aria-labelledby="nearby-title">
+      <div class="container">
+        <h2 class="h3" id="nearby-title">Other member hotels in {d.region}</h2>
+        <ul role="list" class="nearby">
+          {others.map((o) => (
+            <li><a href={`/members/${o.id}/`}><span>{o.data.name}</span><small>{o.data.area}</small></a></li>
+          ))}
+        </ul>
+        <a class="link-arrow" href="/members/">All member hotels <Icon name="arrow-right" /></a>
+      </div>
+    </section>
+  )}
+
+  <JoinBand />
+</BaseLayout>
+
+<style>
+  .mp { padding-block: clamp(3rem, 2rem + 4vw, 6rem); }
+  .mp-grid { align-items: start; row-gap: 2.5rem; }
+  .mp-main { grid-column: 1 / span 8; display: grid; gap: 1.1rem; justify-items: start; }
+  .crumbs { font-size: 0.9rem; color: var(--taupe-deep); display: flex; gap: 0.5rem; }
+  .mp-title { font-size: var(--step-display); line-height: 1.04; max-width: 18ch; }
+  .mp-place { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--taupe-deep); }
+  .mp-place :global(.icon) { color: var(--gold-deep); }
+  .mp-facts { display: flex; flex-wrap: wrap; gap: 2.5rem; padding-block: 1rem; border-block: 1px solid var(--rule); width: 100%; }
+  .mp-facts dt { font-size: var(--step-label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--taupe-deep); font-weight: 600; }
+  .mp-facts dd { font-weight: 600; margin-top: 0.2rem; }
+  .mp-badge { grid-column: 10 / span 3; display: grid; justify-items: center; text-align: center; gap: 0.75rem; }
+  .nearby { list-style: none; padding: 0; margin: 1.5rem 0 2rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0 2rem; }
+  .nearby a { display: grid; padding: 0.85rem 0; border-top: 1px solid var(--rule); color: var(--anthracite); text-decoration: none; font-weight: 600; }
+  .nearby small { font-weight: 400; color: var(--taupe-deep); }
+  .nearby a:hover span { color: var(--gold-deep); }
+  @media (max-width: 1023px) { .mp-main { grid-column: 1 / -1; } .mp-badge { grid-column: 1 / -1; justify-items: start; text-align: left; } }
+</style>

@@ -1,0 +1,75 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import MemberMap from '@/components/MemberMap.astro';
+import JoinBand from '@/components/JoinBand.astro';
+import Icon from '@/components/Icon.astro';
+import { getCollection } from 'astro:content';
+import { getPhoto } from '@/lib/site';
+import figures from '@/data/figures.json';
+
+const photo = await getPhoto('hospitality');
+const members = (await getCollection('members', ({ data }) => !data.hidden)).map((m) => ({ id: m.id, ...m.data }));
+const shown = figures.items.filter((f) => f.value !== null && String(f.value) !== '');
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'HAZ member hotels',
+  numberOfItems: members.length,
+  itemListElement: members
+    .sort((a, b) => a.name.localeCompare(b.name, 'en-GB'))
+    .map((m, i) => ({ '@type': 'ListItem', position: i + 1, item: { '@type': 'Hotel', name: m.name, ...(m.website ? { url: m.website } : {}), address: { '@type': 'PostalAddress', addressLocality: m.area, addressRegion: 'Zanzibar', addressCountry: 'TZ' } } })),
+};
+---
+
+<BaseLayout title="Member hotels" description="Find the hotels that belong to Hotel Association Zanzibar (HAZ), across Unguja and Pemba." schema={[schema]}>
+  <PageHero
+    label="Member hotels"
+    title="The hotels that shape Zanzibar are in HAZ"
+    lead="Owners and General Managers working together for better business and a better Zanzibar. Explore member hotels by region, or search by name."
+    image={{ src: photo.image, alt: photo.alt }}
+  >
+    <div class="hero-actions">
+      <a class="btn" href="/join/">Join HAZ <Icon name="arrow-right" class="icon-arrow" /></a>
+      <a class="btn btn-secondary" href="/members/badge/">Member badge</a>
+    </div>
+  </PageHero>
+
+  {shown.length > 0 && (
+    <section class="bg-anthracite on-dark figs" aria-label="Membership in figures">
+      <dl class="container figs-row">
+        {shown.map((f) => (
+          <div>
+            <dt>{f.label}</dt>
+            <dd class="figs-v" data-count={f.value}><span data-count-value>{Number(f.value).toLocaleString('en-GB')}</span></dd>
+            <dd class="figs-s">{f.source}{f.asOf ? `, ${f.asOf}` : ''}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  )}
+
+  <section class="section bg-white" aria-labelledby="dir-title">
+    <div class="container">
+      <h2 class="h2 dir-title" id="dir-title">Directory</h2>
+      <MemberMap members={members} search />
+      <aside class="missing">
+        <p><strong>Is your hotel a member but not listed?</strong> Write to <a href="mailto:info@haz.or.tz">info@haz.or.tz</a> and we will add it.</p>
+      </aside>
+    </div>
+  </section>
+
+  <JoinBand />
+</BaseLayout>
+
+<style>
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .figs-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; padding-block: 2.5rem; }
+  .figs-row > div { display: flex; flex-direction: column; border-left: 1px solid rgba(213, 167, 68, 0.5); padding-left: 1.25rem; }
+  .figs-row dt { order: 2; color: var(--ivory-on-dark); }
+  .figs-v { order: 1; font-family: var(--font-display); font-size: 3rem; font-weight: 600; line-height: 1; color: var(--bronze); }
+  .figs-s { order: 3; font-size: 0.8rem; color: var(--muted-on-dark); margin-top: 0.3rem; }
+  .dir-title { margin-bottom: 2rem; }
+  .missing { margin-top: 3rem; padding: 1.25rem 1.5rem; background: var(--ivory); border-left: 2px solid var(--haz-gold); }
+</style>

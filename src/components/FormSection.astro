@@ -1,0 +1,23 @@
+---
+interface Props { n: number; title: string; intro?: string }
+const { n, title, intro } = Astro.props;
+const id = `fs-${n}`;
+---
+<fieldset class="fs" aria-labelledby={id}>
+  <div class="fs-head">
+    <span class="fs-n" aria-hidden="true">{String(n).padStart(2, '0')}</span>
+    <h2 class="fs-title" id={id}>{title}</h2>
+  </div>
+  {intro && <p class="fs-intro">{intro}</p>}
+  <div class="fs-body"><slot /></div>
+</fieldset>
+
+<style>
+  .fs { border: 0; padding: 0; margin: 0; min-width: 0; }
+  .fs + .fs { margin-top: 3rem; }
+  .fs-head { display: flex; align-items: baseline; gap: 1rem; padding-bottom: 0.9rem; border-bottom: 1px solid var(--rule); }
+  .fs-n { font-size: var(--step-label); font-weight: 600; letter-spacing: 0.12em; color: var(--gold-deep); }
+  .fs-title { font-family: var(--font-sans); font-size: var(--step-h3); font-weight: 600; color: var(--anthracite); line-height: 1.25; }
+  .fs-intro { margin-top: 1rem; color: var(--taupe-deep); max-width: 66ch; }
+  .fs-body { margin-top: 1.5rem; }
+</style>

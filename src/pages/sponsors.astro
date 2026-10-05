@@ -1,0 +1,90 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import EnquiryForm from '@/components/EnquiryForm.astro';
+import StatusPill from '@/components/StatusPill.astro';
+import Icon from '@/components/Icon.astro';
+import { Image } from 'astro:assets';
+import { getCollection, getEntry } from 'astro:content';
+
+const sponsors = (await getCollection('sponsors')).sort((a, b) => a.data.order - b.data.order);
+const ids = ['summit', 'awards', 'scholarships', 'impact-report'];
+const opps = (await Promise.all(ids.map((id) => getEntry('programmes', id)))).filter(Boolean);
+---
+
+<BaseLayout title="Corporate Sponsors" description="Back the industry that backs Zanzibar: sponsor the Zanzibar Hotel & Tourism Summit, HAZ Hotel Awards, HAZ Scholarships and the Hospitality Impact Report.">
+  <PageHero
+    label="Corporate Sponsors"
+    title="Back the industry that backs Zanzibar"
+    lead="Associate your organisation with a respected, positive industry story: hotels that grow their business and show what they give back."
+    tone="ocean"
+  >
+    <a class="btn" href="#sponsor-enquiry">Become a sponsor <Icon name="arrow-right" class="icon-arrow" /></a>
+  </PageHero>
+
+  <section class="section bg-white" aria-labelledby="opp-title">
+    <div class="container">
+      <SectionHead id="opp-title" title="Partnership opportunities" />
+      <ul role="list" class="opps">
+        {opps.map((o, i) => o && (
+          <li class="opp" data-reveal style={`--i:${i}`}>
+            <div class="opp-top"><span class="label">{o.data.pillar}</span><StatusPill status={o.data.status} /></div>
+            <h3 class="opp-name">{o.data.name}</h3>
+            <p>{o.data.summary}</p>
+            <a class="link-arrow" href={`/programmes/${o.id}/`}>About this programme <Icon name="arrow-right" /></a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section-tight bg-ivory" aria-labelledby="our-title">
+    <div class="container">
+      <h2 class="h3" id="our-title">Our Corporate Sponsors</h2>
+      {sponsors.length > 0 ? (
+        <ul role="list" class="logos">
+          {sponsors.map((s) => (
+            <li>
+              {s.data.website ? (
+                <a href={s.data.website} rel="noopener" target="_blank" aria-label={`${s.data.name} (opens in a new tab)`}><Image src={s.data.logo} alt={s.data.name} height={64} /></a>
+              ) : (
+                <Image src={s.data.logo} alt={s.data.name} height={64} />
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="empty">Corporate Sponsors will be recognised here, on a separate partner band, in line with the HAZ brand standards.</p>
+      )}
+    </div>
+  </section>
+
+  <section class="section bg-white" id="sponsor-enquiry" aria-labelledby="se-title">
+    <div class="container grid-12 se">
+      <div class="se-text">
+        <SectionHead id="se-title" title="Talk to us about sponsorship" intro="Tell us what you would like to support. The Secretariat will reply with the options and terms." />
+      </div>
+      <div class="se-form">
+        <EnquiryForm name="sponsor-enquiry" topics={['Zanzibar Hotel & Tourism Summit', 'HAZ Hotel Awards', 'HAZ Scholarships', 'Hospitality Impact Report', 'Other']} messageLabel="What would you like to support?" submitLabel="Send enquiry" />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .opps { margin-top: 3rem; list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--anthracite); }
+  .opp { padding: 2rem 2rem 2rem 0; border-bottom: 1px solid var(--rule); display: grid; gap: 0.6rem; align-content: start; }
+  .opp:nth-child(even) { padding-left: 2rem; border-left: 1px solid var(--rule); }
+  .opp-top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  .opp-name { font-family: var(--font-display); font-size: 2rem; font-weight: 600; line-height: 1.1; }
+  .opp .link-arrow { justify-self: start; }
+  .logos { list-style: none; padding: 0; margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 2.5rem; align-items: center; }
+  .logos :global(img) { height: 64px; width: auto; }
+  .empty { margin-top: 1rem; color: var(--taupe-deep); max-width: 62ch; }
+  .se { row-gap: 2.5rem; align-items: start; }
+  .se-text { grid-column: 1 / span 4; }
+  .se-form { grid-column: 6 / span 7; }
+  @media (max-width: 1023px) { .se-text, .se-form { grid-column: 1 / -1; } }
+  @media (max-width: 760px) { .opps { grid-template-columns: minmax(0, 1fr); } .opp:nth-child(even) { padding-left: 0; border-left: 0; } }
+</style>

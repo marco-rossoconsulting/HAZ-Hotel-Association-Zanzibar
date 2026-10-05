@@ -1,0 +1,69 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import StatusPill from './StatusPill.astro';
+import Icon from './Icon.astro';
+import { PILLARS } from '@/content.config';
+
+interface Props {
+  /** Limit to these pillars (default: all) */
+  pillars?: (typeof PILLARS)[number][];
+  /** Limit to programme ids */
+  ids?: string[];
+  groupByPillar?: boolean;
+}
+const { pillars, ids, groupByPillar = true } = Astro.props;
+const statusOrder = { live: 0, launching: 1, development: 2 } as const;
+let all = await getCollection('programmes');
+if (pillars) all = all.filter((p) => pillars.includes(p.data.pillar));
+if (ids) all = all.filter((p) => ids.includes(p.id));
+const sort = (a: CollectionEntry<'programmes'>, b: CollectionEntry<'programmes'>) =>
+  statusOrder[a.data.status] - statusOrder[b.data.status] || a.data.order - b.data.order;
+const groups = groupByPillar
+  ? PILLARS.map((p) => ({ pillar: p, items: all.filter((x) => x.data.pillar === p).sort(sort) })).filter((g) => g.items.length)
+  : [{ pillar: null, items: all.sort(sort) }];
+---
+
+<div class="prog-index">
+  {groups.map((g) => (
+    <section class="pi-group" id={g.pillar ? g.pillar.toLowerCase() : undefined} aria-labelledby={g.pillar ? `pi-${g.pillar}` : undefined}>
+      {g.pillar && <h2 class="pi-pillar" id={`pi-${g.pillar}`}>{g.pillar}</h2>}
+      <ul role="list" class="pi-list">
+        {g.items.map((p, i) => (
+          <li class="pi-item" data-reveal style={`--i:${i % 4}`}>
+            <a href={`/programmes/${p.id}/`} class="pi-link">
+              <span class="pi-name">{p.data.name}</span>
+              <span class="pi-summary">{p.data.summary}</span>
+              <span class="pi-meta">
+                <StatusPill status={p.data.status} />
+                <span class="pi-family">{p.data.family}</span>
+              </span>
+              <Icon name="arrow-right" class="pi-arrow" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</div>
+
+<style>
+  .prog-index { display: grid; gap: 3.5rem; }
+  .pi-pillar {
+    font-family: var(--font-display); font-weight: 600; font-size: var(--step-h2); line-height: 1.1;
+    padding-bottom: 0.75rem; border-bottom: 1px solid var(--anthracite); margin-bottom: 0.25rem;
+  }
+  .pi-list { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 3rem; }
+  .pi-item { border-bottom: 1px solid var(--rule); }
+  .pi-link {
+    position: relative; display: grid; gap: 0.35rem; padding: 1.35rem 2.5rem 1.35rem 0;
+    color: var(--anthracite); text-decoration: none; height: 100%;
+  }
+  .pi-name { font-weight: 600; font-size: 1.125rem; line-height: 1.3; transition: color 0.2s; }
+  .pi-summary { color: var(--taupe-deep); font-size: 0.95rem; max-width: 52ch; }
+  .pi-meta { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.4rem; flex-wrap: wrap; }
+  .pi-family { font-size: 0.8rem; color: var(--taupe-deep); letter-spacing: 0.02em; }
+  :global(.pi-arrow) { position: absolute; right: 0.25rem; top: 1.5rem; color: var(--gold-deep); transition: transform 0.3s var(--ease-out); }
+  .pi-link:hover .pi-name { color: var(--gold-deep); }
+  .pi-link:hover :global(.pi-arrow) { transform: translateX(4px); }
+  @media (max-width: 767px) { .pi-list { grid-template-columns: minmax(0, 1fr); } }
+</style>

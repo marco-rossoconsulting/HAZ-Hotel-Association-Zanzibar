@@ -1,0 +1,62 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Article from '@/components/Article.astro';
+import NotifyForm from '@/components/NotifyForm.astro';
+import StatusPill from '@/components/StatusPill.astro';
+import Icon from '@/components/Icon.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const all = await getCollection('programmes');
+  return all.map((p) => ({ params: { slug: p.id }, props: { p } }));
+}
+interface Props { p: CollectionEntry<'programmes'> }
+const { p } = Astro.props;
+const { Content } = await render(p);
+const related = (await getCollection('programmes', (x) => x.data.pillar === p.data.pillar && x.id !== p.id))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 5);
+const statusText = {
+  live: 'This programme is running now. Member hotels can take part today.',
+  launching: 'This programme is launching soon. Leave your email and we will tell you when it opens.',
+  development: 'This programme is in development. Leave your email to hear when there is news.',
+}[p.data.status];
+---
+
+<BaseLayout title={p.data.name} description={p.data.summary}>
+  <Article crumbs={{ label: 'All programmes', href: '/programmes/' }} label={`${p.data.pillar} · ${p.data.family}`} title={p.data.name} standfirst={p.data.summary}>
+    <div class="status-box">
+      <StatusPill status={p.data.status} />
+      <p>{statusText}</p>
+    </div>
+    <Content />
+    {p.data.status === 'live' && p.data.ctaUrl && (
+      <p><a class="btn" href={p.data.ctaUrl}>{p.data.ctaLabel ?? 'Find out more'} <Icon name="arrow-right" class="icon-arrow" /></a></p>
+    )}
+    {p.data.status !== 'live' && <NotifyForm programme={p.data.name} />}
+    {p.data.status !== 'live' && p.data.ctaUrl && (
+      <p><a class="link-arrow" href={p.data.ctaUrl}>{p.data.ctaLabel} <Icon name="arrow-right" /></a></p>
+    )}
+
+    <Fragment slot="aside">
+      {related.length > 0 && (
+        <nav class="related" aria-labelledby="rel-title">
+          <h2 class="h4" id="rel-title">More under {p.data.pillar}</h2>
+          <ul role="list">
+            {related.map((r) => (
+              <li><a href={`/programmes/${r.id}/`}>{r.data.name}</a> <StatusPill status={r.data.status} /></li>
+            ))}
+          </ul>
+        </nav>
+      )}
+    </Fragment>
+  </Article>
+</BaseLayout>
+
+<style>
+  .status-box { display: grid; gap: 0.6rem; padding: 1.25rem; background: var(--ivory); border-left: 2px solid var(--haz-gold); justify-items: start; }
+  .related ul { list-style: none; padding: 0; margin-top: 0.75rem; display: grid; }
+  .related li { display: grid; gap: 0.4rem; justify-items: start; padding: 0.85rem 0; border-top: 1px solid var(--rule); }
+  .related a { font-weight: 600; color: var(--anthracite); text-decoration: none; }
+  .related a:hover { color: var(--gold-deep); }
+</style>

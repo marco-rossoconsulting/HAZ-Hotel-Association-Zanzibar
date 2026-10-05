@@ -1,0 +1,161 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Icon from '../Icon.astro';
+import SectionHead from '../SectionHead.astro';
+import { getPhoto } from '@/lib/site';
+
+const programmes = await getCollection('programmes');
+const byPillar = (p: string) =>
+  programmes.filter((x) => x.data.pillar === p).sort((a, b) => a.data.order - b.data.order).slice(0, 4);
+
+const pillars = [
+  {
+    name: 'People',
+    photo: await getPhoto('hospitality'),
+    aim: 'Zanzibaris build careers, not just jobs, in hospitality; communities share in its success.',
+    message: 'Every career that starts in a Zanzibar hotel should be able to finish in its management office.',
+    href: '/careers/',
+  },
+  {
+    name: 'Place',
+    photo: await getPhoto('mangrove'),
+    aim: 'Reefs, beaches, Stone Town and culture protected for the next generation, with water, waste and power treated as critical.',
+    message: 'Zanzibar’s beauty is our industry’s capital. We protect it like capital.',
+    href: '/programmes/#place',
+  },
+  {
+    name: 'Prosperity',
+    photo: await getPhoto('dhow'),
+    aim: 'Hotels are profitable, investment is confident and more of the money stays in Zanzibar.',
+    message: 'When hotels do well, more of Zanzibar does well, and we can show it.',
+    href: '/join/',
+  },
+  {
+    name: 'Together',
+    photo: await getPhoto('stone-town'),
+    aim: 'Forums, working groups and one credible voice with government on water, waste, power and skills.',
+    message: 'No hotel can fix the island’s challenges alone. Together we can.',
+    href: '/policy/',
+  },
+].map((p) => ({ ...p, programmes: byPillar(p.name) }));
+---
+
+<section class="section pillars bg-white" aria-labelledby="pillars-title">
+  <div class="container">
+    <SectionHead
+      id="pillars-title"
+      title="People, Place and Prosperity in balance. Together is how."
+      intro="Every HAZ programme sits under one pillar and shows its link to the other two. Remove one and the structure tilts."
+      align="wide"
+    />
+
+    <div class="panels" data-panels>
+      {pillars.map((p, i) => (
+        <article class:list={['panel', { 'is-active': i === 0 }]} data-panel tabindex="-1">
+          <Image src={p.photo.image} alt="" widths={[480, 760, 1000]} sizes="(min-width: 1024px) 50vw, 100vw" class="panel-img" />
+          <div class="panel-shade" aria-hidden="true"></div>
+          <button class="panel-tab" type="button" aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`panel-body-${i}`} data-panel-tab>
+            <span class="panel-name">{p.name}</span>
+          </button>
+          <div class="panel-body" id={`panel-body-${i}`}>
+            <h3 class="panel-title">{p.name}</h3>
+            <p class="panel-aim">{p.aim}</p>
+            <blockquote class="panel-quote">“{p.message}”</blockquote>
+            {p.programmes.length > 0 && (
+              <ul role="list" class="panel-programmes">
+                {p.programmes.map((x) => <li><a href={`/programmes/${x.id}/`}>{x.data.name}</a></li>)}
+              </ul>
+            )}
+            <a class="link-arrow" href={p.href}>Explore {p.name.toLowerCase()} <Icon name="arrow-right" /></a>
+          </div>
+        </article>
+      ))}
+    </div>
+    <p class="pillar-signature pillars-sig">People · Place · Prosperity · Together</p>
+  </div>
+</section>
+
+<style>
+  .panels {
+    margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
+    display: flex; gap: 6px; height: clamp(540px, 62vh, 640px);
+  }
+  .panel {
+    position: relative; flex: 1 1 0; min-width: 0; overflow: hidden; color: var(--ivory-on-dark);
+    background: var(--anthracite);
+    transition: flex-grow 0.8s var(--ease-out);
+  }
+  .panel.is-active { flex-grow: 3.4; }
+  .panel :global(.panel-img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); transition: transform 1.2s var(--ease-out), filter 0.8s; filter: saturate(0.85); }
+  .panel.is-active :global(.panel-img) { transform: scale(1); filter: saturate(1); }
+  .panel-shade {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(48, 50, 52, 0.1) 0%, rgba(40, 42, 44, 0.62) 38%, rgba(33, 35, 37, 0.93) 62%, rgba(33, 35, 37, 0.97) 100%);
+    transition: background-color 0.6s;
+  }
+  .panel:not(.is-active) .panel-shade { background-color: rgba(48, 50, 52, 0.45); }
+  .panel-tab {
+    position: absolute; inset: 0; width: 100%; background: transparent; border: 0; padding: 1.5rem;
+    display: flex; align-items: flex-end; justify-content: flex-start; color: inherit; text-align: left; z-index: 2;
+  }
+  .panel.is-active .panel-tab { pointer-events: none; opacity: 0; }
+  .panel-name {
+    font-family: var(--font-display); font-weight: 600; font-size: 2rem; line-height: 1;
+    writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap;
+    transition: opacity 0.4s;
+  }
+  .panel-tab:focus-visible { outline: 2px solid var(--bronze); outline-offset: -6px; }
+  .panel-body {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding: clamp(1.5rem, 1rem + 2vw, 2.75rem);
+    max-width: 640px; opacity: 0; transform: translateY(16px); visibility: hidden;
+    transition: opacity 0.5s var(--ease-out), transform 0.6s var(--ease-out), visibility 0s linear 0.6s;
+  }
+  .panel.is-active .panel-body { opacity: 1; transform: none; visibility: visible; transition-delay: 0.3s, 0.3s, 0s; }
+  .panel-title { font-family: var(--font-display); font-weight: 600; font-size: clamp(2.25rem, 1.8rem + 1.6vw, 3rem); line-height: 1; color: #fff; }
+  .panel-aim { margin-top: 0.85rem; color: var(--ivory-on-dark); max-width: 52ch; }
+  .panel-quote { margin-top: 1.1rem; font-family: var(--font-display); font-style: italic; font-size: 1.45rem; line-height: 1.3; color: var(--bronze); max-width: 34ch; }
+  .panel-programmes { list-style: none; padding: 0; margin: 1.25rem 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .panel-programmes a {
+    display: inline-block; padding: 0.3rem 0.7rem; border: 1px solid rgba(246, 242, 233, 0.4); border-radius: 999px;
+    color: var(--ivory-on-dark); text-decoration: none; font-size: 0.85rem; transition: background 0.2s, color 0.2s;
+  }
+  .panel-programmes a:hover { background: var(--ivory-on-dark); color: var(--anthracite); }
+  .panel .link-arrow { color: var(--bronze); }
+  .pillars-sig { margin-top: 1.75rem; text-align: center; }
+  @media (prefers-reduced-motion: reduce) {
+    .panel, .panel-body, .panel :global(.panel-img) { transition: none; }
+  }
+
+  /* Tablet and mobile: stacked, all open */
+  @media (max-width: 899px) {
+    .panels { flex-direction: column; height: auto; gap: 12px; }
+    .panel, .panel.is-active { flex: none; min-height: 460px; }
+    .panel-tab { display: none; }
+    .panel-body { position: relative; opacity: 1; transform: none; visibility: visible; padding-top: 10rem; }
+    .panel :global(.panel-img) { transform: none; filter: none; }
+    .panel:not(.is-active) .panel-shade { background-color: transparent; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-panels]').forEach((root) => {
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-panel]'));
+    const activate = (panel: HTMLElement) => {
+      panels.forEach((p) => {
+        const on = p === panel;
+        p.classList.toggle('is-active', on);
+        p.querySelector('[data-panel-tab]')?.setAttribute('aria-expanded', String(on));
+      });
+    };
+    const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+    panels.forEach((p) => {
+      const tab = p.querySelector<HTMLButtonElement>('[data-panel-tab]')!;
+      tab.addEventListener('click', () => {
+        activate(p);
+        p.querySelector<HTMLElement>('.panel-body a')?.focus({ preventScroll: true });
+      });
+      if (fine) p.addEventListener('mouseenter', () => activate(p));
+    });
+  });
+</script>

@@ -1,0 +1,119 @@
+---
+import { Image } from 'astro:assets';
+import Icon from '../Icon.astro';
+import { getNews, getEvents, formatDate, formatShortDate, isoDate } from '@/lib/site';
+
+const news = (await getNews()).slice(0, 3);
+const { upcoming } = await getEvents();
+const events = upcoming.slice(0, 3);
+const [lead, ...rest] = news;
+---
+
+<section class="section latest bg-white" aria-labelledby="latest-title">
+  <div class="container">
+    <div class="l-head">
+      <h2 class="h2" id="latest-title" data-reveal>Latest from HAZ</h2>
+      <a class="link-arrow" href="/news/">All news <Icon name="arrow-right" /></a>
+    </div>
+
+    <div class="grid-12 l-grid">
+      <div class="l-news">
+        {lead ? (
+          <article class="l-lead" data-reveal>
+            {lead.data.image && (
+              <a href={`/news/${lead.id}/`} class="l-lead-img" tabindex="-1" aria-hidden="true">
+                <Image src={lead.data.image} alt="" widths={[480, 800, 1100]} sizes="(min-width: 1024px) 55vw, 100vw" />
+              </a>
+            )}
+            <p class="caption"><time datetime={isoDate(lead.data.date)}>{formatDate(lead.data.date)}</time>{lead.data.pillar && ` · ${lead.data.pillar}`}</p>
+            <h3 class="l-lead-title"><a href={`/news/${lead.id}/`}>{lead.data.title}</a></h3>
+            <p class="l-excerpt">{lead.data.excerpt}</p>
+          </article>
+        ) : (
+          <p class="muted">News will appear here.</p>
+        )}
+        {rest.length > 0 && (
+          <ul role="list" class="l-rest">
+            {rest.map((n, i) => (
+              <li data-reveal style={`--i:${i + 1}`}>
+                <p class="caption"><time datetime={isoDate(n.data.date)}>{formatDate(n.data.date)}</time></p>
+                <h3 class="h4"><a href={`/news/${n.id}/`}>{n.data.title}</a></h3>
+                <p class="l-excerpt-sm">{n.data.excerpt}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <aside class="l-events" aria-labelledby="events-mini-title">
+        <h3 class="h4 l-ev-title" id="events-mini-title">Upcoming</h3>
+        {events.length > 0 ? (
+          <ul role="list" class="l-ev-list">
+            {events.map((e) => (
+              <li class="l-ev" data-end={(e.data.end ?? e.data.start).toISOString()}>
+                <time class="l-ev-date" datetime={isoDate(e.data.start)}>
+                  <span class="d">{formatShortDate(e.data.start).split(' ')[0]}</span>
+                  <span class="m">{formatShortDate(e.data.start).split(' ')[1]}</span>
+                </time>
+                <div>
+                  <a href={`/events/${e.id}/`} class="l-ev-name">{e.data.title}</a>
+                  <p class="caption">{e.data.format} · {e.data.location}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div class="l-empty">
+            <Icon name="calendar-blank" class="l-empty-icon" />
+            <p>The next HAZ Hotel Forum and partner events will be listed here as dates are confirmed.</p>
+            <a class="link-arrow" href="/events/">Events <Icon name="arrow-right" /></a>
+          </div>
+        )}
+      </aside>
+    </div>
+  </div>
+</section>
+
+<style>
+  .l-head { display: flex; justify-content: space-between; align-items: end; gap: 1rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--anthracite); }
+  .l-grid { margin-top: 2.5rem; row-gap: 3rem; }
+  .l-news { grid-column: 1 / span 8; display: grid; grid-template-columns: 1.35fr 1fr; gap: 2.5rem; align-items: start; }
+  .l-lead-img { display: block; aspect-ratio: 3 / 2; overflow: hidden; margin-bottom: 1.1rem; background: var(--ivory-2); }
+  .l-lead-img :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 0.9s var(--ease-out); }
+  .l-lead:hover .l-lead-img :global(img) { transform: scale(1.03); }
+  .l-lead-title { font-family: var(--font-display); font-size: clamp(1.75rem, 1.4rem + 1vw, 2.25rem); font-weight: 600; line-height: 1.12; margin-top: 0.4rem; }
+  .l-lead-title a, .l-rest a { color: var(--anthracite); text-decoration: none; background-image: linear-gradient(var(--haz-gold), var(--haz-gold)); background-size: 0 1px; background-repeat: no-repeat; background-position: 0 100%; transition: background-size 0.4s var(--ease-out); }
+  .l-lead-title a:hover, .l-rest a:hover { background-size: 100% 1px; }
+  .l-excerpt { margin-top: 0.75rem; max-width: 52ch; }
+  .l-rest { list-style: none; padding: 0; display: grid; gap: 1.75rem; }
+  .l-rest li { padding-top: 1.25rem; border-top: 1px solid var(--rule); }
+  .l-rest li:first-child { padding-top: 0; border-top: 0; }
+  .l-rest h3 { margin-top: 0.3rem; }
+  .l-excerpt-sm { margin-top: 0.4rem; font-size: 0.95rem; color: var(--taupe-deep); }
+  .l-events { grid-column: 10 / span 3; border-left: 1px solid var(--rule); padding-left: 1.75rem; }
+  .l-ev-title { margin-bottom: 1rem; }
+  .l-ev-list { list-style: none; padding: 0; display: grid; gap: 1.25rem; }
+  .l-ev { display: grid; grid-template-columns: 3.5rem 1fr; gap: 0.9rem; align-items: start; }
+  .l-ev[hidden] { display: none; }
+  .l-ev-date { display: grid; place-items: center; border: 1px solid var(--anthracite); padding: 0.35rem 0; line-height: 1; }
+  .l-ev-date .d { font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; }
+  .l-ev-date .m { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.15rem; }
+  .l-ev-name { font-weight: 600; color: var(--anthracite); text-decoration: none; }
+  .l-ev-name:hover { color: var(--gold-deep); }
+  .l-empty { display: grid; gap: 0.75rem; padding: 1.25rem; background: var(--ivory); }
+  .l-empty p { font-size: 0.95rem; }
+  .l-empty-icon { width: 1.75rem; height: 1.75rem; color: var(--gold-deep); }
+  @media (max-width: 1023px) {
+    .l-news { grid-column: 1 / -1; }
+    .l-events { grid-column: 1 / -1; border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 2rem; }
+  }
+  @media (max-width: 720px) { .l-news { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<script>
+  // Hide events that have finished since the last build
+  const now = Date.now();
+  document.querySelectorAll<HTMLElement>('.l-ev[data-end]').forEach((li) => {
+    if (new Date(li.dataset.end!).valueOf() < now - 86_400_000) li.hidden = true;
+  });
+</script>

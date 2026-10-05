@@ -1,0 +1,50 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import { Image } from 'astro:assets';
+import { getNews, formatDate, isoDate } from '@/lib/site';
+
+const news = await getNews();
+---
+
+<BaseLayout title="News" description="Updates from Hotel Association Zanzibar (HAZ): membership, programmes, positions and the hotel sector in Zanzibar.">
+  <PageHero label="News" title="News from HAZ" lead="What changes for Zanzibar's hotels, and what HAZ is doing about it." />
+  <section class="section-tight bg-white">
+    <div class="container">
+      {news.length === 0 ? (
+        <p class="muted">News will appear here.</p>
+      ) : (
+        <ul role="list" class="news-list">
+          {news.map((n, i) => (
+            <li class:list={['ni', { 'ni-first': i === 0 }]} data-reveal style={`--i:${i % 3}`}>
+              {n.data.image && (
+                <a href={`/news/${n.id}/`} class="ni-img" tabindex="-1" aria-hidden="true">
+                  <Image src={n.data.image} alt="" widths={[400, 800]} sizes="(min-width: 900px) 40vw, 100vw" />
+                </a>
+              )}
+              <div class="ni-text">
+                <p class="caption"><time datetime={isoDate(n.data.date)}>{formatDate(n.data.date)}</time>{n.data.pillar && ` · ${n.data.pillar}`}</p>
+                <h2 class="ni-title"><a href={`/news/${n.id}/`}>{n.data.title}</a></h2>
+                <p class="ni-excerpt">{n.data.excerpt}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .news-list { list-style: none; padding: 0; border-top: 1px solid var(--anthracite); }
+  .ni { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; padding: 2rem 0; border-bottom: 1px solid var(--rule); }
+  .ni:has(.ni-img) { grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); }
+  .ni-img { display: block; aspect-ratio: 3 / 2; overflow: hidden; background: var(--ivory-2); }
+  .ni-img :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .ni-title { font-size: clamp(1.6rem, 1.3rem + 1vw, 2.1rem); margin-top: 0.35rem; max-width: 30ch; }
+  .ni-first .ni-title { font-size: clamp(2rem, 1.5rem + 1.6vw, 2.75rem); }
+  .ni-title a { color: var(--anthracite); text-decoration: none; }
+  .ni-title a:hover { color: var(--gold-deep); }
+  .ni-excerpt { margin-top: 0.6rem; max-width: 62ch; }
+  @media (max-width: 760px) { .ni:has(.ni-img) { grid-template-columns: minmax(0, 1fr); } }
+</style>

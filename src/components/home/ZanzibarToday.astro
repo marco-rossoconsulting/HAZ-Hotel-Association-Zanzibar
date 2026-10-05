@@ -1,0 +1,95 @@
+---
+import Icon from '../Icon.astro';
+import { formatDate } from '@/lib/site';
+
+interface Props {
+  pulse?: { title: string; href: string; week: number } | null;
+  event?: { title: string; href: string; start: Date; end?: Date } | null;
+}
+const { pulse, event } = Astro.props;
+---
+
+<section class="zt on-dark" aria-label="Zanzibar today">
+  <div class="container zt-inner">
+    <p class="label zt-label">Zanzibar today</p>
+    <ul role="list" class="zt-list">
+      <li class="zt-item">
+        <Icon name="clock" class="zt-icon" />
+        <span><span class="zt-k">Local time</span> <span class="zt-v" data-zt-time>EAT (UTC+3)</span></span>
+      </li>
+      <li class="zt-item" data-zt-weather hidden>
+        <Icon name="cloud-sun" class="zt-icon" />
+        <span><span class="zt-k">Stone Town</span> <span class="zt-v" data-zt-weather-text></span></span>
+      </li>
+      <li class="zt-item">
+        <Icon name="chart-line" class="zt-icon" />
+        {pulse ? (
+          <a href={pulse.href}><span class="zt-k">Market Pulse · Week {pulse.week}</span> <span class="zt-v">{pulse.title}</span></a>
+        ) : (
+          <a href="/market-pulse/"><span class="zt-k">Market Pulse</span> <span class="zt-v">Launching soon. Sign up</span></a>
+        )}
+      </li>
+      <li class="zt-item">
+        <Icon name="calendar-blank" class="zt-icon" />
+        {event ? (
+          <a href={event.href}><span class="zt-k">Next: {formatDate(event.start, { year: undefined })}</span> <span class="zt-v">{event.title}</span></a>
+        ) : (
+          <a href="/events/"><span class="zt-k">Events</span> <span class="zt-v">Forum dates are published here</span></a>
+        )}
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .zt { background: var(--anthracite); color: var(--ivory-on-dark); border-top: 1px solid rgba(190, 137, 22, 0.35); }
+  .zt-inner { display: flex; align-items: stretch; gap: 2rem; padding-block: 1.1rem; }
+  .zt-label { flex: none; align-self: center; }
+  .zt-list { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 0; flex: 1; list-style: none; padding: 0; }
+  .zt-item { display: flex; gap: 0.7rem; align-items: center; padding: 0.35rem 1.25rem; border-left: 1px solid rgba(246, 242, 233, 0.16); font-size: 0.9rem; line-height: 1.35; min-width: 0; }
+  .zt-item[hidden] { display: none; }
+  .zt-item > span, .zt-item > a { color: inherit; text-decoration: none; min-width: 0; flex: 1; overflow: hidden; }
+  .zt-item a:hover .zt-v { text-decoration: underline; text-underline-offset: 0.2em; }
+  .zt-icon { color: var(--bronze); width: 1.35rem; height: 1.35rem; }
+  .zt-k { display: block; color: var(--muted-on-dark); font-size: 0.8rem; }
+  .zt-v { display: block; color: #fff; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  @media (max-width: 1023px) {
+    .zt-inner { flex-direction: column; gap: 0.75rem; }
+    .zt-list { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 0.75rem; }
+    .zt-item:nth-child(odd) { border-left: 0; padding-left: 0; }
+  }
+  @media (max-width: 520px) {
+    .zt-list { grid-template-columns: minmax(0, 1fr); }
+    .zt-item { border-left: 0; padding-left: 0; }
+  }
+</style>
+
+<script>
+  // Live local time in Zanzibar (East Africa Time)
+  const timeEl = document.querySelector<HTMLElement>('[data-zt-time]');
+  const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Dar_es_Salaam', hour: '2-digit', minute: '2-digit', weekday: 'short' });
+  const tick = () => { if (timeEl) timeEl.textContent = `${fmt.format(new Date())} EAT`; };
+  tick();
+  setInterval(tick, 30_000);
+
+  // Current weather in Stone Town from Open-Meteo (free, no key). Hidden if unavailable.
+  const wrap = document.querySelector<HTMLElement>('[data-zt-weather]');
+  const text = document.querySelector<HTMLElement>('[data-zt-weather-text]');
+  const codes: Record<number, string> = {
+    0: 'Clear', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast', 45: 'Fog', 48: 'Fog',
+    51: 'Light drizzle', 53: 'Drizzle', 55: 'Drizzle', 61: 'Light rain', 63: 'Rain', 65: 'Heavy rain',
+    80: 'Showers', 81: 'Showers', 82: 'Heavy showers', 95: 'Thunderstorms', 96: 'Thunderstorms', 99: 'Thunderstorms',
+  };
+  const url = 'https://api.open-meteo.com/v1/forecast?latitude=-6.163&longitude=39.192&current=temperature_2m,weather_code,wind_speed_10m&timezone=Africa%2FDar_es_Salaam';
+  fetch(url, { signal: AbortSignal.timeout?.(5000) })
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then((d) => {
+      const c = d?.current;
+      if (!c || !wrap || !text) return;
+      const desc = codes[c.weather_code as number] ?? '';
+      text.textContent = `${Math.round(c.temperature_2m)}°C${desc ? `, ${desc.toLowerCase()}` : ''}`;
+      wrap.title = `Wind ${Math.round(c.wind_speed_10m)} km/h`;
+      wrap.hidden = false;
+    })
+    .catch(() => {});
+</script>

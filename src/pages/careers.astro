@@ -1,0 +1,63 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import ProgrammeIndex from '@/components/ProgrammeIndex.astro';
+import NotifyForm from '@/components/NotifyForm.astro';
+import Icon from '@/components/Icon.astro';
+---
+
+<BaseLayout title="Careers & Training" description="Hospitality careers in Zanzibar: Careers & Training, the HAZ Hospitality Careers Pathway and HAZ Scholarships develop Zanzibari talent for member hotels.">
+  <PageHero
+    label="Careers & Training"
+    title="Your hospitality career can start here and go anywhere"
+    lead="HAZ develops Zanzibari talent for member hotels: careers, training and recruitment support, so that Zanzibaris build careers, not just jobs, in hospitality."
+    tone="anthracite"
+  />
+
+  <section class="section bg-white" aria-labelledby="quote-title">
+    <div class="container grid-12 quote-wrap">
+      <blockquote class="big-quote" data-reveal>
+        <p id="quote-title">“Every career that starts in a Zanzibar hotel should be able to finish in its management office.”</p>
+      </blockquote>
+      <div class="audiences">
+        <article class="aud" data-reveal style="--i:1">
+          <Icon name="graduation-cap" class="aud-icon" />
+          <h2 class="h3">For young Zanzibaris</h2>
+          <p>Hotels need chefs, engineers, housekeepers, managers and apprentices. Leave your email and we will tell you when Careers & Training opens.</p>
+          <NotifyForm programme="Careers & Training" compact />
+        </article>
+        <article class="aud" data-reveal style="--i:2">
+          <Icon name="buildings" class="aud-icon" />
+          <h2 class="h3">For member hotels</h2>
+          <p>Recruitment and training support that develops Zanzibari talent, and a Human Capital working group where members shape it.</p>
+          <a class="link-arrow" href="/join/">Join HAZ <Icon name="arrow-right" /></a>
+        </article>
+        <article class="aud" data-reveal style="--i:3">
+          <Icon name="handshake" class="aud-icon" />
+          <h2 class="h3">For sponsors</h2>
+          <p>Fund HAZ Scholarships for young Zanzibaris entering hospitality.</p>
+          <a class="link-arrow" href="/sponsors/">Sponsorship <Icon name="arrow-right" /></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-ivory" aria-labelledby="people-title">
+    <div class="container">
+      <SectionHead id="people-title" title="People programmes" />
+      <div class="pi"><ProgrammeIndex pillars={['People']} groupByPillar={false} /></div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .quote-wrap { row-gap: 3rem; }
+  .big-quote { grid-column: 1 / span 10; font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: clamp(2rem, 1.4rem + 2.6vw, 3.4rem); line-height: 1.15; border-left: 2px solid var(--haz-gold); padding-left: clamp(1rem, 0.5rem + 2vw, 2rem); }
+  .audiences { grid-column: 1 / -1; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 2rem; }
+  .aud { display: grid; gap: 0.75rem; align-content: start; padding-top: 1.5rem; border-top: 1px solid var(--anthracite); }
+  :global(.aud-icon) { width: 2rem; height: 2rem; color: var(--gold-deep); }
+  .aud .link-arrow { justify-self: start; }
+  .pi { margin-top: 2rem; }
+  @media (max-width: 1023px) { .audiences { grid-template-columns: minmax(0, 1fr); } .big-quote { grid-column: 1 / -1; } }
+</style>

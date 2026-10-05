@@ -1,0 +1,33 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+---
+
+<BaseLayout title="Thank you" noindex>
+  <section class="section bg-ivory ty">
+    <div class="container ty-inner">
+      <span class="accent-rule" aria-hidden="true"></span>
+      <h1 class="ty-title" data-ty-title>Thank you. We have received your submission.</h1>
+      <p class="lead" data-ty-text>We will be in touch soon. For anything urgent, write to <a href="mailto:info@haz.or.tz">info@haz.or.tz</a>.</p>
+      <div class="ty-actions">
+        <a class="btn" href="/">Back to the homepage <Icon name="arrow-right" class="icon-arrow" /></a>
+        <a class="btn btn-secondary" href="/news/">Latest news</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .ty { min-height: 60vh; display: grid; align-items: center; }
+  .ty-title { margin-top: 1.25rem; max-width: 20ch; }
+  .ty .lead { margin-top: 1rem; }
+  .ty-actions { margin-top: 2rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
+</style>
+
+<script>
+  const form = new URLSearchParams(location.search).get('form');
+  const text = document.querySelector('[data-ty-text]');
+  if (text && (form === 'hotel' || form === 'affiliate')) {
+    text.textContent = 'Your application has been sent to the Executive Chairman, who will reply to you personally.';
+  }
+</script>

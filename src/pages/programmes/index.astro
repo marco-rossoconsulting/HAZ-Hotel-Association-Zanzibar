@@ -1,0 +1,45 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import ProgrammeIndex from '@/components/ProgrammeIndex.astro';
+import JoinBand from '@/components/JoinBand.astro';
+import { getCollection } from 'astro:content';
+
+const all = await getCollection('programmes');
+const count = (s: string) => all.filter((p) => p.data.status === s).length;
+---
+
+<BaseLayout title="Programmes" description="Every HAZ programme, from joint promotions and the HAZ Hotel Forum to Market Pulse, Careers & Training and the Impact Observatory, with its current status.">
+  <PageHero
+    label="Programmes"
+    title="What HAZ runs, and what comes next"
+    lead="Every programme sits under one pillar: People, Place, Prosperity or Together. We show what is live today, what is launching and what is in development."
+  >
+    <ul role="list" class="legend">
+      <li><span class="status status-live">Live</span> {count('live')}</li>
+      <li><span class="status status-launching">Launching soon</span> {count('launching')}</li>
+      <li><span class="status status-development">In development</span> {count('development')}</li>
+    </ul>
+  </PageHero>
+
+  <section class="section bg-white">
+    <div class="container">
+      <nav class="pillar-nav" aria-label="Jump to a pillar">
+        <a href="#people">People</a><a href="#place">Place</a><a href="#prosperity">Prosperity</a><a href="#together">Together</a>
+      </nav>
+      <ProgrammeIndex />
+    </div>
+  </section>
+  <JoinBand />
+</BaseLayout>
+
+<style>
+  .legend { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; font-size: 0.95rem; color: var(--taupe-deep); }
+  .legend li { display: flex; align-items: center; gap: 0.5rem; }
+  .pillar-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 3rem; position: sticky; top: calc(var(--header-h) + 0.75rem); z-index: 2; }
+  .pillar-nav a {
+    padding: 0.5rem 1rem; border: 1px solid var(--anthracite); border-radius: 999px; background: var(--paper);
+    color: var(--anthracite); text-decoration: none; font-weight: 600; font-size: 0.9rem;
+  }
+  .pillar-nav a:hover { background: var(--anthracite); color: #fff; }
+</style>

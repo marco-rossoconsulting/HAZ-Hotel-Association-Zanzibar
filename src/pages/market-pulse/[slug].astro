@@ -1,0 +1,31 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Article from '@/components/Article.astro';
+import Icon from '@/components/Icon.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const all = await getCollection('pulse', ({ data }) => !data.draft);
+  return all.map((p) => ({ params: { slug: p.id }, props: { p } }));
+}
+interface Props { p: CollectionEntry<'pulse'> }
+const { p } = Astro.props;
+const { Content } = await render(p);
+---
+
+<BaseLayout title={`Market Pulse, week ${p.data.week}: ${p.data.title}`} description={p.data.summary} type="article">
+  <Article crumbs={{ label: 'Market Pulse', href: '/market-pulse/' }} label={`Market Pulse · Week ${p.data.week}`} title={p.data.title} date={p.data.date} standfirst={p.data.summary}>
+    <Content />
+    <Fragment slot="aside">
+      <div class="box">
+        <p class="h4">Get it every week</p>
+        <p>By WhatsApp, email and web, included in HAZ membership.</p>
+        <a class="link-arrow" href="/market-pulse/">Sign up <Icon name="arrow-right" /></a>
+      </div>
+    </Fragment>
+  </Article>
+</BaseLayout>
+
+<style>
+  .box { padding: 1.25rem; background: var(--ivory); display: grid; gap: 0.5rem; }
+</style>

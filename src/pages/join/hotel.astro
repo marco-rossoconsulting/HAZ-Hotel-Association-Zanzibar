@@ -1,0 +1,209 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import FormSection from '@/components/FormSection.astro';
+import Icon from '@/components/Icon.astro';
+import fees from '@/data/fees.json';
+import { REGIONS } from '@/content.config';
+import { site, usd } from '@/lib/site';
+import '@/styles/application.css';
+
+const contacts = [
+  { key: 'coordinator', label: 'HAZ coordinator', hint: 'Main contact for HAZ', required: true },
+  { key: 'owner', label: 'Owner' },
+  { key: 'gm', label: 'General Manager' },
+  { key: 'finance', label: 'Financial Controller or Accountant' },
+  { key: 'assistant', label: 'Assistant Manager' },
+  { key: 'sales', label: 'Sales & Marketing' },
+];
+const range = (r: (typeof fees.hotel)[number]) => (r.max ? `${r.min}–${r.max}` : `${r.min}+`);
+const feeOptions = fees.hotel.flatMap((r) =>
+  fees.bands.map((b) => ({
+    value: `${range(r)} rooms, ${b.label}: ${usd(r[b.key as 'economy' | 'standard'])}`,
+    label: `${range(r)} rooms · ${b.label} · ${usd(r[b.key as 'economy' | 'standard'])}`,
+    min: r.min, max: r.max ?? 100000, band: b.key,
+  })),
+);
+---
+
+<BaseLayout title="Hotel membership application" description={`Apply for HAZ hotel membership for ${fees.year}. Applications go directly to the Executive Chairman.`}>
+  <div class="app-page">
+  <section class="app-hero bg-ivory">
+    <div class="container narrow">
+      <nav aria-label="Breadcrumb" class="crumbs"><a href="/join/">Join HAZ</a> <span aria-hidden="true">/</span> <span>Hotel application</span></nav>
+      <p class="label">Hotel membership · {fees.year}</p>
+      <h1 class="app-title">Hotel membership application</h1>
+      <p class="lead">It takes about ten minutes. Fields marked <span class="req">*</span> are required. Your application goes directly to the Executive Chairman.</p>
+      <ul role="list" class="app-needs">
+        <li><Icon name="check" /> Your company registration details</li>
+        <li><Icon name="check" /> Staff numbers</li>
+        <li><Icon name="check" /> Names of two HAZ member hotels that propose you</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section-tight bg-white">
+    <div class="container narrow">
+      <form
+        class="app-form"
+        name="hotel-application"
+        method="POST"
+        action="/thank-you/?form=hotel"
+        data-netlify="true"
+        netlify-honeypot="company_website"
+        data-netlify-ajax
+        data-success="Thank you. Your application has been sent to the Executive Chairman, who will reply to you personally."
+        data-app-form
+      >
+        <input type="hidden" name="form-name" value="hotel-application" />
+        <input type="hidden" name="subject" value="New HAZ hotel membership application" />
+        <p class="hp"><label>Leave this empty <input name="company_website" tabindex="-1" autocomplete="off" /></label></p>
+
+        <FormSection n={1} title="Hotel details">
+          <div class="form-grid">
+            <div class="field span-2"><label for="hotel_name">Hotel name <span class="req">*</span></label><input id="hotel_name" name="hotel_name" required autocomplete="organization" /></div>
+            <div class="field"><label for="location">Location (village or town) <span class="req">*</span></label><input id="location" name="location" required /></div>
+            <div class="field">
+              <label for="region">Area / region</label>
+              <select id="region" name="region">
+                <option value="">Select</option>
+                {REGIONS.map((r) => <option>{r}</option>)}
+              </select>
+            </div>
+            <div class="field"><label for="rooms">Rooms (keys) <span class="req">*</span></label><input id="rooms" name="rooms" type="number" min="1" inputmode="numeric" required data-rooms /></div>
+            <div class="field"><label for="rating">Hotel rating</label><input id="rating" name="hotel_rating" placeholder="For example, 4 star" /></div>
+            <div class="field"><label for="operational_since">Operational since</label><input id="operational_since" name="operational_since" inputmode="numeric" placeholder="Year" /></div>
+          </div>
+        </FormSection>
+
+        <FormSection n={2} title="Company details">
+          <div class="form-grid">
+            <div class="field"><label for="company_name">Company / business name <span class="req">*</span></label><input id="company_name" name="company_name" required /></div>
+            <div class="field"><label for="registration_number">Registration number</label><input id="registration_number" name="registration_number" /></div>
+            <div class="field"><label for="physical_address">Physical address</label><input id="physical_address" name="physical_address" autocomplete="street-address" /></div>
+            <div class="field"><label for="postal_address">Postal address</label><input id="postal_address" name="postal_address" /></div>
+            <div class="field"><label for="website">Website</label><input id="website" name="website" type="url" placeholder="https://" autocomplete="url" /></div>
+            <div class="field"><label for="year_established">Year established</label><input id="year_established" name="year_established" inputmode="numeric" /></div>
+          </div>
+        </FormSection>
+
+        <FormSection n={3} title="Employment">
+          <div class="form-grid cols-5">
+            <div class="field"><label for="emp_total">Total employees</label><input id="emp_total" name="employees_total" type="number" min="0" inputmode="numeric" /></div>
+            <div class="field"><label for="emp_perm">Permanent staff</label><input id="emp_perm" name="employees_permanent" type="number" min="0" inputmode="numeric" /></div>
+            <div class="field"><label for="emp_casual">Casual staff</label><input id="emp_casual" name="employees_casual" type="number" min="0" inputmode="numeric" /></div>
+            <div class="field"><label for="emp_tz">Tanzanian citizens</label><input id="emp_tz" name="employees_tanzanian" type="number" min="0" inputmode="numeric" /></div>
+            <div class="field"><label for="emp_exp">Expatriates</label><input id="emp_exp" name="employees_expatriate" type="number" min="0" inputmode="numeric" /></div>
+          </div>
+        </FormSection>
+
+        <FormSection n={4} title="Contacts" intro="The HAZ coordinator is our main contact. Add the others if you can.">
+          <div class="contacts">
+            {contacts.map((c) => (
+              <fieldset class="contact">
+                <legend class="h4">{c.label}{c.required && <span class="req"> *</span>}{c.hint && <span class="hint-inline"> · {c.hint}</span>}</legend>
+                <div class="contact-row">
+                  <div class="field"><label for={`${c.key}_name`}>Name</label><input id={`${c.key}_name`} name={`${c.key}_name`} required={c.required} autocomplete={c.required ? 'name' : 'off'} /></div>
+                  <div class="field"><label for={`${c.key}_email`}>Email</label><input id={`${c.key}_email`} name={`${c.key}_email`} type="email" required={c.required} autocomplete={c.required ? 'email' : 'off'} /></div>
+                  <div class="field"><label for={`${c.key}_mobile`}>Mobile</label><input id={`${c.key}_mobile`} name={`${c.key}_mobile`} type="tel" required={c.required} autocomplete={c.required ? 'tel' : 'off'} /></div>
+                </div>
+              </fieldset>
+            ))}
+          </div>
+        </FormSection>
+
+        <FormSection n={5} title="Proposers" intro="Two representatives of HAZ member hotels who support your application.">
+          <div class="form-grid">
+            <div class="field"><label for="proposer_1">Proposer 1 · name and hotel <span class="req">*</span></label><input id="proposer_1" name="proposer_1" required /></div>
+            <div class="field"><label for="proposer_2">Proposer 2 · name and hotel <span class="req">*</span></label><input id="proposer_2" name="proposer_2" required /></div>
+          </div>
+          <p class="caption help">Not sure who to ask? See the <a href="/members/" target="_blank">member hotels</a>.</p>
+        </FormSection>
+
+        <FormSection n={6} title="Annual membership fee" intro={`Select one fee by number of rooms and rate band. Fees are in US dollars per membership year (${fees.year}).`}>
+          <div class="form-grid">
+            <fieldset class="field band span-2">
+              <legend>Your published rates <span class="req">*</span></legend>
+              <div class="seg">
+                {fees.bands.map((b) => (
+                  <label class="seg-opt"><input type="radio" name="rate_band" value={b.label} data-band={b.key} required /><span><strong>{b.label}</strong><small>{b.detail}</small></span></label>
+                ))}
+              </div>
+            </fieldset>
+            <div class="field span-2">
+              <label for="annual_fee">Annual fee selected <span class="req">*</span></label>
+              <select id="annual_fee" name="annual_fee" required data-fee-select>
+                <option value="">Select your fee</option>
+                {feeOptions.map((o) => <option value={o.value} data-min={o.min} data-max={o.max} data-band={o.band}>{o.label}</option>)}
+              </select>
+              <p class="hint" data-fee-hint>Enter your rooms and choose a rate band above, and we will select your fee.</p>
+            </div>
+          </div>
+        </FormSection>
+
+        <FormSection n={7} title="Declaration and undertaking">
+          <p>I declare that the information in this application is complete and correct to the best of my knowledge.</p>
+          <p class="decl-intro">On behalf of the company named in this application, I apply for membership of Hotel Association Zanzibar (HAZ) and agree:</p>
+          <ol class="decl">
+            <li>to be bound by its Memorandum and Articles of Association and any rules made under them, now or in future;</li>
+            <li>to notify HAZ of any change in directors, partners, management or ownership during our membership;</li>
+            <li>to notify HAZ of any other change to the information given in this application.</li>
+          </ol>
+          <label class="check agree"><input type="checkbox" name="declaration_agreed" value="Yes" required /> <span>I agree to the declaration and undertaking above. <span class="req">*</span></span></label>
+          <div class="form-grid">
+            <div class="field"><label for="decl_name">Full name <span class="req">*</span></label><input id="decl_name" name="declaration_full_name" required autocomplete="name" /></div>
+            <div class="field"><label for="decl_position">Position <span class="req">*</span></label><input id="decl_position" name="declaration_position" required autocomplete="organization-title" /></div>
+            <div class="field"><label for="decl_sig">Signature (type your full name to sign digitally) <span class="req">*</span></label><input id="decl_sig" name="declaration_signature" required /></div>
+            <div class="field"><label for="decl_date">Date <span class="req">*</span></label><input id="decl_date" name="declaration_date" type="date" required data-today /></div>
+          </div>
+        </FormSection>
+
+        <div class="submit-row">
+          <button class="btn" type="submit">Submit application <Icon name="arrow-right" class="icon-arrow" /></button>
+          <p class="caption">Your application goes to {site.applicationsEmail}. We use your details only to process your membership. <a href="/privacy/">Privacy</a></p>
+        </div>
+        <p class="form-status" data-form-status tabindex="-1" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+  </div>
+</BaseLayout>
+
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-app-form]');
+  if (form) {
+    // Default the declaration date to today
+    const today = form.querySelector<HTMLInputElement>('[data-today]');
+    if (today && !today.value) today.value = new Date().toISOString().slice(0, 10);
+
+    const rooms = form.querySelector<HTMLInputElement>('[data-rooms]')!;
+    const bands = Array.from(form.querySelectorAll<HTMLInputElement>('[data-band]'));
+    const select = form.querySelector<HTMLSelectElement>('[data-fee-select]')!;
+    const hint = form.querySelector<HTMLElement>('[data-fee-hint]')!;
+
+    // Prefill from the fee calculator (?rooms=40&band=standard)
+    const params = new URLSearchParams(location.search);
+    if (params.get('rooms')) rooms.value = params.get('rooms')!;
+    const pb = params.get('band');
+    if (pb) bands.forEach((b) => (b.checked = b.dataset.band === pb));
+
+    const pick = () => {
+      const n = Number(rooms.value);
+      const band = bands.find((b) => b.checked)?.dataset.band;
+      if (!n || !band) return;
+      const opt = Array.from(select.options).find(
+        (o) => o.dataset.band === band && n >= Number(o.dataset.min) && n <= Number(o.dataset.max),
+      );
+      if (opt) {
+        select.value = opt.value;
+        hint.textContent = 'Selected from your rooms and rate band. You can change it if needed.';
+      } else if (n < 5) {
+        select.value = '';
+        hint.textContent = 'Hotels with fewer than 5 rooms: please contact the Secretariat at info@haz.or.tz.';
+      }
+    };
+    rooms.addEventListener('input', pick);
+    bands.forEach((b) => b.addEventListener('change', pick));
+    pick();
+  }
+</script>

@@ -1,0 +1,184 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import FeeCalculator from '@/components/FeeCalculator.astro';
+import Icon from '@/components/Icon.astro';
+import { getPhoto, site } from '@/lib/site';
+import fees from '@/data/fees.json';
+
+const photo = await getPhoto('heritage');
+
+const gives = [
+  { icon: 'airplane-tilt', title: 'Joint promotions', text: 'Seasonal and event packages negotiated with airlines and partners. Partners promote member hotels; your hotel opts in with its own offers.' },
+  { icon: 'storefront', title: 'Shared exhibition stands', text: 'A place at trade fairs at a fraction of the cost of going alone.' },
+  { icon: 'handshake', title: 'Negotiated terms', text: 'Preferential conditions on digital systems, from guest journey and door locks to maintenance management and web services, and service-level agreements with Affiliate Members.' },
+  { icon: 'chart-line', title: 'Market intelligence', text: 'The weekly HAZ Market Pulse and quarterly Hotel Pulse benchmark: visitor trends, booking channels, airline capacity and supply pipeline.' },
+  { icon: 'megaphone', title: 'One credible voice', text: 'Data-led representation with government on the issues that affect hotel operations and investment, including water, waste, power and skills.' },
+  { icon: 'graduation-cap', title: 'Skills and careers', text: 'Careers, training and recruitment support that develops Zanzibari talent for member hotels.' },
+  { icon: 'users', title: 'Forums and working groups', text: 'Owners, General Managers and specialists solving common problems together.' },
+];
+
+const steps = [
+  { verb: 'Apply', text: 'Complete the hotel application online and select your membership fee.' },
+  { verb: 'Find two proposers', text: 'Ask two HAZ member hotels to propose your hotel. Name them in the application.' },
+  { verb: 'Hear from the Chairman', text: `Your application goes directly to the Executive Chairman at ${site.applicationsEmail}, for a personal, timely reply.` },
+];
+
+const faqs = [
+  { q: 'Who can join HAZ?', a: 'Hotels operating in Zanzibar join as Hotel Members. Suppliers, professional advisers and service providers join as Affiliate Members. Organisations that want to support HAZ events and programmes can become Corporate Sponsors.' },
+  { q: 'How much does membership cost?', a: `Hotel fees are set per membership year by number of rooms and rate band, from ${'USD ' + Math.min(...fees.hotel.map((r) => r.economy)).toLocaleString('en-GB')} for hotels of 5 to 20 rooms with rates below USD 150. Use the calculator above to find your fee.` },
+  { q: 'Does HAZ membership count for hotel licensing?', a: 'Yes. The Zanzibar Commission for Tourism (ZCT) requires every hotel to show evidence of association membership before a hotel licence is issued. HAZ membership meets this requirement.' },
+  { q: 'Does membership mean discounts from suppliers?', a: 'HAZ creates value by organising hotels and their partners around shared goals, not by promising blanket discounts. Where a negotiated term exists, we name the partner, the term and who qualifies.' },
+  { q: 'Who reviews my application?', a: `Applications go directly to the Executive Chairman. For general questions, write to ${site.email}.` },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+
+<BaseLayout title="Join HAZ" description="Join Hotel Association Zanzibar (HAZ): joint promotions, shared exhibition stands, negotiated terms, market intelligence and one credible voice. Find your fee and apply online." schema={[faqSchema]}>
+  <PageHero
+    label={`Hotel membership ${fees.year}`}
+    title="Join the hotels that are shaping Zanzibar's next decade"
+    lead="Welcome to Hotel Association Zanzibar. We bring Zanzibar's hotels together to win business, share intelligence and speak with one voice. Here is what membership gives you."
+    image={{ src: photo.image, alt: photo.alt }}
+  >
+    <div class="hero-actions">
+      <a class="btn" href="/join/hotel/">Apply as a hotel <Icon name="arrow-right" class="icon-arrow" /></a>
+      <a class="btn btn-secondary" href="/join/affiliate/">Apply as an Affiliate</a>
+    </div>
+  </PageHero>
+
+  <section class="section bg-white" aria-labelledby="gives-title">
+    <div class="container">
+      <SectionHead id="gives-title" title="What membership gives your hotel" intro="A network working towards shared goals: business no hotel wins alone, and a seat at the table with government." />
+      <ul role="list" class="gives">
+        {gives.map((g, i) => (
+          <li class="give" data-reveal style={`--i:${i % 3}`}>
+            <Icon name={g.icon} class="give-icon" />
+            <h3 class="h4">{g.title}</h3>
+            <p>{g.text}</p>
+          </li>
+        ))}
+        <li class="give give-cta" data-reveal style="--i:1">
+          <p class="give-cta-text">Membership pays back: in business won together, in knowledge, in influence and in standing.</p>
+          <a class="link-arrow" href="#fees">Find your fee <Icon name="arrow-right" /></a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section bg-ivory" id="fees" aria-labelledby="fees-title">
+    <div class="container grid-12 fees">
+      <div class="fees-head">
+        <SectionHead id="fees-title" title="Annual membership fee" intro={`Set by number of rooms and rate band, in US dollars per membership year (${fees.year}).`} />
+        <aside class="licence">
+          <Icon name="seal-check" class="licence-icon" />
+          <div>
+            <h3 class="h4">Hotel licensing</h3>
+            <p>The Zanzibar Commission for Tourism (ZCT) requires every hotel to show evidence of association membership before a hotel licence is issued. HAZ membership meets this requirement.</p>
+          </div>
+        </aside>
+      </div>
+      <div class="fees-calc">
+        <FeeCalculator />
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-white" aria-labelledby="how-title">
+    <div class="container">
+      <SectionHead id="how-title" title="How to join" />
+      <ol role="list" class="steps">
+        {steps.map((s, i) => (
+          <li class="step" data-reveal style={`--i:${i}`}>
+            <span class="step-n" aria-hidden="true">{i + 1}</span>
+            <h3 class="h3">{s.verb}</h3>
+            <p>{s.text}</p>
+          </li>
+        ))}
+      </ol>
+      <div class="how-ctas">
+        <a class="btn" href="/join/hotel/">Start your application <Icon name="arrow-right" class="icon-arrow" /></a>
+        <p class="caption">Prefer to talk first? WhatsApp the Executive Chairman on <a href={`https://wa.me/${site.contacts[0].whatsapp.replace(/\D/g, '')}`}>{site.contacts[0].whatsapp}</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight bg-anthracite on-dark" aria-labelledby="aff-join-title">
+    <div class="container aff-join">
+      <div>
+        <h2 class="h2" id="aff-join-title">Not a hotel? Be the supplier Zanzibar's hotels choose.</h2>
+        <p class="aff-join-p">Affiliate membership gives suppliers and service providers credibility, visibility and direct access to the people who make hotel decisions.</p>
+      </div>
+      <div class="aff-join-ctas">
+        <a class="btn" href="/affiliates/">Affiliate levels <Icon name="arrow-right" class="icon-arrow" /></a>
+        <a class="btn btn-secondary" href="/sponsors/">Corporate sponsorship</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-ivory" aria-labelledby="faq-title">
+    <div class="container grid-12">
+      <div class="faq-head">
+        <SectionHead id="faq-title" title="Questions hotels ask" />
+      </div>
+      <div class="faqs">
+        {faqs.map((f) => (
+          <details class="faq">
+            <summary><span>{f.q}</span><Icon name="plus" class="faq-icon" /></summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .gives { margin-top: 3rem; list-style: none; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .give { background: var(--paper); padding: 1.75rem; display: grid; gap: 0.6rem; align-content: start; }
+  .give p { font-size: 0.975rem; }
+  :global(.give-icon) { width: 1.9rem; height: 1.9rem; color: var(--gold-deep); margin-bottom: 0.5rem; }
+  .give-cta { background: var(--anthracite); color: var(--ivory-on-dark); align-content: space-between; }
+  .give-cta-text { font-family: var(--font-display); font-style: italic; font-size: 1.5rem; line-height: 1.3; color: #fff; }
+  .give-cta .link-arrow { color: var(--bronze); }
+
+  .fees { row-gap: 2.5rem; align-items: start; }
+  .fees-head { grid-column: 1 / span 4; display: grid; gap: 2rem; }
+  .fees-calc { grid-column: 5 / span 8; }
+  .licence { display: grid; grid-template-columns: auto 1fr; gap: 1rem; padding: 1.25rem; background: var(--paper); border-left: 2px solid var(--haz-gold); }
+  .licence p { margin-top: 0.35rem; font-size: 0.95rem; }
+  :global(.licence-icon) { width: 1.75rem; height: 1.75rem; color: var(--gold-deep); }
+
+  .steps { list-style: none; padding: 0; margin-top: 3rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.5rem; counter-reset: s; }
+  .step { position: relative; padding-top: 4.5rem; border-top: 1px solid var(--anthracite); display: grid; gap: 0.6rem; align-content: start; }
+  .step-n { position: absolute; top: 1rem; left: 0; font-family: var(--font-display); font-size: 3rem; line-height: 1; color: var(--gold-deep); font-weight: 600; }
+  .how-ctas { margin-top: 3rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; }
+
+  .aff-join { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 2rem; }
+  .aff-join .h2 { color: #fff; max-width: 22ch; }
+  .aff-join-p { margin-top: 1rem; max-width: 56ch; color: var(--muted-on-dark); }
+  .aff-join-ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+  .faq-head { grid-column: 1 / span 4; }
+  .faqs { grid-column: 6 / span 7; border-top: 1px solid var(--anthracite); }
+  .faq { border-bottom: 1px solid var(--rule); }
+  .faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 1rem; padding: 1.25rem 0; font-weight: 600; font-size: 1.075rem; }
+  .faq summary::-webkit-details-marker { display: none; }
+  :global(.faq-icon) { color: var(--gold-deep); transition: transform 0.3s var(--ease-out); flex: none; margin-top: 0.2rem; }
+  .faq[open] :global(.faq-icon) { transform: rotate(45deg); }
+  .faq p { padding-bottom: 1.25rem; max-width: 62ch; }
+
+  @media (max-width: 1023px) {
+    .gives { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .fees-head, .fees-calc, .faq-head, .faqs { grid-column: 1 / -1; }
+    .steps { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+  }
+  @media (max-width: 560px) { .gives { grid-template-columns: minmax(0, 1fr); } }
+</style>

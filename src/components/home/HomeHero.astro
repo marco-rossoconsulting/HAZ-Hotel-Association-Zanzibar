@@ -1,0 +1,111 @@
+---
+import { Image } from 'astro:assets';
+import Icon from '../Icon.astro';
+import { getPhoto, site } from '@/lib/site';
+
+interface Props { pulseHref: string; pulseLabel: string }
+const { pulseHref, pulseLabel } = Astro.props;
+const hero = await getPhoto('hero');
+// One line per sentence: "Better business." / "Better Zanzibar."
+const lines = site.hero.headline.split(/(?<=\.)\s+/).map((l) => l.split(' '));
+---
+
+<section class="home-hero" aria-labelledby="hero-title">
+  <div class="container grid-12 hh-grid">
+    <div class="hh-text">
+      <p class="label hh-label">Hotel Association Zanzibar</p>
+      <h1 class="display hh-title" id="hero-title">
+        {lines.map((line, li) => (
+          <span class="line">
+            {line.map((w, wi) => (
+              <span class="w" style={`--d:${li * 2 + wi}`}><span>{w}</span></span>
+            ))}
+          </span>
+        ))}
+      </h1>
+      <p class="lead hh-lead">{site.hero.intro}</p>
+      <div class="hh-ctas">
+        <a class="btn" href="/join/">Join HAZ <Icon name="arrow-right" class="icon-arrow" /></a>
+        <a class="btn btn-secondary" href={pulseHref}>{pulseLabel}</a>
+      </div>
+    </div>
+
+    <div class="hh-visual">
+      <div class="hh-door arch" data-door>
+        <Image
+          src={hero.image}
+          alt={hero.alt}
+          widths={[420, 640, 860, 1100]}
+          sizes="(min-width: 1024px) 38vw, (min-width: 768px) 60vw, 88vw"
+          loading="eager"
+          fetchpriority="high"
+          class="hh-img"
+        />
+        <span class="leaf leaf-l" aria-hidden="true"></span>
+        <span class="leaf leaf-r" aria-hidden="true"></span>
+      </div>
+      <p class="hh-narrative serif-italic">{site.narrativeLine}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .home-hero { background: var(--ivory); padding-block: clamp(2.5rem, 1.5rem + 3vw, 4.5rem) clamp(3rem, 2rem + 4vw, 6rem); overflow: hidden; }
+  .hh-grid { align-items: center; row-gap: 3rem; }
+  .hh-text { grid-column: 1 / span 7; }
+  .hh-label { margin-bottom: 1.25rem; }
+  .hh-title { max-width: none; }
+  .line { display: block; white-space: nowrap; }
+  .w + .w { margin-left: 0.24em; }
+  .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  .w > span { display: inline-block; }
+  .hh-lead { margin-top: 1.75rem; max-width: 40ch; }
+  .hh-ctas { margin-top: 2.25rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .hh-visual { grid-column: 8 / span 5; position: relative; }
+  .hh-door { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: var(--ivory-2); }
+  .hh-door :global(.hh-img) { width: 100%; height: 100%; object-fit: cover; object-position: 28% 60%; }
+  .leaf { position: absolute; top: 0; bottom: 0; width: 50.5%; background: var(--anthracite); pointer-events: none; }
+  .leaf-l { left: 0; }
+  .leaf-r { right: 0; }
+  .hh-narrative {
+    margin-top: 1.1rem; font-size: 1.35rem; line-height: 1.3; color: var(--anthracite);
+    padding-left: 1rem; border-left: 1px solid var(--haz-gold); max-width: 30ch;
+  }
+  .leaf { display: none; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .w > span { transform: translateY(105%); animation: rise 1s var(--ease-out) forwards; animation-delay: calc(120ms + var(--d) * 90ms); }
+    .hh-lead, .hh-ctas { opacity: 0; transform: translateY(14px); animation: fade-up 0.9s var(--ease-out) forwards; }
+    .hh-lead { animation-delay: 0.55s; }
+    .hh-ctas { animation-delay: 0.7s; }
+    .hh-narrative { opacity: 0; animation: fade-up 0.9s var(--ease-out) 1.5s forwards; }
+    /* The Mlango opens: two door leaves part to reveal the photograph */
+    .leaf { display: block; transition: transform 1.5s var(--ease-in-out) 0.35s; }
+    :global(.js) .hh-door.is-open .leaf-l { transform: translateX(-101%); }
+    :global(.js) .hh-door.is-open .leaf-r { transform: translateX(101%); }
+    :global(html:not(.js)) .leaf { display: none; }
+    .hh-door :global(.hh-img) { transform: scale(1.1); transition: transform 2.4s var(--ease-out) 0.35s; }
+    .hh-door.is-open :global(.hh-img) { transform: scale(1); }
+  }
+  @keyframes rise { to { transform: none; } }
+  @keyframes fade-up { to { opacity: 1; transform: none; } }
+
+  @media (max-width: 1023px) {
+    .hh-text { grid-column: 1 / span 12; }
+    .hh-visual { grid-column: 1 / span 12; max-width: 520px; }
+    .hh-door { aspect-ratio: 5 / 4; }
+  }
+  @media (max-width: 767px) {
+    .hh-door { aspect-ratio: 4 / 5; }
+  }
+</style>
+
+<script>
+  const door = document.querySelector<HTMLElement>('[data-door]');
+  if (door) {
+    const img = door.querySelector('img');
+    const open = () => requestAnimationFrame(() => door.classList.add('is-open'));
+    if (!img || img.complete) open();
+    else { img.addEventListener('load', open, { once: true }); img.addEventListener('error', open, { once: true }); setTimeout(open, 1800); }
+  }
+</script>

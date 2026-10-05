@@ -1,0 +1,194 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import JoinBand from '@/components/JoinBand.astro';
+import Icon from '@/components/Icon.astro';
+import { getPhoto, site } from '@/lib/site';
+
+const photo = await getPhoto('stone-town');
+
+const reasons = [
+  { icon: 'buildings', title: 'Hotel-specific', text: 'Founded in June 2021 by professional hoteliers as the association for Zanzibar’s hotel and hospitality sector.' },
+  { icon: 'handshake', title: 'Commercially useful', text: 'Joint promotions with airlines and partners, shared exhibition stands, negotiated terms on digital systems and one-to-one service agreements with Affiliates win business no hotel wins alone.' },
+  { icon: 'chart-line', title: 'Evidence-led', text: 'Market Pulse, Hotel Pulse and the Hospitality Impact Report make HAZ the source of hotel-sector facts.' },
+  { icon: 'scales', title: 'Accountable', text: 'The CSR & Sustainability Impact Observatory turns member contributions into verified, published totals.' },
+  { icon: 'seal-check', title: 'Recognised', text: 'HAZ membership is accepted by the Zanzibar Commission for Tourism as evidence of association membership for hotel licensing.' },
+];
+
+const values = [
+  { title: 'Members first', text: 'Every activity earns its place by being useful to member hotels.' },
+  { title: 'Respect', text: 'For Zanzibar’s people, culture and faith, and for every view at the table.' },
+  { title: 'Integrity', text: 'We say what we can prove, publish what we measure and correct what we get wrong.' },
+  { title: 'Shared success', text: 'We grow when Zanzibar grows. Profit and community are not traded off.' },
+  { title: 'Stewardship', text: 'We leave the island better than we found it.' },
+];
+
+const structure = [
+  { title: 'The Board', text: 'The Executive Chairman, Chief Executive Officer, office bearers and chapter chairs lead HAZ on behalf of its members.', href: '/about/leadership/', link: 'Meet the Board' },
+  { title: 'Regional chapters', text: 'West, North Coast, East Coast and Pemba chapters bring members together close to where they operate.', href: '/about/leadership/#chapter-chairs', link: 'Chapter chairs' },
+  { title: 'HAZ Hotel Forum', text: 'A monthly forum where owners and General Managers solve common problems together.', href: '/programmes/hotel-forum/', link: 'About the Forum' },
+  { title: 'Working groups', text: 'Seven working groups, including Human Capital and Sustainability, turn shared problems into workable proposals.', href: '/programmes/working-groups/', link: 'About working groups' },
+];
+---
+
+<BaseLayout title="About HAZ" description={site.description50}>
+  <PageHero
+    label="About HAZ"
+    title="The association of Zanzibar's hotels"
+    lead="We bring hotels together to grow their business, speak with one credible voice, develop Zanzibari talent and protect the island that makes it all possible."
+    image={{ src: photo.image, alt: photo.alt }}
+    frame="arch"
+  />
+
+  <section class="section bg-white" aria-labelledby="purpose-title">
+    <div class="container grid-12 purpose">
+      <div class="p-main">
+        <p class="label">Our purpose</p>
+        <h2 class="p-statement" id="purpose-title" data-reveal>
+          To make hospitality a force that builds a better Zanzibar: for the businesses that invest in it, the people who live here and the island they share.
+        </h2>
+      </div>
+      <dl class="p-defs">
+        <div data-reveal style="--i:1">
+          <dt class="h4">Vision 2030</dt>
+          <dd>Zanzibar is known as the island where hospitality and community prosper together, and its hotel industry can prove it.</dd>
+        </div>
+        <div data-reveal style="--i:2">
+          <dt class="h4">Mission</dt>
+          <dd>HAZ unites Zanzibar's hotels to grow their business, speak with one credible voice, develop Zanzibari talent and protect the island that makes it all possible.</dd>
+        </div>
+        <div data-reveal style="--i:3">
+          <dt class="h4">Our promise to members</dt>
+          <dd>Membership pays back: in business won together, in knowledge, in influence and in standing.</dd>
+        </div>
+        <div data-reveal style="--i:4">
+          <dt class="h4">Our promise to Zanzibar</dt>
+          <dd>What Zanzibar's hotels give back is measured, published and growing.</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section bg-ocean on-dark balance" aria-labelledby="balance-title">
+    <div class="container grid-12">
+      <div class="b-head">
+        <span class="accent-rule" data-rule aria-hidden="true"></span>
+        <h2 class="h2" id="balance-title" data-reveal>The Zanzibar Balance</h2>
+      </div>
+      <div class="b-copy">
+        <p class="b-lead" data-reveal>
+          A hotel is only as strong as the island around it. Stronger hotels build a stronger Zanzibar, and a stronger Zanzibar builds stronger hotels.
+        </p>
+        <p data-reveal style="--i:1">
+          Hotels prosper when Zanzibar's people thrive and its place is protected, and the island gains most when its hotels prosper. This is shared value, not charity: the commercial case and the community case are the same case.
+        </p>
+        <ol class="cycle" role="list" data-reveal style="--i:2" aria-label="The collaborative cycle">
+          <li><span>Stronger hotels</span></li>
+          <li><span>Stronger Zanzibar</span></li>
+          <li><span>Stronger hotels</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-ivory" aria-labelledby="reasons-title">
+    <div class="container">
+      <SectionHead id="reasons-title" title="Why hotels trust HAZ" intro="Strong associations are useful first, influential second and admired third." />
+      <ul role="list" class="reasons">
+        {reasons.map((r, i) => (
+          <li class="reason" data-reveal style={`--i:${i % 3}`}>
+            <Icon name={r.icon} class="reason-icon" />
+            <h3 class="h4">{r.title}</h3>
+            <p>{r.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section bg-white" aria-labelledby="values-title">
+    <div class="container grid-12 values-wrap">
+      <div class="v-head">
+        <span class="accent-rule" data-rule aria-hidden="true"></span>
+        <h2 class="h2 v-title" id="values-title" data-reveal>The respected senior hotelier everyone calls first.</h2>
+        <p class="v-intro" data-reveal style="--i:1">Well informed, generous with help, commercially sharp, rooted in Zanzibar and quietly confident. Five values guide how we work.</p>
+      </div>
+      <ol role="list" class="values">
+        {values.map((v, i) => (
+          <li data-reveal style={`--i:${i}`}>
+            <h3 class="v-name">{v.title}</h3>
+            <p>{v.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section bg-ivory-2" aria-labelledby="structure-title">
+    <div class="container">
+      <SectionHead id="structure-title" title="How HAZ works" intro="Built by hoteliers for hotels, organised close to where members operate." />
+      <div class="structure">
+        {structure.map((s, i) => (
+          <article class="st" data-reveal style={`--i:${i}`}>
+            <h3 class="h4">{s.title}</h3>
+            <p>{s.text}</p>
+            <a class="link-arrow" href={s.href}>{s.link} <Icon name="arrow-right" /></a>
+          </article>
+        ))}
+      </div>
+      <p class="pillar-signature st-sig">People · Place · Prosperity · Together</p>
+    </div>
+  </section>
+
+  <JoinBand />
+</BaseLayout>
+
+<style>
+  .purpose { row-gap: 3rem; align-items: start; }
+  .p-main { grid-column: 1 / span 7; }
+  .p-statement { margin-top: 1rem; font-family: var(--font-display); font-weight: 500; font-size: clamp(1.9rem, 1.4rem + 1.9vw, 3rem); line-height: 1.15; }
+  .p-defs { grid-column: 9 / span 4; display: grid; gap: 1.75rem; }
+  .p-defs > div { border-top: 1px solid var(--haz-gold); padding-top: 1rem; }
+  .p-defs dd { margin-top: 0.4rem; color: var(--ink); }
+
+  .b-head { grid-column: 1 / span 4; }
+  .b-head .h2 { margin-top: 1.1rem; color: #fff; }
+  .b-copy { grid-column: 6 / span 7; display: grid; gap: 1.25rem; font-size: var(--step-lead); color: var(--ivory-on-dark); max-width: 60ch; }
+  .b-lead { font-family: var(--font-display); font-style: italic; font-size: clamp(1.6rem, 1.3rem + 1vw, 2.1rem); line-height: 1.3; color: #fff; }
+  .cycle { list-style: none; padding: 0; margin-top: 1rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.75rem; font-size: 1rem; }
+  .cycle li { display: flex; align-items: center; gap: 0.75rem; }
+  .cycle li span { border: 1px solid var(--bronze); color: var(--bronze); padding: 0.45rem 0.9rem; border-radius: 999px; font-weight: 600; }
+  .cycle li:not(:last-child)::after { content: '→'; color: var(--muted-on-dark); }
+
+  .reasons { margin-top: 3rem; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; }
+  .reason { grid-column: span 2; padding: 2rem 2rem 2rem 0; border-top: 1px solid var(--anthracite); }
+  .reason:nth-child(4), .reason:nth-child(5) { grid-column: span 3; }
+  .reason p { margin-top: 0.5rem; max-width: 46ch; }
+  :global(.reason-icon) { width: 2rem; height: 2rem; color: var(--gold-deep); margin-bottom: 1rem; }
+
+  .values-wrap { row-gap: 2.5rem; }
+  .v-head { grid-column: 1 / span 5; }
+  .v-title { margin-top: 1.1rem; }
+  .v-intro { margin-top: 1rem; max-width: 44ch; }
+  .values { grid-column: 7 / span 6; list-style: none; padding: 0; counter-reset: v; }
+  .values li { counter-increment: v; display: grid; grid-template-columns: 3.5rem 1fr; padding: 1.25rem 0; border-bottom: 1px solid var(--rule); }
+  .values li::before { content: counter(v); grid-row: span 2; font-family: var(--font-display); font-size: 2rem; line-height: 1; color: var(--gold-deep); }
+  .v-name { font-family: var(--font-display); font-size: 1.75rem; font-weight: 600; line-height: 1.1; }
+  .values p { margin-top: 0.35rem; }
+
+  .structure { margin-top: 3rem; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5rem; }
+  .st { background: var(--paper); padding: 1.75rem; display: grid; gap: 0.75rem; align-content: start; border-top: 2px solid var(--haz-gold); }
+  .st .link-arrow { margin-top: 0.5rem; justify-self: start; }
+  .st-sig { margin-top: 2.5rem; text-align: center; }
+
+  @media (max-width: 1023px) {
+    .p-main, .p-defs, .b-head, .b-copy, .v-head, .values { grid-column: 1 / -1; }
+    .structure { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .reasons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .reason, .reason:nth-child(4), .reason:nth-child(5) { grid-column: span 1; }
+  }
+  @media (max-width: 640px) {
+    .structure, .reasons { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

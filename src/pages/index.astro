@@ -1,0 +1,112 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HomeHero from '@/components/home/HomeHero.astro';
+import ZanzibarToday from '@/components/home/ZanzibarToday.astro';
+import Pillars from '@/components/home/Pillars.astro';
+import Benefits from '@/components/home/Benefits.astro';
+import Facts from '@/components/home/Facts.astro';
+import Latest from '@/components/home/Latest.astro';
+import AffiliateSplit from '@/components/home/AffiliateSplit.astro';
+import MemberMap from '@/components/MemberMap.astro';
+import JoinBand from '@/components/JoinBand.astro';
+import Icon from '@/components/Icon.astro';
+import { getCollection } from 'astro:content';
+import { getPulse, getEvents, getPhoto, site } from '@/lib/site';
+import { Image } from 'astro:assets';
+
+const pulse = (await getPulse())[0];
+const { upcoming } = await getEvents();
+const next = upcoming[0];
+const heritage = await getPhoto('heritage');
+const members = (await getCollection('members', ({ data }) => !data.hidden)).map((m) => ({ id: m.id, ...m.data }));
+
+const webSite = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: site.name,
+  alternateName: 'HAZ',
+  url: Astro.site?.toString(),
+  inLanguage: 'en-GB',
+  publisher: { '@id': `${Astro.site}#organization` },
+};
+---
+
+<BaseLayout title={site.name} schema={[webSite]}>
+  <HomeHero
+    pulseHref={pulse ? `/market-pulse/${pulse.id}/` : '/market-pulse/'}
+    pulseLabel={pulse ? 'This week’s Market Pulse' : 'Get the Market Pulse'}
+  />
+  <ZanzibarToday
+    pulse={pulse ? { title: pulse.data.title, href: `/market-pulse/${pulse.id}/`, week: pulse.data.week } : null}
+    event={next ? { title: next.data.title, href: `/events/${next.id}/`, start: next.data.start, end: next.data.end } : null}
+  />
+
+  <section class="section manifesto bg-ivory" aria-labelledby="manifesto-title">
+    <div class="container grid-12">
+      <h2 class="mf-title" id="manifesto-title" data-reveal>{site.narrativeLine}</h2>
+      <figure class="mf-figure" data-reveal style="--i:2">
+        <Image src={heritage.image} alt={heritage.alt} widths={[360, 560, 760]} sizes="(min-width: 1024px) 26vw, 60vw" />
+        <figcaption>The carved doors of Stone Town gave the HAZ logo its Mlango: the threshold of every home, and of hospitality itself.</figcaption>
+      </figure>
+      <div class="mf-body">
+        <p data-reveal style="--i:1">
+          Stronger hotels build a stronger Zanzibar, and a stronger Zanzibar builds stronger hotels. HAZ exists to keep that cycle turning.
+        </p>
+        <p data-reveal style="--i:2">
+          Founded in June 2021 by professional hoteliers, HAZ is the hotel industry's own institution in Zanzibar: useful to members, trusted by government and accountable to the people and place that make Zanzibar hospitality possible.
+        </p>
+        <a class="link-arrow" href="/about/" data-reveal style="--i:3">Who we are <Icon name="arrow-right" /></a>
+      </div>
+    </div>
+  </section>
+
+  <Pillars />
+  <Benefits />
+  <Facts />
+
+  <section class="section members-home bg-white" aria-labelledby="members-home-title">
+    <div class="container">
+      <div class="mh-head">
+        <div>
+          <span class="accent-rule" data-rule aria-hidden="true"></span>
+          <h2 class="h2 mh-title" id="members-home-title" data-reveal>The hotels that shape Zanzibar are in HAZ.</h2>
+        </div>
+        <p class="mh-text" data-reveal style="--i:1">From Stone Town to Nungwi, the east coast and Pemba. Choose a region on the map.</p>
+      </div>
+      <MemberMap members={members} compact />
+    </div>
+  </section>
+
+  <Latest />
+  <AffiliateSplit />
+  <JoinBand />
+</BaseLayout>
+
+<style>
+  .manifesto { padding-block: clamp(4rem, 3rem + 5vw, 8rem); }
+  .mf-title {
+    grid-column: 1 / span 7; grid-row: 1; align-self: start;
+    font-family: var(--font-display); font-weight: 500; font-style: italic;
+    font-size: clamp(2.4rem, 1.5rem + 3.8vw, 4.5rem); line-height: 1.06; letter-spacing: -0.01em;
+    max-width: 18ch;
+  }
+  .mf-figure { grid-column: 9 / span 4; grid-row: 1 / span 2; align-self: start; }
+  .mf-figure :global(img) { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; }
+  .mf-figure figcaption { margin-top: 0.75rem; max-width: 34ch; }
+  .mf-body { grid-column: 2 / span 6; grid-row: 2; margin-top: 2.5rem; display: grid; gap: 1.1rem; font-size: var(--step-lead); line-height: 1.6; max-width: 56ch; }
+  .mf-body .link-arrow { justify-self: start; margin-top: 0.5rem; font-size: 1rem; }
+  .mh-head { display: grid; grid-template-columns: 1fr minmax(0, 360px); gap: 2rem; align-items: end; margin-bottom: clamp(2rem, 1.5rem + 2vw, 3.5rem); }
+  .mh-title { margin-top: 1.1rem; max-width: 18ch; }
+  .mh-text { color: var(--taupe-deep); }
+  @media (max-width: 1023px) {
+    .mf-title { grid-column: 1 / span 7; }
+    .mf-body { grid-column: 1 / span 7; }
+    .mf-figure { grid-column: 9 / span 4; }
+  }
+  @media (max-width: 767px) {
+    .mh-head { grid-template-columns: minmax(0, 1fr); }
+    .mf-body { grid-column: 1 / -1; grid-row: auto; }
+    .mf-title, .mf-figure { grid-row: auto; }
+    .mf-figure { max-width: 360px; margin-top: 2rem; }
+  }
+</style>

@@ -1,0 +1,91 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import NotifyForm from '@/components/NotifyForm.astro';
+import Icon from '@/components/Icon.astro';
+import { getEvents, formatDate, formatShortDate, isoDate } from '@/lib/site';
+
+const { upcoming, past } = await getEvents();
+const fmtTime = (d: Date) => new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Dar_es_Salaam' }).format(d);
+---
+
+<BaseLayout title="Events" description="HAZ Hotel Forums, working groups, summits and partner events for Zanzibar's hotels.">
+  <PageHero label="Events" title="Forums, summits and partner events" lead="Where owners, General Managers and partners meet to solve common problems together." />
+
+  <section class="section-tight bg-white" aria-labelledby="up-title">
+    <div class="container">
+      <h2 class="h2" id="up-title">Upcoming</h2>
+      {upcoming.length > 0 ? (
+        <ul role="list" class="ev-list" data-ev-list>
+          {upcoming.map((e) => (
+            <li class="ev" data-end={(e.data.end ?? e.data.start).toISOString()}>
+              <time class="ev-date" datetime={isoDate(e.data.start)}>
+                <span class="d">{formatShortDate(e.data.start).split(' ')[0]}</span>
+                <span class="m">{formatShortDate(e.data.start).split(' ')[1]}</span>
+              </time>
+              <div class="ev-main">
+                <p class="caption">{e.data.format}{e.data.membersOnly ? ' · Members only' : ''}</p>
+                <h3 class="ev-title"><a href={`/events/${e.id}/`}>{e.data.title}</a></h3>
+                <p>{e.data.excerpt}</p>
+                <p class="ev-meta"><Icon name="map-pin" /> {e.data.location} <span aria-hidden="true">·</span> <Icon name="clock" /> {formatDate(e.data.start)}, {fmtTime(e.data.start)} EAT</p>
+              </div>
+              <a class="btn btn-secondary btn-sm ev-cta" href={`/events/${e.id}/`}>Details</a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div class="empty">
+          <Icon name="calendar-blank" class="empty-icon" />
+          <div>
+            <p class="h4">No dates are published yet</p>
+            <p>The next HAZ Hotel Forum and partner events will be listed here as dates are confirmed. Member hotels hear about forums directly.</p>
+          </div>
+        </div>
+      )}
+      <div class="ev-notify">
+        <NotifyForm programme="HAZ events" heading="Get event dates by email" />
+      </div>
+    </div>
+  </section>
+
+  {past.length > 0 && (
+    <section class="section-tight bg-ivory" aria-labelledby="past-title">
+      <div class="container">
+        <h2 class="h3" id="past-title">Past events</h2>
+        <ul role="list" class="past">
+          {past.map((e) => (
+            <li><time datetime={isoDate(e.data.start)}>{formatDate(e.data.start)}</time> <a href={`/events/${e.id}/`}>{e.data.title}</a> <span class="caption">{e.data.location}</span></li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .ev-list { list-style: none; padding: 0; margin-top: 2rem; border-top: 1px solid var(--anthracite); }
+  .ev { display: grid; grid-template-columns: 5rem minmax(0, 1fr) auto; gap: 1.5rem; padding: 1.75rem 0; border-bottom: 1px solid var(--rule); align-items: start; }
+  .ev[hidden] { display: none; }
+  .ev-date { display: grid; place-items: center; border: 1px solid var(--anthracite); padding: 0.6rem 0; line-height: 1; }
+  .ev-date .d { font-family: var(--font-display); font-size: 2.2rem; font-weight: 600; }
+  .ev-date .m { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; margin-top: 0.2rem; }
+  .ev-title { font-family: var(--font-display); font-size: 1.85rem; line-height: 1.15; margin: 0.2rem 0 0.4rem; }
+  .ev-title a { color: var(--anthracite); text-decoration: none; }
+  .ev-title a:hover { color: var(--gold-deep); }
+  .ev-meta { margin-top: 0.6rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; font-size: 0.9rem; color: var(--taupe-deep); }
+  .ev-meta :global(.icon) { color: var(--gold-deep); }
+  .empty { margin-top: 2rem; display: grid; grid-template-columns: auto 1fr; gap: 1.25rem; padding: 1.75rem; background: var(--ivory); max-width: 760px; }
+  :global(.empty-icon) { width: 2rem; height: 2rem; color: var(--gold-deep); }
+  .empty p + p { margin-top: 0.4rem; }
+  .ev-notify { margin-top: 3rem; max-width: 900px; }
+  .past { list-style: none; padding: 0; margin-top: 1rem; }
+  .past li { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; padding: 0.75rem 0; border-top: 1px solid var(--rule); }
+  @media (max-width: 640px) { .ev { grid-template-columns: 4rem minmax(0, 1fr); } .ev-cta { grid-column: 2; justify-self: start; } }
+</style>
+
+<script>
+  const now = Date.now();
+  document.querySelectorAll<HTMLElement>('.ev[data-end]').forEach((li) => {
+    if (new Date(li.dataset.end!).valueOf() < now - 86_400_000) li.hidden = true;
+  });
+</script>

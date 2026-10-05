@@ -1,0 +1,229 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import NotifyForm from '@/components/NotifyForm.astro';
+import StatusPill from '@/components/StatusPill.astro';
+import Icon from '@/components/Icon.astro';
+import { Image } from 'astro:assets';
+import { getCollection, getEntry } from 'astro:content';
+import { getPhoto, usd } from '@/lib/site';
+import fees from '@/data/fees.json';
+
+const photo = await getPhoto('dhow');
+const affiliates = (await getCollection('affiliates', ({ data }) => !data.hidden)).sort((a, b) => a.data.name.localeCompare(b.data.name, 'en-GB'));
+const marketplace = await getEntry('programmes', 'affiliate-marketplace');
+
+const gains = [
+  { icon: 'users', title: 'Access', text: 'Direct connection with owners, General Managers, purchasing teams and other decision-makers through forums, meetings and events.' },
+  { icon: 'storefront', title: 'Visibility', text: 'Your organisation, products, services and member offers in the HAZ Affiliate Marketplace, directory, newsletter and channels.' },
+  { icon: 'handshake', title: 'Commercial engagement', text: 'Supplier introductions, procurement opportunities and member promotions.' },
+  { icon: 'chart-line', title: 'Intelligence', text: 'HAZ market information, hotel-sector data, regulatory updates and workshops on doing business in Zanzibar.' },
+  { icon: 'airplane-tilt', title: 'Partnership programmes', text: 'Sponsorships, co-branded initiatives, events and programmes for specific sectors, such as airline co-promotions and reward points.' },
+  { icon: 'seal-check', title: 'Trusted standing', text: 'A selected network that member hotels can rely on, including service-level agreements negotiated one to one.' },
+  { icon: 'leaf', title: 'Responsible Zanzibar', text: 'Contribute to sustainability, community, skills and destination-quality initiatives.' },
+];
+---
+
+<BaseLayout title="Affiliate Members" description="Affiliate membership of Hotel Association Zanzibar (HAZ): credibility, visibility and direct access to the people who make hotel decisions. Five levels, from Standard to Principal Affiliate.">
+  <PageHero
+    label="Affiliate Members"
+    title="Be the supplier Zanzibar's hotels choose"
+    lead="Join a selected network of suppliers, professional advisers and service providers working with the island's hotels towards shared goals."
+    image={{ src: photo.image, alt: photo.alt }}
+  >
+    <div class="hero-actions">
+      <a class="btn" href="/join/affiliate/">Apply as an Affiliate <Icon name="arrow-right" class="icon-arrow" /></a>
+      <a class="btn btn-secondary" href="#levels">Compare levels</a>
+    </div>
+  </PageHero>
+
+  <section class="section bg-white" aria-labelledby="gains-title">
+    <div class="container grid-12 gains-wrap">
+      <div class="gains-head">
+        <SectionHead id="gains-title" title="A competitive advantage over non-member suppliers" intro="Credibility, visibility and direct access to hotel decision-makers. A stronger hotel sector creates stronger opportunities for its partners." />
+      </div>
+      <ul role="list" class="gains">
+        {gains.map((g, i) => (
+          <li data-reveal style={`--i:${i % 3}`}>
+            <Icon name={g.icon} class="g-icon" />
+            <div>
+              <h3 class="h4">{g.title}</h3>
+              <p>{g.text}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section bg-ivory" id="levels" aria-labelledby="levels-title">
+    <div class="container">
+      <SectionHead id="levels-title" title="Five levels of Affiliate membership" intro="Each level includes all the benefits of the levels before it. Choose a level to see everything it includes." />
+      <div class="ladder" data-ladder>
+        <div class="rungs" role="group" aria-label="Choose an Affiliate level">
+          {fees.affiliate.map((l, i) => (
+            <button type="button" class="rung" aria-pressed={i === 0 ? 'true' : 'false'} data-level={i} style={`--h:${90 + i * 52}px`}>
+              <span class="rung-bar" aria-hidden="true"></span>
+              <span class="rung-name">{l.level}</span>
+              <span class="rung-fee">{l.fee ? `${usd(l.fee)} a year` : 'Fee on application'}</span>
+            </button>
+          ))}
+        </div>
+        <div class="ladder-panel" aria-live="polite">
+          <h3 class="h3" data-ladder-title>{fees.affiliate[0].level} Affiliate</h3>
+          <ol role="list" class="ladder-list">
+            {fees.affiliate.map((l, i) =>
+              l.benefits.map((b) => (
+                <li data-from={i} class:list={{ 'is-on': i === 0, 'is-new': i === 0 }}>
+                  <Icon name="check" />
+                  <span>{b}</span>
+                  <small>{l.level}</small>
+                </li>
+              )),
+            )}
+          </ol>
+          <a class="btn" href="/join/affiliate/">Apply now <Icon name="arrow-right" class="icon-arrow" /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-white" aria-labelledby="market-title">
+    <div class="container grid-12 market">
+      <div class="market-head">
+        <div class="market-status">{marketplace && <StatusPill status={marketplace.data.status} />}</div>
+        <SectionHead id="market-title" title="Affiliate Marketplace" intro="Where member hotels find Affiliate Members, their services and their member offers." />
+        {marketplace && marketplace.data.status !== 'live' && (
+          <NotifyForm programme="the Affiliate Marketplace" heading="Get notified when the Marketplace opens" />
+        )}
+      </div>
+      <div class="market-list">
+        <h3 class="h4 ml-title">Affiliate Members</h3>
+        {affiliates.length > 0 ? (
+          <ul role="list" class="aff-list">
+            {affiliates.map((a) => (
+              <li class="aff">
+                {a.data.logo && <Image src={a.data.logo} alt="" width={120} class="aff-logo" />}
+                <div>
+                  <p class="aff-name">{a.data.website ? <a href={a.data.website} rel="noopener" target="_blank">{a.data.name} <Icon name="arrow-up-right" /></a> : a.data.name}</p>
+                  <p class="aff-type">{a.data.businessType}{a.data.level ? ` · ${a.data.level} Affiliate` : ''}</p>
+                  {a.data.description && <p class="aff-desc">{a.data.description}</p>}
+                  {a.data.offer && <p class="aff-offer"><strong>Member offer:</strong> {a.data.offer}</p>}
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="muted">Affiliate Members will be listed here.</p>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight bg-anthracite on-dark" aria-labelledby="apply-title">
+    <div class="container apply">
+      <div>
+        <h2 class="h2" id="apply-title">How to apply</h2>
+        <ol role="list" class="apply-steps">
+          <li><strong>Choose</strong> a membership level and complete the application.</li>
+          <li><strong>Attach</strong> your supporting documents.</li>
+          <li><strong>Submit</strong>: your application goes to the Executive Chairman.</li>
+        </ol>
+      </div>
+      <a class="btn" href="/join/affiliate/">Start your application <Icon name="arrow-right" class="icon-arrow" /></a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .gains-wrap { row-gap: 2.5rem; }
+  .gains-head { grid-column: 1 / span 5; }
+  .gains { grid-column: 7 / span 6; list-style: none; padding: 0; display: grid; gap: 0; }
+  .gains li { display: grid; grid-template-columns: 2.5rem 1fr; gap: 1rem; padding: 1.25rem 0; border-top: 1px solid var(--rule); }
+  .gains p { margin-top: 0.3rem; }
+  :global(.g-icon) { width: 1.75rem; height: 1.75rem; color: var(--gold-deep); margin-top: 0.1rem; }
+
+  .ladder { margin-top: 3rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2.5rem; align-items: stretch; }
+  .rungs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.6rem; align-items: end; min-height: 360px; }
+  .rung { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; gap: 0.3rem; background: none; border: 0; padding: 0; text-align: left; color: var(--anthracite); }
+  .rung-bar { display: block; height: var(--h); background: var(--paper); border: 1px solid #b9b1a4; border-bottom: 0; transition: background-color 0.35s var(--ease-out), border-color 0.35s; transform-origin: bottom; }
+  .rung.is-included .rung-bar { background: var(--ivory-2); border-color: var(--taupe); }
+  .rung[aria-pressed='true'] .rung-bar { background: var(--anthracite); border-color: var(--anthracite); box-shadow: inset 0 3px 0 var(--haz-gold); }
+  .rung-name { font-weight: 600; font-size: 0.95rem; padding-top: 0.5rem; border-top: 1px solid var(--anthracite); }
+  .rung-fee { font-size: 0.78rem; color: var(--taupe-deep); line-height: 1.3; }
+  .rung:hover .rung-bar { border-color: var(--anthracite); }
+  .rung:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 4px; }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .ladder .rung-bar { animation: grow 1s var(--ease-out) both; animation-delay: calc(var(--d, 0) * 80ms); }
+  }
+  @keyframes grow { from { transform: scaleY(0.2); opacity: 0; } }
+  .ladder-panel { background: var(--paper); padding: 2rem; border-top: 2px solid var(--haz-gold); display: grid; gap: 1.25rem; align-content: start; }
+  .ladder-list { list-style: none; padding: 0; display: grid; gap: 0.15rem; }
+  .ladder-list li { display: none; grid-template-columns: 1.4rem 1fr auto; gap: 0.6rem; align-items: start; padding: 0.55rem 0; border-bottom: 1px solid var(--rule); }
+  .ladder-list li.is-on { display: grid; }
+  .ladder-list li :global(.icon) { color: var(--gold-deep); margin-top: 0.2rem; }
+  .ladder-list small { font-size: 0.75rem; color: var(--taupe-deep); white-space: nowrap; }
+  .ladder-list li.is-new span { font-weight: 600; }
+  @media (prefers-reduced-motion: no-preference) {
+    .ladder-list li.is-new { animation: li-in 0.5s var(--ease-out) both; }
+  }
+  @keyframes li-in { from { opacity: 0; transform: translateX(-8px); } }
+  .ladder-panel .btn { justify-self: start; }
+
+  .market { row-gap: 3rem; align-items: start; }
+  .market-head { grid-column: 1 / span 6; display: grid; gap: 1.5rem; }
+  .market-list { grid-column: 8 / span 5; }
+  .ml-title { padding-bottom: 0.75rem; border-bottom: 1px solid var(--anthracite); }
+  .aff-list { list-style: none; padding: 0; }
+  .aff { display: grid; grid-template-columns: auto 1fr; gap: 1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--rule); }
+  .aff-name { font-weight: 600; font-size: 1.075rem; }
+  .aff-name a { color: var(--anthracite); text-decoration: none; display: inline-flex; gap: 0.3rem; align-items: center; }
+  .aff-name a:hover { color: var(--gold-deep); }
+  .aff-type { font-size: 0.875rem; color: var(--taupe-deep); }
+  .aff-desc { margin-top: 0.35rem; font-size: 0.95rem; }
+
+  .apply { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 2rem; }
+  .apply .h2 { color: #fff; }
+  .apply-steps { margin-top: 1rem; padding-left: 1.25rem; display: grid; gap: 0.4rem; color: var(--ivory-on-dark); }
+  .apply-steps strong { color: var(--bronze); }
+
+  @media (max-width: 1023px) {
+    .gains-head, .gains, .market-head, .market-list { grid-column: 1 / -1; }
+    .ladder { grid-template-columns: minmax(0, 1fr); }
+    .rungs { min-height: 0; }
+    .rung-bar { height: calc(var(--h) * 0.6); }
+  }
+  @media (max-width: 520px) {
+    .rung-name { font-size: 0.8rem; }
+    .rung-fee { display: none; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-ladder]').forEach((root) => {
+    const rungs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-level]'));
+    const items = Array.from(root.querySelectorAll<HTMLElement>('[data-from]'));
+    const title = root.querySelector<HTMLElement>('[data-ladder-title]')!;
+    rungs.forEach((r, i) => r.style.setProperty('--d', String(i)));
+    const select = (level: number) => {
+      rungs.forEach((r, i) => {
+        r.setAttribute('aria-pressed', String(i === level));
+        r.classList.toggle('is-included', i < level);
+      });
+      items.forEach((li) => {
+        const from = Number(li.dataset.from);
+        li.classList.toggle('is-on', from <= level);
+        li.classList.toggle('is-new', from === level);
+      });
+      title.textContent = `${rungs[level].querySelector('.rung-name')?.textContent} Affiliate`;
+    };
+    rungs.forEach((r, i) => r.addEventListener('click', () => select(i)));
+    root.addEventListener('keydown', (e) => {
+      const cur = rungs.findIndex((r) => r.getAttribute('aria-pressed') === 'true');
+      if (e.key === 'ArrowRight' && cur < rungs.length - 1) { select(cur + 1); rungs[cur + 1].focus(); }
+      if (e.key === 'ArrowLeft' && cur > 0) { select(cur - 1); rungs[cur - 1].focus(); }
+    });
+  });
+</script>

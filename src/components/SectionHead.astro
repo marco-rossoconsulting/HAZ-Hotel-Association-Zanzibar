@@ -1,0 +1,31 @@
+---
+interface Props {
+  label?: string;
+  title: string;
+  intro?: string;
+  id?: string;
+  level?: 'h2' | 'h3';
+  align?: 'left' | 'wide';
+}
+const { label, title, intro, id, level = 'h2', align = 'left' } = Astro.props;
+const Tag = level;
+---
+
+<header class:list={['section-head', `align-${align}`]}>
+  <span class="accent-rule" data-rule aria-hidden="true"></span>
+  {label && <p class="label sh-label">{label}</p>}
+  <Tag class="h2 sh-title" id={id} data-reveal>{title}</Tag>
+  {intro && <p class="lead sh-intro" data-reveal style="--i:1">{intro}</p>}
+</header>
+
+<style>
+  .section-head { max-width: 760px; }
+  .align-wide { max-width: 960px; }
+  .sh-label { display: block; margin-top: 1.1rem; }
+  .accent-rule + .sh-title { margin-top: 1.1rem; }
+  .sh-label + .sh-title { margin-top: 0.6rem; }
+  .sh-title { max-width: 22ch; }
+  .align-wide .sh-title { max-width: 28ch; }
+  .sh-intro { margin-top: 1.1rem; color: var(--ink); }
+  :global(.on-dark) .sh-intro { color: var(--ivory-on-dark); }
+</style>

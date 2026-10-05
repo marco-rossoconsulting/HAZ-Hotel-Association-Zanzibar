@@ -1,0 +1,33 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Article from '@/components/Article.astro';
+import { site } from '@/lib/site';
+const updated = new Date('2026-10-05');
+---
+
+<BaseLayout title="Privacy notice" description="How Hotel Association Zanzibar (HAZ) uses the personal information you send through this website.">
+  <Article crumbs={{ label: 'Home', href: '/' }} label="Privacy" title="Privacy notice" updated={updated} standfirst="How Hotel Association Zanzibar (HAZ) uses the information you send us through this website.">
+    <h2>Who we are</h2>
+    <p>This website is run by Hotel Association Zanzibar (HAZ), {site.address.street}, {site.address.poBox}, {site.address.locality}, {site.address.country}. You can contact us at <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+
+    <h2>What we collect</h2>
+    <p>We collect only what you choose to send us through the forms on this website:</p>
+    <ul>
+      <li>membership applications for hotels and Affiliate Members, including contact details and the supporting documents you attach;</li>
+      <li>messages sent through the contact, investment and sponsorship forms;</li>
+      <li>sign-ups for Market Pulse, events and programme launch updates.</li>
+    </ul>
+
+    <h2>How we use it</h2>
+    <p>We use your information to process your application or enquiry, to reply to you, and to send the updates you asked for. Membership applications go to the Executive Chairman. We do not sell your information, and we do not use it for advertising.</p>
+
+    <h2>Where it is stored</h2>
+    <p>Form submissions are received and stored by our website host, Netlify, and forwarded by email to the HAZ Secretariat. We keep application records for as long as they are needed to manage membership.</p>
+
+    <h2>Cookies and third parties</h2>
+    <p>This website does not use advertising or tracking cookies. The homepage requests current weather for Stone Town from Open-Meteo; no personal information is sent.</p>
+
+    <h2>Your choices</h2>
+    <p>You can ask us to see, correct or delete the information we hold about you, or to stop sending you updates, by writing to <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+  </Article>
+</BaseLayout>
