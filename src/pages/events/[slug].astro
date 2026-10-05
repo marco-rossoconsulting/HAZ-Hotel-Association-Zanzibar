@@ -1,0 +1,48 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Article from '@/components/Article.astro';
+import Icon from '@/components/Icon.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { formatDate } from '@/lib/site';
+
+export async function getStaticPaths() {
+  const all = await getCollection('events', ({ data }) => !data.draft);
+  return all.map((e) => ({ params: { slug: e.id }, props: { e } }));
+}
+interface Props { e: CollectionEntry<'events'> }
+const { e } = Astro.props;
+const { Content } = await render(e);
+const fmtTime = (d: Date) => new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Dar_es_Salaam' }).format(d);
+const when = `${formatDate(e.data.start)}, ${fmtTime(e.data.start)}${e.data.end ? ` to ${e.data.end.toDateString() === e.data.start.toDateString() ? fmtTime(e.data.end) : `${formatDate(e.data.end)}, ${fmtTime(e.data.end)}`}` : ''} EAT`;
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Event',
+  name: e.data.title,
+  description: e.data.excerpt,
+  startDate: e.data.start.toISOString(),
+  ...(e.data.end ? { endDate: e.data.end.toISOString() } : {}),
+  eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+  location: { '@type': 'Place', name: e.data.location, address: { '@type': 'PostalAddress', addressLocality: 'Zanzibar', addressCountry: 'TZ' } },
+  organizer: { '@id': `${Astro.site}#organization` },
+};
+---
+
+<BaseLayout title={e.data.title} description={e.data.excerpt} schema={[schema]}>
+  <Article crumbs={{ label: 'All events', href: '/events/' }} label={e.data.format} title={e.data.title} standfirst={e.data.excerpt}>
+    <Content />
+    <Fragment slot="aside">
+      <dl class="facts">
+        <div><dt><Icon name="calendar-blank" /> When</dt><dd>{when}</dd></div>
+        <div><dt><Icon name="map-pin" /> Where</dt><dd>{e.data.location}</dd></div>
+        {e.data.membersOnly && <div><dt><Icon name="users" /> Who</dt><dd>HAZ members only</dd></div>}
+      </dl>
+      {e.data.registrationUrl && <a class="btn" href={e.data.registrationUrl} rel="noopener" target="_blank">Register <Icon name="arrow-up-right" /></a>}
+    </Fragment>
+  </Article>
+</BaseLayout>
+
+<style>
+  .facts { display: grid; gap: 1rem; padding: 1.25rem; background: var(--ivory); }
+  .facts dt { display: flex; align-items: center; gap: 0.4rem; font-size: var(--step-label); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; color: var(--gold-deep); }
+  .facts dd { margin-top: 0.25rem; font-weight: 500; }
+</style>

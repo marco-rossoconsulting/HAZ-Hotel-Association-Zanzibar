@@ -1,0 +1,188 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import Icon from '@/components/Icon.astro';
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import logoGold from '@/assets/brand/haz-logo-gold.png';
+import logoWhite from '@/assets/brand/haz-logo-white.png';
+import { getNews, site, formatDate, isoDate } from '@/lib/site';
+import context from '@/data/context.json';
+
+const news = (await getNews()).slice(0, 4);
+const photos = (await getCollection('photos')).filter((p) => p.data.credit);
+const descriptions = [
+  { id: 'desc-one', label: 'One line', text: site.oneLine },
+  { id: 'desc-50', label: '50 words', text: site.description50 },
+];
+const logos = [
+  { name: 'Gold, transparent', note: 'Primary version on ivory or white', file: '/brand/HAZ_Logo_Gold_Transparent.png', img: logoGold, bg: 'ivory' },
+  { name: 'White, transparent', note: 'On Anthracite, dark panels and photography', file: '/brand/HAZ_Logo_White_Transparent.png', img: logoWhite, bg: 'dark' },
+  { name: 'Black, transparent', note: 'Formal, press, legal and monochrome print', file: '/brand/HAZ_Logo_Black_Transparent.png', img: null, bg: 'white' },
+];
+---
+
+<BaseLayout title="Media kit" description="Media kit for Hotel Association Zanzibar (HAZ): approved descriptions, logo files, spokespeople, key facts and the media contact.">
+  <PageHero
+    label="Media"
+    title="The first call for the hotel-sector view"
+    lead="Approved descriptions, logo files, spokespeople and dated, sourced facts about Hotel Association Zanzibar."
+  >
+    <a class="btn" href={`mailto:${site.email}?subject=Media%20enquiry`}><Icon name="envelope" /> Media enquiries</a>
+  </PageHero>
+
+  <section class="section-tight bg-white" aria-labelledby="desc-title">
+    <div class="container grid-12 two">
+      <div class="col-a">
+        <h2 class="h3" id="desc-title">About HAZ, in approved words</h2>
+        <p class="caption">Use as written. Name: "Hotel Association Zanzibar (HAZ)" on first mention, then "HAZ".</p>
+      </div>
+      <div class="col-b descs">
+        {descriptions.map((d) => (
+          <figure class="desc">
+            <figcaption class="label">{d.label}</figcaption>
+            <blockquote id={d.id}>{d.text}</blockquote>
+            <button class="btn btn-sm btn-secondary" type="button" data-copy={d.id}><Icon name="copy" /> <span>Copy</span></button>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight bg-ivory" aria-labelledby="logo-title">
+    <div class="container">
+      <SectionHead id="logo-title" title="Logo files" intro="Three letters under one roof, with a Zanzibar door. Always reproduced from the master artwork, in one solid colour: gold, black or white." />
+      <ul role="list" class="logos">
+        {logos.map((l) => (
+          <li class="logo-card">
+            <div class:list={['logo-stage', `stage-${l.bg}`]}>
+              {l.img ? <Image src={l.img} alt={`HAZ logo, ${l.name.toLowerCase()}`} width={220} /> : <img src={l.file} alt="HAZ logo, black" width="220" height="75" loading="lazy" />}
+            </div>
+            <div class="logo-info">
+              <h3 class="h4">{l.name}</h3>
+              <p class="caption">{l.note}</p>
+              <a href={l.file} download class="link-arrow"><Icon name="download-simple" /> PNG</a>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <div class="rules">
+        <p><strong>Clear space:</strong> the height of the H on all four sides. <strong>Minimum size:</strong> 160 px wide on screen, 35 mm in print.</p>
+        <p><strong>Please do not</strong> stretch, recolour, outline or add effects to the logo, place it over busy backgrounds, or lock it up with slogans. For other formats, write to <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight bg-white" aria-labelledby="facts-title">
+    <div class="container grid-12 two">
+      <div class="col-a">
+        <h2 class="h3" id="facts-title">Key facts</h2>
+        <p class="caption">Every figure carries its date, unit and source.</p>
+      </div>
+      <dl class="col-b facts">
+        <div><dt>Founded</dt><dd>June 2021, Zanzibar, Tanzania, by professional hoteliers</dd></div>
+        <div><dt>Recognition</dt><dd>HAZ membership is accepted by the Zanzibar Commission for Tourism as evidence of association membership for hotel licensing</dd></div>
+        {context.items.map((c) => (
+          <div><dt>{c.label}</dt><dd>{c.prefix}{c.value.toLocaleString('en-GB')}{c.suffix} <span class="caption">Source: {c.source}</span></dd></div>
+        ))}
+        <div><dt>Corporate line</dt><dd>{site.corporateLine}</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section-tight bg-ivory" aria-labelledby="spk-title">
+    <div class="container grid-12 two">
+      <div class="col-a">
+        <h2 class="h3" id="spk-title">Spokespeople</h2>
+      </div>
+      <ul role="list" class="col-b spk">
+        {site.contacts.map((c) => (
+          <li>
+            <p class="label">{c.role}</p>
+            <p class="spk-name">{c.name}</p>
+            <p><a href={`mailto:${c.email}`}>{c.email}</a></p>
+          </li>
+        ))}
+        <li>
+          <p class="label">Media contact</p>
+          <p class="spk-name">HAZ Secretariat</p>
+          <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section-tight bg-white" aria-labelledby="recent-title">
+    <div class="container grid-12 two">
+      <div class="col-a">
+        <h2 class="h3" id="recent-title">Recent news</h2>
+        <a class="link-arrow" href="/news/">All news <Icon name="arrow-right" /></a>
+      </div>
+      <ul role="list" class="col-b recent">
+        {news.map((n) => (
+          <li><time class="caption" datetime={isoDate(n.data.date)}>{formatDate(n.data.date)}</time> <a href={`/news/${n.id}/`}>{n.data.title}</a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {photos.length > 0 && (
+    <section class="section-tight bg-ivory" aria-labelledby="credits-title">
+      <div class="container grid-12 two">
+        <div class="col-a"><h2 class="h4" id="credits-title">Photography credits</h2></div>
+        <ul role="list" class="col-b credits">
+          {photos.map((p) => <li><span>{p.data.label}</span> <span class="caption">{p.data.credit}</span></li>)}
+        </ul>
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .two { row-gap: 1.5rem; align-items: start; }
+  .col-a { grid-column: 1 / span 4; display: grid; gap: 0.6rem; justify-items: start; }
+  .col-b { grid-column: 6 / span 7; }
+  .descs { display: grid; gap: 1.5rem; }
+  .desc { display: grid; gap: 0.75rem; justify-items: start; padding: 1.5rem; background: var(--ivory); }
+  .desc blockquote { font-size: 1.05rem; line-height: 1.65; max-width: 66ch; }
+  .logos { margin-top: 2.5rem; list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+  .logo-card { background: var(--paper); border: 1px solid var(--rule); }
+  .logo-stage { display: grid; place-items: center; padding: 2.5rem 1.5rem; min-height: 170px; }
+  .logo-stage :global(img) { width: 200px; height: auto; }
+  .stage-ivory { background: var(--ivory); }
+  .stage-dark { background: var(--anthracite); }
+  .stage-white { background: #fff; border-bottom: 1px solid var(--rule); }
+  .logo-info { padding: 1.25rem; display: grid; gap: 0.35rem; justify-items: start; }
+  .rules { margin-top: 2rem; display: grid; gap: 0.6rem; max-width: 80ch; }
+  .facts { display: grid; }
+  .facts > div { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 1.5rem; padding: 1rem 0; border-top: 1px solid var(--rule); }
+  .facts dt { font-weight: 600; }
+  .facts .caption { display: block; }
+  .spk { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+  .spk-name { font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; line-height: 1.15; margin: 0.3rem 0; }
+  .recent { list-style: none; padding: 0; }
+  .recent li { display: grid; gap: 0.2rem; padding: 0.9rem 0; border-top: 1px solid var(--rule); }
+  .recent a { font-weight: 600; color: var(--anthracite); text-decoration: none; }
+  .recent a:hover { color: var(--gold-deep); }
+  .credits { list-style: none; padding: 0; display: grid; gap: 0.4rem; }
+  .credits li { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; justify-content: space-between; border-top: 1px solid var(--rule); padding-top: 0.4rem; }
+  @media (max-width: 1023px) {
+    .col-a, .col-b { grid-column: 1 / -1; }
+    .logos, .spk { grid-template-columns: minmax(0, 1fr); }
+    .facts > div { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const text = document.getElementById(btn.dataset.copy!)?.textContent?.trim() ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        const label = btn.querySelector('span');
+        if (label) { label.textContent = 'Copied'; setTimeout(() => (label.textContent = 'Copy'), 2000); }
+      } catch { /* text stays selectable */ }
+    });
+  });
+</script>

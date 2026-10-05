@@ -1,0 +1,427 @@
+# Sveltia CMS configuration for the HAZ website.
+# Docs: https://sveltiacms.app/en/docs
+# Field names here must match src/content.config.ts.
+
+backend:
+  name: github
+  repo: marco-rossoconsulting/HAZ-Hotel-Association-Zanzibar
+  branch: main
+  # Sign-in uses Netlify's GitHub OAuth provider by default (base_url https://api.netlify.com).
+  # Set it up once in Netlify: Site configuration > Access & security > OAuth > Install provider > GitHub.
+  # Editors can also sign in with a GitHub personal access token.
+  commit_messages:
+    create: 'Create {{collection}} "{{slug}}"'
+    update: 'Update {{collection}} "{{slug}}"'
+    delete: 'Delete {{collection}} "{{slug}}"'
+    uploadMedia: 'Upload "{{path}}"'
+    deleteMedia: 'Delete "{{path}}"'
+
+site_url: https://www.haz.or.tz
+display_url: https://www.haz.or.tz
+logo_url: /apple-touch-icon.png
+
+# Files such as PDFs go to /public/uploads. Images used in pages are stored next to the content
+# (see each collection's media_folder) so Astro can optimise them.
+media_folder: public/uploads
+public_folder: /uploads
+
+slug:
+  encoding: ascii
+  clean_accents: true
+
+collections:
+  # ---------------------------------------------------------------- News
+  - name: news
+    label: News
+    label_singular: News post
+    icon: newspaper
+    description: News and updates. Lead with what changes for the reader. British English.
+    folder: src/content/news
+    extension: md
+    format: frontmatter
+    slug: '{{slug}}'
+    media_folder: ../../assets/uploads/news
+    public_folder: ../../assets/uploads/news
+    summary: '{{title}} ({{date}})'
+    sortable_fields: [date, title]
+    preview_path: /news/{{slug}}/
+    fields:
+      - { name: title, label: Title, widget: string, hint: 'Sentence case. Lead with the outcome.' }
+      - { name: date, label: Date, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false }
+      - { name: excerpt, label: Summary, widget: text, hint: 'One or two sentences shown in lists and search results.' }
+      - name: pillar
+        label: Pillar
+        widget: select
+        required: false
+        options: [People, Place, Prosperity, Together]
+      - { name: image, label: Image, widget: image, required: false, hint: 'Real Zanzibar, real people, real work. Written consent for every identifiable person.' }
+      - { name: imageAlt, label: Image description (alt text), widget: string, required: false }
+      - { name: draft, label: Draft (hidden from the site), widget: boolean, default: false }
+      - { name: body, label: Text, widget: markdown }
+
+  # ---------------------------------------------------------------- Events
+  - name: events
+    label: Events
+    label_singular: Event
+    icon: event
+    folder: src/content/events
+    extension: md
+    format: frontmatter
+    slug: '{{year}}-{{month}}-{{slug}}'
+    summary: '{{title}} ({{start}})'
+    sortable_fields: [start, title]
+    preview_path: /events/{{slug}}/
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: start, label: Starts, widget: datetime, hint: 'Zanzibar time (EAT)' }
+      - { name: end, label: Ends, widget: datetime, required: false }
+      - { name: location, label: Location, widget: string }
+      - name: format
+        label: Type
+        widget: select
+        options: [HAZ Hotel Forum, Working group, Summit, Awards, Training, Partner event, Other]
+      - { name: excerpt, label: Summary, widget: text }
+      - { name: membersOnly, label: Members only, widget: boolean, default: false }
+      - { name: registrationUrl, label: Registration link, widget: string, required: false }
+      - { name: draft, label: Draft (hidden from the site), widget: boolean, default: false }
+      - { name: body, label: Details, widget: markdown, required: false }
+
+  # ---------------------------------------------------------------- Market Pulse
+  - name: pulse
+    label: Market Pulse
+    label_singular: Market Pulse issue
+    icon: monitoring
+    description: 'Weekly. Three developments affecting hotels, one opportunity and HAZ activity. Cite date range, unit and source for every figure.'
+    folder: src/content/pulse
+    extension: md
+    format: frontmatter
+    slug: '{{year}}-week-{{fields.week}}'
+    summary: 'Week {{week}}: {{title}}'
+    sortable_fields: [date, week]
+    preview_path: /market-pulse/{{slug}}/
+    fields:
+      - { name: title, label: Headline, widget: string }
+      - { name: week, label: Week number, widget: number, value_type: int, min: 1, max: 53 }
+      - { name: date, label: Date, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false }
+      - { name: summary, label: Summary, widget: text }
+      - { name: draft, label: Draft (hidden from the site), widget: boolean, default: false }
+      - name: body
+        label: Text
+        widget: markdown
+        default: "## Three things affecting your hotel this week\n\n1. \n2. \n3. \n\n## One opportunity\n\n\n## HAZ activity\n\n"
+
+  # ---------------------------------------------------------------- Positions
+  - name: positions
+    label: HAZ Positions
+    label_singular: Position
+    icon: gavel
+    description: 'Name the problem, its cost and a workable solution. Approved by the Chair or nominated spokesperson.'
+    folder: src/content/positions
+    extension: md
+    format: frontmatter
+    slug: '{{slug}}'
+    summary: '{{title}} ({{date}})'
+    preview_path: /policy/{{slug}}/
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: date, label: Date, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false }
+      - name: topic
+        label: Topic
+        widget: select
+        options: [Water, Waste, Power, Skills, Regulation, Taxation and levies, Destination, Other]
+      - { name: summary, label: Summary, widget: text }
+      - { name: document, label: PDF document, widget: file, required: false }
+      - { name: draft, label: Draft (hidden from the site), widget: boolean, default: false }
+      - { name: body, label: Text, widget: markdown }
+
+  # ---------------------------------------------------------------- Programmes
+  - name: programmes
+    label: Programmes
+    label_singular: Programme
+    icon: account_tree
+    description: 'Every programme is HAZ plus a plain name. Set the status to Live when it launches.'
+    folder: src/content/programmes
+    extension: md
+    format: frontmatter
+    slug: '{{slug}}'
+    identifier_field: name
+    summary: '{{name}} · {{status}}'
+    sortable_fields: [order, name]
+    preview_path: /programmes/{{slug}}/
+    fields:
+      - { name: name, label: Name, widget: string }
+      - { name: pillar, label: Pillar, widget: select, options: [People, Place, Prosperity, Together] }
+      - name: family
+        label: Group
+        widget: select
+        options: [Membership, Intelligence, HAZ Digital, Convening, Partnerships, Programmes]
+      - name: status
+        label: Status
+        widget: select
+        options:
+          - { label: Live, value: live }
+          - { label: Launching soon, value: launching }
+          - { label: In development, value: development }
+      - { name: summary, label: Summary, widget: text }
+      - { name: order, label: Sort order, widget: number, value_type: int, default: 100 }
+      - { name: ctaLabel, label: Button label, widget: string, required: false }
+      - { name: ctaUrl, label: Button link, widget: string, required: false }
+      - { name: body, label: More detail, widget: markdown, required: false }
+
+  # ---------------------------------------------------------------- Members
+  - name: members
+    label: Member hotels
+    label_singular: Member hotel
+    icon: hotel
+    folder: src/content/members
+    extension: yml
+    format: yaml
+    slug: '{{slug}}'
+    identifier_field: name
+    summary: '{{name}} · {{area}}'
+    sortable_fields: [name, region]
+    media_folder: ../../assets/uploads/members
+    public_folder: ../../assets/uploads/members
+    preview_path: /members/{{slug}}/
+    view_groups:
+      - { label: Region, field: region }
+    fields:
+      - { name: name, label: Hotel name, widget: string }
+      - { name: area, label: Village or town, widget: string, required: false }
+      - name: region
+        label: Region (map)
+        widget: select
+        options: [Stone Town & West, North, North-East, South-East, Pemba, Beyond Zanzibar]
+      - { name: website, label: Website, widget: string, required: false, hint: 'Full address, starting https://' }
+      - { name: rooms, label: Rooms, widget: number, value_type: int, required: false }
+      - { name: description, label: Short description, widget: text, required: false }
+      - { name: logo, label: Logo, widget: image, required: false }
+      - { name: membershipYear, label: Membership year, widget: string, required: false, hint: 'For example 2026/27. Shown on the member page.' }
+      - { name: hidden, label: Hide from the directory, widget: boolean, default: false }
+
+  # ---------------------------------------------------------------- Affiliates
+  - name: affiliates
+    label: Affiliate Members
+    label_singular: Affiliate Member
+    icon: storefront
+    folder: src/content/affiliates
+    extension: yml
+    format: yaml
+    slug: '{{slug}}'
+    identifier_field: name
+    media_folder: ../../assets/uploads/affiliates
+    public_folder: ../../assets/uploads/affiliates
+    fields:
+      - { name: name, label: Organisation, widget: string }
+      - name: level
+        label: Level
+        widget: select
+        required: false
+        options: [Standard, Preferred, Corporate, Strategic, Principal]
+      - name: businessType
+        label: Business type
+        widget: select
+        options:
+          - Food & beverage / supplies
+          - Hotel equipment / OS&E / FF&E
+          - Technology / PMS / booking / payments
+          - Transport / logistics / aviation
+          - Tour operator / DMC / experiences
+          - Professional / legal / finance / insurance
+          - Construction / engineering / maintenance
+          - Energy / water / sustainability
+          - Training / recruitment / HR
+          - Media / marketing / communications
+          - Wellness / spa / amenities
+          - Other
+      - { name: website, label: Website, widget: string, required: false }
+      - { name: description, label: Short description, widget: text, required: false }
+      - { name: offer, label: Member offer, widget: text, required: false, hint: 'Name the partner, the term and who qualifies.' }
+      - { name: logo, label: Logo, widget: image, required: false }
+      - { name: hidden, label: Hide from the site, widget: boolean, default: false }
+
+  # ---------------------------------------------------------------- People
+  - name: people
+    label: Leadership
+    label_singular: Person
+    icon: groups
+    folder: src/content/people
+    extension: yml
+    format: yaml
+    slug: '{{slug}}'
+    identifier_field: name
+    summary: '{{name}} · {{role}}'
+    sortable_fields: [order, name]
+    media_folder: ../../assets/uploads/people
+    public_folder: ../../assets/uploads/people
+    fields:
+      - { name: name, label: Name, widget: string }
+      - { name: role, label: Role at HAZ, widget: string }
+      - { name: organisation, label: Organisation, widget: string, required: false }
+      - name: group
+        label: Group
+        widget: select
+        options: [Leadership, Chapter chairs, Board]
+      - { name: order, label: Sort order, widget: number, value_type: int, default: 100 }
+      - { name: bio, label: Short biography, widget: text, required: false }
+      - { name: email, label: Public email, widget: string, required: false }
+      - { name: photo, label: Photograph, widget: image, required: false, hint: 'With written consent.' }
+      - { name: photoAlt, label: Photograph description, widget: string, required: false }
+
+  # ---------------------------------------------------------------- Sponsors
+  - name: sponsors
+    label: Corporate Sponsors
+    label_singular: Corporate Sponsor
+    icon: handshake
+    folder: src/content/sponsors
+    extension: yml
+    format: yaml
+    slug: '{{slug}}'
+    identifier_field: name
+    media_folder: ../../assets/uploads/sponsors
+    public_folder: ../../assets/uploads/sponsors
+    fields:
+      - { name: name, label: Sponsor name, widget: string }
+      - { name: logo, label: Logo, widget: image }
+      - { name: website, label: Website, widget: string, required: false }
+      - { name: supports, label: Supports, widget: string, required: false, hint: 'For example: HAZ Scholarships' }
+      - { name: order, label: Sort order, widget: number, value_type: int, default: 100 }
+
+  # ---------------------------------------------------------------- Photography
+  - name: photos
+    label: Site photography
+    label_singular: Photo slot
+    icon: photo_library
+    description: 'Fixed photo slots used across the site. Replace the interim photos with real HAZ photography (natural light, documentary, consent held).'
+    folder: src/content/photos
+    extension: yml
+    format: yaml
+    create: false
+    delete: false
+    identifier_field: label
+    media_folder: ../../assets/photos
+    public_folder: ../../assets/photos
+    fields:
+      - { name: label, label: Where it is used, widget: string, readonly: true }
+      - { name: image, label: Photo, widget: image, hint: 'At least 1,600 px on the long edge.' }
+      - { name: alt, label: Description (alt text), widget: string }
+      - { name: credit, label: Credit, widget: string, required: false }
+      - { name: interim, label: Interim photo (replace when real photography is available), widget: boolean, default: false }
+
+  # ---------------------------------------------------------------- Settings
+  - name: settings
+    label: Settings
+    icon: settings
+    files:
+      - name: site
+        label: Site and contacts
+        file: src/data/site.json
+        fields:
+          - { name: name, label: Name, widget: string, readonly: true }
+          - { name: shortName, label: Short name, widget: string, readonly: true }
+          - { name: corporateLine, label: Corporate line, widget: string, readonly: true, hint: 'Board approval required to change.' }
+          - { name: narrativeLine, label: Narrative line, widget: string, readonly: true }
+          - { name: oneLine, label: One-line description, widget: text }
+          - { name: description50, label: 50-word description (search engines), widget: text }
+          - { name: founded, label: Founded, widget: string }
+          - { name: email, label: General email, widget: string }
+          - { name: applicationsEmail, label: Applications email, widget: string }
+          - name: address
+            label: Address
+            widget: object
+            fields:
+              - { name: street, label: Street, widget: string }
+              - { name: poBox, label: P.O. Box, widget: string }
+              - { name: locality, label: Town, widget: string }
+              - { name: country, label: Country, widget: string }
+          - name: contacts
+            label: Contacts
+            widget: list
+            fields:
+              - { name: role, label: Role, widget: string }
+              - { name: name, label: Name, widget: string }
+              - { name: email, label: Email, widget: string }
+              - { name: whatsapp, label: WhatsApp, widget: string }
+          - name: social
+            label: Social channels
+            widget: object
+            fields:
+              - { name: facebook, label: Facebook, widget: string, required: false }
+              - { name: instagram, label: Instagram, widget: string, required: false }
+              - { name: linkedin, label: LinkedIn, widget: string, required: false }
+              - { name: youtube, label: YouTube, widget: string, required: false }
+              - { name: whatsappChannel, label: WhatsApp Channel, widget: string, required: false }
+          - name: hero
+            label: Homepage hero
+            widget: object
+            fields:
+              - { name: headline, label: Headline, widget: string, hint: 'Brand: the corporate line.' }
+              - { name: intro, label: Introduction, widget: text, hint: 'Maximum 20 words.' }
+
+      - name: figures
+        label: Membership figures
+        file: src/data/figures.json
+        fields:
+          - { name: note, label: Note, widget: text, readonly: true }
+          - name: items
+            label: Figures
+            widget: list
+            allow_add: false
+            allow_remove: false
+            fields:
+              - { name: key, label: Key, widget: string, readonly: true }
+              - { name: label, label: Label, widget: string }
+              - { name: value, label: Value (leave empty to hide), widget: number, value_type: int, required: false }
+              - { name: unit, label: Unit, widget: string, required: false }
+              - { name: asOf, label: As of (for example 1 October 2026), widget: string, required: false }
+              - { name: source, label: Source, widget: string }
+
+      - name: context
+        label: Zanzibar context figures
+        file: src/data/context.json
+        fields:
+          - name: items
+            label: Figures
+            widget: list
+            fields:
+              - { name: value, label: Value, widget: number, value_type: int }
+              - { name: prefix, label: Prefix, widget: string, required: false }
+              - { name: suffix, label: Suffix, widget: string, required: false }
+              - { name: label, label: Label, widget: string }
+              - { name: source, label: Source, widget: string }
+          - { name: pressures, label: Critical gaps, widget: list, field: { name: item, label: Item, widget: string } }
+
+      - name: fees
+        label: Membership fees
+        file: src/data/fees.json
+        fields:
+          - { name: year, label: Membership year, widget: string }
+          - { name: currency, label: Currency, widget: string, readonly: true }
+          - { name: note, label: Note, widget: text }
+          - name: bands
+            label: Rate bands
+            widget: list
+            allow_add: false
+            allow_remove: false
+            fields:
+              - { name: key, label: Key, widget: string, readonly: true }
+              - { name: label, label: Label, widget: string }
+              - { name: detail, label: Detail, widget: string }
+          - name: hotel
+            label: Hotel fees (USD per year)
+            widget: list
+            summary: '{{min}}–{{max}} rooms: {{economy}} / {{standard}}'
+            fields:
+              - { name: min, label: Rooms from, widget: number, value_type: int }
+              - { name: max, label: Rooms to (leave empty for "and above"), widget: number, value_type: int, required: false }
+              - { name: economy, label: Economy fee (USD), widget: number, value_type: int }
+              - { name: standard, label: Standard fee (USD), widget: number, value_type: int }
+          - name: affiliate
+            label: Affiliate levels
+            widget: list
+            allow_add: false
+            allow_remove: false
+            fields:
+              - { name: level, label: Level, widget: string, readonly: true }
+              - { name: fee, label: 'Annual fee in USD (leave empty for "on application")', widget: number, value_type: int, required: false }
+              - { name: benefits, label: Benefits, widget: list, field: { name: benefit, label: Benefit, widget: string } }

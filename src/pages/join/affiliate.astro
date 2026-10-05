@@ -1,0 +1,165 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import FormSection from '@/components/FormSection.astro';
+import Icon from '@/components/Icon.astro';
+import fees from '@/data/fees.json';
+import { BUSINESS_TYPES } from '@/content.config';
+import { site, usd } from '@/lib/site';
+import '@/styles/application.css';
+
+const interests = [
+  'Directory and Marketplace listing', 'Member introductions and networking',
+  'HAZ events, forums and roundtables', 'Supplier offers and member promotions',
+  'Website and newsletter visibility', 'Industry information and updates',
+  'Training, workshops and knowledge-sharing', 'Sponsorship and co-branded initiatives',
+  'Procurement and preferred-supplier opportunities', 'Sustainability and community initiatives',
+];
+const slug = (x: string) => x.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+const docs = [
+  { key: 'doc_incorporation', label: 'Certificate of incorporation / business registration' },
+  { key: 'doc_licence', label: 'Business licence / relevant operating licence' },
+  { key: 'doc_profile', label: 'Company profile' },
+  { key: 'doc_evidence', label: 'Evidence of business activities' },
+];
+---
+
+<BaseLayout title="Affiliate membership application" description={`Apply for HAZ Affiliate membership for ${fees.year}: credibility, visibility and direct access to hotel decision-makers.`}>
+  <div class="app-page">
+    <section class="app-hero bg-ivory">
+      <div class="container narrow">
+        <nav aria-label="Breadcrumb" class="crumbs"><a href="/affiliates/">Affiliates</a> <span aria-hidden="true">/</span> <span>Application</span></nav>
+        <p class="label">Affiliate membership · {fees.year}</p>
+        <h1 class="app-title">Affiliate membership application</h1>
+        <p class="lead">For suppliers, professional advisers and service providers who want to build lasting relationships with Zanzibar's hotels. Fields marked <span class="req">*</span> are required.</p>
+        <ul role="list" class="app-needs">
+          <li><Icon name="check" /> Organisation and contact details</li>
+          <li><Icon name="check" /> Your chosen Affiliate level</li>
+          <li><Icon name="check" /> Supporting documents, if available</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section-tight bg-white">
+      <div class="container narrow">
+        <form
+          class="app-form"
+          name="affiliate-application"
+          method="POST"
+          action="/thank-you/?form=affiliate"
+          enctype="multipart/form-data"
+          data-netlify="true"
+          netlify-honeypot="company_website"
+          data-netlify-ajax
+          data-success="Thank you. Your application has been sent to the Executive Chairman. Membership is subject to approval by the HAZ Membership / Executive Committee, and we will be in touch."
+          data-app-form
+        >
+          <input type="hidden" name="form-name" value="affiliate-application" />
+          <input type="hidden" name="subject" value="New HAZ Affiliate membership application" />
+          <p class="hp"><label>Leave this empty <input name="company_website" tabindex="-1" autocomplete="off" /></label></p>
+
+          <FormSection n={1} title="Organisation details">
+            <div class="form-grid">
+              <div class="field"><label for="org_name">Organisation name <span class="req">*</span></label><input id="org_name" name="organisation_name" required autocomplete="organization" /></div>
+              <div class="field"><label for="trading_name">Trading name (if different)</label><input id="trading_name" name="trading_name" /></div>
+              <div class="field"><label for="reg_no">Registration number</label><input id="reg_no" name="registration_number" /></div>
+              <div class="field"><label for="year_est">Year established</label><input id="year_est" name="year_established" inputmode="numeric" /></div>
+              <div class="field"><label for="employees">Employees</label><input id="employees" name="employees" type="number" min="0" inputmode="numeric" /></div>
+              <div class="field"><label for="org_web">Website</label><input id="org_web" name="website" type="url" placeholder="https://" autocomplete="url" /></div>
+              <div class="field"><label for="phys">Physical address</label><input id="phys" name="physical_address" autocomplete="street-address" /></div>
+              <div class="field"><label for="postal">Postal address</label><input id="postal" name="postal_address" /></div>
+              <div class="field span-2"><label for="gen_email">General email <span class="req">*</span></label><input id="gen_email" name="general_email" type="email" required /></div>
+            </div>
+            <fieldset class="contact" style="margin-top:1.5rem">
+              <legend class="h4">Main contact for HAZ <span class="req">*</span></legend>
+              <div class="form-grid">
+                <div class="field"><label for="c_name">Name</label><input id="c_name" name="contact_name" required autocomplete="name" /></div>
+                <div class="field"><label for="c_pos">Position</label><input id="c_pos" name="contact_position" required autocomplete="organization-title" /></div>
+                <div class="field"><label for="c_email">Email</label><input id="c_email" name="contact_email" type="email" required autocomplete="email" /></div>
+                <div class="field"><label for="c_mobile">Mobile / WhatsApp</label><input id="c_mobile" name="contact_mobile" type="tel" required autocomplete="tel" /></div>
+              </div>
+            </fieldset>
+          </FormSection>
+
+          <FormSection n={2} title="Business type" intro="Tick all that apply.">
+            <div class="checks">
+              {BUSINESS_TYPES.map((b) => (
+                <label class="check"><input type="checkbox" name={`type_${slug(b)}`} value="Yes" /> <span>{b}</span></label>
+              ))}
+            </div>
+            <div class="field" style="margin-top:1.5rem"><label for="services">Your products and services, in brief <span class="req">*</span></label><textarea id="services" name="products_services" required></textarea></div>
+          </FormSection>
+
+          <FormSection n={3} title="Membership level" intro="Select one level. Each level includes all the benefits of the levels before it.">
+            <div class="levels" role="radiogroup" aria-label="Membership level">
+              {fees.affiliate.map((l) => (
+                <label class="level">
+                  <input type="radio" name="membership_level" value={`${l.level} Affiliate`} required />
+                  <span class="level-card">
+                    <span class="level-name">{l.level} Affiliate</span>
+                    <span class="level-fee">{l.fee ? `${usd(l.fee)} a year` : 'Fee on application'}</span>
+                    <ul class="level-benefits">{l.benefits.map((b) => <li>{b}</li>)}</ul>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </FormSection>
+
+          <FormSection n={4} title="Participation and interests" intro="Tick all that interest you.">
+            <div class="checks">
+              {interests.map((x) => (
+                <label class="check"><input type="checkbox" name={`interest_${slug(x)}`} value="Yes" /> <span>{x}</span></label>
+              ))}
+            </div>
+            <div class="form-grid" style="margin-top:1.5rem">
+              <div class="field span-2"><label for="value_most">What would you most value from HAZ Affiliate membership?</label><textarea id="value_most" name="most_value"></textarea></div>
+              <div class="field span-2"><label for="add_value">How will your organisation add value for HAZ member hotels?</label><textarea id="add_value" name="add_value"></textarea></div>
+            </div>
+          </FormSection>
+
+          <FormSection n={5} title="Supporting documents" intro="Attach the following where applicable. PDF, JPG or PNG, up to 8 MB in total. Larger files can be emailed to the Secretariat.">
+            <div class="files">
+              {docs.map((d) => (
+                <div class="field"><label for={d.key}>{d.label}</label><input id={d.key} name={d.key} type="file" accept=".pdf,.jpg,.jpeg,.png" /></div>
+              ))}
+              <div class="field"><label for="doc_notes">Notes on supporting documents</label><textarea id="doc_notes" name="document_notes"></textarea></div>
+            </div>
+          </FormSection>
+
+          <FormSection n={6} title="Declaration and undertaking">
+            <p>I/We declare that the information in this application is complete and accurate to the best of my/our knowledge.</p>
+            <p class="decl-intro">On behalf of the organisation named in this application, I/we apply for Affiliate membership of Hotel Association Zanzibar (HAZ). If approved, I/we agree to:</p>
+            <ol class="decl">
+              <li>abide by the HAZ Code of Conduct, membership requirements, rules and regulations in force from time to time;</li>
+              <li>pay the applicable annual membership fee;</li>
+              <li>keep the organisation in good legal and regulatory standing;</li>
+              <li>notify HAZ promptly of any material change to the information in this application, including changes in ownership, directors, partners, principal management or business activities;</li>
+              <li>conduct our business in line with the values and professional standards of HAZ;</li>
+              <li>support the objectives of HAZ and contribute constructively to the development of Zanzibar's hospitality and tourism sector.</li>
+            </ol>
+            <p>I/We understand that membership is subject to approval by the HAZ Membership / Executive Committee, and that submitting this application does not by itself constitute acceptance.</p>
+            <label class="check agree" style="margin-top:1.25rem"><input type="checkbox" name="declaration_agreed" value="Yes" required /> <span>I/We agree to the declaration and undertaking above. <span class="req">*</span></span></label>
+            <div class="form-grid">
+              <div class="field"><label for="d_name">Full name <span class="req">*</span></label><input id="d_name" name="declaration_full_name" required autocomplete="name" /></div>
+              <div class="field"><label for="d_pos">Position <span class="req">*</span></label><input id="d_pos" name="declaration_position" required /></div>
+              <div class="field"><label for="d_behalf">For and on behalf of <span class="req">*</span></label><input id="d_behalf" name="declaration_on_behalf_of" required /></div>
+              <div class="field"><label for="d_sig">Signature (type your full name to sign digitally) <span class="req">*</span></label><input id="d_sig" name="declaration_signature" required /></div>
+              <div class="field"><label for="d_date">Date <span class="req">*</span></label><input id="d_date" name="declaration_date" type="date" required data-today /></div>
+              <div class="field"><label for="d_stamp">Company stamp or typed confirmation</label><input id="d_stamp" name="company_confirmation" /></div>
+            </div>
+          </FormSection>
+
+          <div class="submit-row">
+            <button class="btn" type="submit">Submit application <Icon name="arrow-right" class="icon-arrow" /></button>
+            <p class="caption">Your application goes to {site.applicationsEmail}. We use your details only to process your membership. <a href="/privacy/">Privacy</a></p>
+          </div>
+          <p class="form-status" data-form-status tabindex="-1" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  const today = document.querySelector<HTMLInputElement>('[data-today]');
+  if (today && !today.value) today.value = new Date().toISOString().slice(0, 10);
+</script>

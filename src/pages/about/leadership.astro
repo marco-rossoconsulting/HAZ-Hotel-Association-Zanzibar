@@ -1,0 +1,91 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import JoinBand from '@/components/JoinBand.astro';
+import Icon from '@/components/Icon.astro';
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+
+const people = (await getCollection('people')).sort((a, b) => a.data.order - b.data.order);
+const groups = [
+  { key: 'Leadership', title: 'Board and office bearers', id: 'board' },
+  { key: 'Chapter chairs', title: 'Chapter chairs', id: 'chapter-chairs' },
+  { key: 'Board', title: 'Board members', id: 'board-members' },
+] as const;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'HAZ leadership',
+  itemListElement: people.map((p, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: { '@type': 'Person', name: p.data.name, jobTitle: `${p.data.role}, Hotel Association Zanzibar` },
+  })),
+};
+---
+
+<BaseLayout title="Leadership" description="The Board, office bearers and chapter chairs of Hotel Association Zanzibar (HAZ)." schema={[schema]}>
+  <PageHero
+    label="Leadership"
+    title="Hoteliers leading hoteliers"
+    lead="HAZ is led by owners and General Managers from member hotels across Unguja and Pemba, working on behalf of the whole industry."
+  />
+
+  <section class="section-tight bg-white">
+    <div class="container">
+      {groups.map((g) => {
+        const list = people.filter((p) => p.data.group === g.key);
+        if (!list.length) return null;
+        return (
+          <section class="lg" aria-labelledby={g.id}>
+            <h2 class="lg-title" id={g.id}>{g.title}</h2>
+            <ul role="list" class:list={['lg-list', { 'is-lead': g.key === 'Leadership' }]}>
+              {list.map((p, i) => (
+                <li class="person" data-reveal style={`--i:${i % 3}`}>
+                  {p.data.photo && (
+                    <Image src={p.data.photo} alt={p.data.photoAlt ?? p.data.name} widths={[240, 480]} sizes="240px" class="person-photo" />
+                  )}
+                  <p class="person-role">{p.data.role}</p>
+                  <h3 class="person-name">{p.data.name}</h3>
+                  {p.data.organisation && <p class="person-org">{p.data.organisation}</p>}
+                  {p.data.bio && <p class="person-bio">{p.data.bio}</p>}
+                  {p.data.email && (
+                    <a class="person-mail" href={`mailto:${p.data.email}`}><Icon name="envelope" /> {p.data.email}</a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
+    </div>
+  </section>
+
+  <section class="section-tight bg-ivory">
+    <div class="container contact-row">
+      <p class="lead">To reach the Board, write to the Secretariat at <a href="mailto:info@haz.or.tz">info@haz.or.tz</a>.</p>
+      <a class="btn btn-secondary" href="/contact/">Contact HAZ</a>
+    </div>
+  </section>
+
+  <JoinBand />
+</BaseLayout>
+
+<style>
+  .lg + .lg { margin-top: clamp(3rem, 2rem + 3vw, 5rem); }
+  .lg-title { font-size: var(--step-h2); padding-bottom: 0.9rem; border-bottom: 1px solid var(--anthracite); }
+  .lg-list { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 2.5rem; }
+  .person { padding: 1.75rem 0; border-bottom: 1px solid var(--rule); display: grid; align-content: start; gap: 0.3rem; }
+  :global(.person-photo) { width: 120px; height: 150px; object-fit: cover; margin-bottom: 0.75rem; }
+  .person-role { font-size: var(--step-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-deep); line-height: 1.4; }
+  .person-name { font-family: var(--font-display); font-weight: 600; font-size: 1.85rem; line-height: 1.1; margin-top: 0.15rem; }
+  .is-lead .person-name { font-size: 2.1rem; }
+  .person-org { color: var(--taupe-deep); font-size: 0.95rem; max-width: 40ch; }
+  .person-bio { margin-top: 0.4rem; font-size: 0.95rem; }
+  .person-mail { margin-top: 0.4rem; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.95rem; }
+  .contact-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; }
+  .contact-row .lead { max-width: 60ch; }
+  @media (max-width: 1023px) { .lg-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 600px) { .lg-list { grid-template-columns: minmax(0, 1fr); } }
+</style>

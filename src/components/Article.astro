@@ -1,0 +1,61 @@
+---
+import Icon from './Icon.astro';
+import { isoDate, formatDate } from '@/lib/site';
+
+interface Props {
+  crumbs: { label: string; href: string };
+  label?: string;
+  title: string;
+  date?: Date;
+  updated?: Date;
+  meta?: string[];
+  standfirst?: string;
+}
+const { crumbs, label, title, date, updated, meta = [], standfirst } = Astro.props;
+---
+
+<article class="article">
+  <header class="art-head bg-ivory">
+    <div class="container art-container">
+      <a class="art-back" href={crumbs.href}><Icon name="arrow-right" class="back-icon" /> {crumbs.label}</a>
+      {label && <p class="label art-label">{label}</p>}
+      <h1 class="art-title">{title}</h1>
+      {standfirst && <p class="lead art-standfirst">{standfirst}</p>}
+      <p class="art-meta caption">
+        {date && <time datetime={isoDate(date)}>{formatDate(date)}</time>}
+        {meta.map((m) => <span>{m}</span>)}
+        {updated && <span>Last updated <time datetime={isoDate(updated)}>{formatDate(updated)}</time></span>}
+      </p>
+    </div>
+  </header>
+  <div class="art-body bg-white">
+    <div class="container art-container art-grid">
+      <div class="prose art-prose">
+        <slot />
+      </div>
+      <aside class="art-aside">
+        <slot name="aside" />
+      </aside>
+    </div>
+  </div>
+</article>
+
+<style>
+  .art-head { padding-block: clamp(2.5rem, 2rem + 3vw, 5rem) clamp(2rem, 1.5rem + 2vw, 3.5rem); }
+  .art-container { max-width: calc(1080px + 2 * var(--margin)); }
+  .art-back { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600; text-decoration: none; font-size: 0.95rem; }
+  :global(.back-icon) { transform: rotate(180deg); }
+  .art-label { display: block; margin-top: 2rem; }
+  .art-title { margin-top: 0.6rem; font-size: var(--step-h1); max-width: 24ch; }
+  .art-standfirst { margin-top: 1.25rem; max-width: 56ch; }
+  .art-meta { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.35rem 1.25rem; }
+  .art-body { padding-block: clamp(2.5rem, 2rem + 3vw, 4.5rem); }
+  .art-grid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 4rem; align-items: start; }
+  .art-prose { font-size: 1.0625rem; }
+  .art-prose :global(h2) { font-size: 1.9rem; }
+  .art-prose :global(a) { font-weight: 500; }
+  .art-prose :global(img) { margin-block: 1.5rem; }
+  .art-aside:empty { display: none; }
+  .art-aside { position: sticky; top: calc(var(--header-h) + 2rem); display: grid; gap: 1.5rem; }
+  @media (max-width: 900px) { .art-grid { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; } .art-aside { position: static; } }
+</style>

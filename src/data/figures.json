@@ -1,0 +1,8 @@
+{
+  "note": "Publish only figures taken from the HAZ membership database, with an as-of date and source. Leave value empty to hide a figure.",
+  "items": [
+    { "key": "memberHotels", "label": "Member hotels", "value": null, "unit": "", "asOf": "", "source": "HAZ membership database" },
+    { "key": "rooms", "label": "Rooms represented", "value": null, "unit": "", "asOf": "", "source": "HAZ membership database" },
+    { "key": "employees", "label": "People employed by member hotels", "value": null, "unit": "", "asOf": "", "source": "HAZ membership database" }
+  ]
+}

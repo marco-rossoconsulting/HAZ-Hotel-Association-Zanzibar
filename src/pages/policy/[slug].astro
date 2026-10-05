@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Article from '@/components/Article.astro';
+import Icon from '@/components/Icon.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const all = await getCollection('positions', ({ data }) => !data.draft);
+  return all.map((p) => ({ params: { slug: p.id }, props: { p } }));
+}
+interface Props { p: CollectionEntry<'positions'> }
+const { p } = Astro.props;
+const { Content } = await render(p);
+---
+
+<BaseLayout title={`HAZ Position: ${p.data.title}`} description={p.data.summary} type="article">
+  <Article crumbs={{ label: 'Policy and positions', href: '/policy/' }} label={`HAZ Position · ${p.data.topic}`} title={p.data.title} date={p.data.date} standfirst={p.data.summary}>
+    <Content />
+    <Fragment slot="aside">
+      {p.data.document && <a class="btn btn-secondary" href={p.data.document} download><Icon name="download-simple" /> Download the position</a>}
+      <div class="box"><p class="h4">Media enquiries</p><p>Write to <a href="mailto:info@haz.or.tz">info@haz.or.tz</a>.</p></div>
+    </Fragment>
+  </Article>
+</BaseLayout>
+
+<style>
+  .box { padding: 1.25rem; background: var(--ivory); display: grid; gap: 0.4rem; }
+</style>

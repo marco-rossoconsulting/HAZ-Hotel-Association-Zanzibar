@@ -1,0 +1,74 @@
+---
+import context from '@/data/context.json';
+import figures from '@/data/figures.json';
+
+const memberFigures = figures.items.filter((f) => f.value !== null && f.value !== undefined && String(f.value) !== '');
+---
+
+<section class="section facts bg-ocean on-dark" aria-labelledby="facts-title">
+  <div class="container">
+    <div class="grid-12 f-grid">
+      <div class="f-head">
+        <span class="accent-rule" data-rule aria-hidden="true"></span>
+        <h2 class="h2 f-title" id="facts-title" data-reveal>Zanzibar's hotels carry the island's economy, and the island carries the hotels.</h2>
+        <p class="f-intro" data-reveal style="--i:1">HAZ exists to keep that relationship in balance, and to prove it.</p>
+      </div>
+    </div>
+
+    <dl class="f-stats">
+      {context.items.map((s, i) => (
+        <div class="f-stat" data-reveal style={`--i:${i}`}>
+          <dt class="f-label">{s.label}</dt>
+          <dd class="f-value" data-count={s.value}>
+            {s.prefix}<span data-count-value>{s.value.toLocaleString('en-GB')}</span>{s.suffix}
+          </dd>
+          <dd class="f-source">Source: {s.source}</dd>
+        </div>
+      ))}
+      <div class="f-stat f-pressure" data-reveal style="--i:2">
+        <dt class="f-label">The critical gaps in Zanzibar's growth, for hotels and residents alike</dt>
+        <dd class="f-words">
+          <span>{context.pressures.slice(0, 2).join(' · ')}</span>
+          <span>{context.pressures.slice(2).join(' · ')}</span>
+        </dd>
+        <dd class="f-source">Where collective action with government matters most</dd>
+      </div>
+    </dl>
+
+    {memberFigures.length > 0 && (
+      <dl class="f-members">
+        {memberFigures.map((f) => (
+          <div class="f-m">
+            <dt>{f.label}</dt>
+            <dd class="f-m-v" data-count={f.value}><span data-count-value>{Number(f.value).toLocaleString('en-GB')}</span>{f.unit}</dd>
+            <dd class="f-source">{f.source}{f.asOf ? `, ${f.asOf}` : ''}</dd>
+          </div>
+        ))}
+      </dl>
+    )}
+  </div>
+</section>
+
+<style>
+  .f-head { grid-column: 1 / span 9; }
+  .f-title { margin-top: 1.1rem; color: #fff; max-width: 24ch; }
+  .f-intro { margin-top: 1rem; font-size: var(--step-lead); color: var(--muted-on-dark); }
+  .f-stats { margin-top: clamp(3rem, 2rem + 3vw, 5rem); display: grid; grid-template-columns: 1.2fr 1fr 1.2fr; gap: 0; }
+  .f-stat { display: flex; flex-direction: column; padding: 0 2rem; border-left: 1px solid rgba(213, 167, 68, 0.45); }
+  .f-stat:first-child { padding-left: 0; border-left: 0; }
+  .f-label { order: 2; margin-top: 0.75rem; color: var(--ivory-on-dark); max-width: 30ch; font-size: 0.975rem; }
+  .f-value { order: 1; font-family: var(--font-display); font-weight: 600; font-size: clamp(3.25rem, 2.2rem + 3.5vw, 5.25rem); line-height: 0.95; color: var(--bronze); font-variant-numeric: lining-nums tabular-nums; }
+  .f-source { order: 3; margin-top: 0.6rem; font-size: 0.8rem; color: var(--muted-on-dark); }
+  .f-words { order: 1; display: grid; gap: 0.1rem; font-family: var(--font-display); font-weight: 600; font-size: clamp(2rem, 1.6rem + 1.5vw, 2.75rem); line-height: 1.05; color: #fff; }
+  .f-members { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(246, 242, 233, 0.16); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; }
+  .f-m { display: flex; flex-direction: column; }
+  .f-m dt { order: 2; color: var(--ivory-on-dark); }
+  .f-m-v { order: 1; font-family: var(--font-display); font-size: 3rem; font-weight: 600; color: #fff; line-height: 1; }
+  @media (max-width: 1023px) {
+    .f-head { grid-column: 1 / -1; }
+    .f-stats { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
+    .f-stat { padding: 0 0 0 1.25rem; border-left: 1px solid rgba(213, 167, 68, 0.45); }
+    .f-stat:first-child { padding-left: 1.25rem; border-left: 1px solid rgba(213, 167, 68, 0.45); }
+    .f-members { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

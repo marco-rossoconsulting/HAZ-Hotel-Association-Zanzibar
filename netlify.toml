@@ -1,0 +1,102 @@
+# Netlify configuration for the HAZ website (Astro static build)
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# ---------------------------------------------------------------------------
+# Redirects from the old WordPress site (haz.or.tz) so existing links keep working
+# ---------------------------------------------------------------------------
+[[redirects]]
+  from = "/haz-profile/*"
+  to = "/about/"
+  status = 301
+[[redirects]]
+  from = "/haz-structure/*"
+  to = "/about/"
+  status = 301
+[[redirects]]
+  from = "/haz/about/haz-leadership-board/*"
+  to = "/about/leadership/"
+  status = 301
+[[redirects]]
+  from = "/haz-leadership-board/*"
+  to = "/about/leadership/"
+  status = 301
+[[redirects]]
+  from = "/haz-launch/*"
+  to = "/about/"
+  status = 301
+[[redirects]]
+  from = "/haz-news/*"
+  to = "/news/"
+  status = 301
+[[redirects]]
+  from = "/events-meetings/*"
+  to = "/events/"
+  status = 301
+[[redirects]]
+  from = "/haz-members-list/*"
+  to = "/members/"
+  status = 301
+[[redirects]]
+  from = "/haz-membership-categories/*"
+  to = "/join/"
+  status = 301
+[[redirects]]
+  from = "/sponsor/*"
+  to = "/sponsors/"
+  status = 301
+[[redirects]]
+  from = "/zanzibar-tourism-show-2024/*"
+  to = "/news/"
+  status = 301
+[[redirects]]
+  from = "/haz-announces-appointment-of-communications-officer/*"
+  to = "/news/"
+  status = 301
+[[redirects]]
+  from = "/haz-announces-appointment-of-executive-chairman/*"
+  to = "/about/leadership/"
+  status = 301
+[[redirects]]
+  from = "/18th-december-tourisim-and-diplomatic-police/*"
+  to = "/news/"
+  status = 301
+[[redirects]]
+  from = "/haz-press-release-on-vaccination/*"
+  to = "/news/"
+  status = 301
+[[redirects]]
+  from = "/wp-content/uploads/2023/01/HAZ_MembershipApplication2023.pdf"
+  to = "/join/"
+  status = 301
+[[redirects]]
+  from = "/feed/*"
+  to = "/news/"
+  status = 301
+
+# ---------------------------------------------------------------------------
+# Headers
+# ---------------------------------------------------------------------------
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+    X-Frame-Options = "SAMEORIGIN"
+
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+    Cache-Control = "no-cache"

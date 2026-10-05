@@ -1,0 +1,50 @@
+---
+/** Generic Netlify enquiry form (contact, invest, sponsor). */
+import Icon from './Icon.astro';
+interface Props {
+  name: string;
+  topics?: string[];
+  heading?: string;
+  success?: string;
+  messageLabel?: string;
+  submitLabel?: string;
+}
+const { name, topics, heading, success = 'Thank you. We have received your message and will reply soon.', messageLabel = 'Your message', submitLabel = 'Send message' } = Astro.props;
+const id = (f: string) => `${name}-${f}`;
+---
+
+<form class="enquiry" name={name} method="POST" action="/thank-you/" data-netlify="true" netlify-honeypot="company_website" data-netlify-ajax data-success={success}>
+  <input type="hidden" name="form-name" value={name} />
+  <p class="hp"><label>Leave this empty <input name="company_website" tabindex="-1" autocomplete="off" /></label></p>
+  {heading && <h2 class="h3 enq-h">{heading}</h2>}
+  <div class="form-grid">
+    <div class="field"><label for={id('name')}>Name <span class="req">*</span></label><input id={id('name')} name="name" required autocomplete="name" /></div>
+    <div class="field"><label for={id('org')}>Organisation</label><input id={id('org')} name="organisation" autocomplete="organization" /></div>
+    <div class="field"><label for={id('email')}>Email <span class="req">*</span></label><input id={id('email')} type="email" name="email" required autocomplete="email" /></div>
+    <div class="field"><label for={id('phone')}>Phone or WhatsApp</label><input id={id('phone')} type="tel" name="phone" autocomplete="tel" /></div>
+    {topics && (
+      <div class="field span-2">
+        <label for={id('topic')}>Topic <span class="req">*</span></label>
+        <select id={id('topic')} name="topic" required>
+          <option value="">Select a topic</option>
+          {topics.map((t) => <option>{t}</option>)}
+        </select>
+      </div>
+    )}
+    <div class="field span-2"><label for={id('msg')}>{messageLabel} <span class="req">*</span></label><textarea id={id('msg')} name="message" required></textarea></div>
+  </div>
+  <label class="check consent"><input type="checkbox" name="consent" value="Yes" required /> <span>I agree that HAZ may use these details to reply to me. <a href="/privacy/">Privacy</a> <span class="req">*</span></span></label>
+  <button class="btn" type="submit">{submitLabel} <Icon name="arrow-right" class="icon-arrow" /></button>
+  <p class="form-status" data-form-status tabindex="-1" role="status" aria-live="polite"></p>
+</form>
+
+<style>
+  .enquiry { display: grid; gap: 1.5rem; background: var(--paper); padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); border-top: 2px solid var(--haz-gold); }
+  .enquiry .btn { justify-self: start; }
+  .req { color: var(--gold-deep); }
+  .consent { font-size: 0.95rem; }
+  .form-status:empty { display: none; }
+  .form-status { padding: 1rem; background: var(--ivory); border-left: 3px solid var(--haz-gold); font-weight: 500; }
+  .form-status[data-state='error'] { border-left-color: #a1321f; }
+  :global(.enquiry.is-sent) > :not([data-form-status]):not(input):not(.enq-h) { display: none; }
+</style>

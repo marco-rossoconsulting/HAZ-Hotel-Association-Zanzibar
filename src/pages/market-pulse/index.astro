@@ -1,0 +1,109 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import StatusPill from '@/components/StatusPill.astro';
+import Icon from '@/components/Icon.astro';
+import { getEntry } from 'astro:content';
+import { getPulse, formatDate, isoDate } from '@/lib/site';
+
+const issues = await getPulse();
+const prog = await getEntry('programmes', 'market-pulse');
+const hotelPulse = await getEntry('programmes', 'hotel-pulse');
+const latest = issues[0];
+---
+
+<BaseLayout title="Market Pulse" description="HAZ Market Pulse: every week, three developments affecting Zanzibar's hotels, one opportunity and HAZ activity. By WhatsApp, email and web.">
+  <PageHero
+    label={latest ? `Market Pulse · Week ${latest.data.week}` : 'Market Pulse'}
+    title="Three things affecting your hotel this week"
+    lead="Every week: three developments affecting hotels, one opportunity and HAZ activity. By WhatsApp, email and web."
+    tone="anthracite"
+    updated={latest?.data.date}
+  >
+    {prog && <StatusPill status={prog.data.status} />}
+  </PageHero>
+
+  <section class="section bg-white">
+    <div class="container grid-12 mp">
+      <div class="mp-issues">
+        <h2 class="h2">{latest ? 'Latest issues' : 'The first issue is on its way'}</h2>
+        {issues.length > 0 ? (
+          <ol role="list" class="issues">
+            {issues.map((p) => (
+              <li class="issue">
+                <p class="label">Week {p.data.week} · <time datetime={isoDate(p.data.date)}>{formatDate(p.data.date)}</time></p>
+                <h3 class="issue-title"><a href={`/market-pulse/${p.id}/`}>{p.data.title}</a></h3>
+                <p>{p.data.summary}</p>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <div class="what">
+            <p class="lead">Market Pulse will give member hotels short, useful intelligence they can act on.</p>
+            <ul role="list" class="what-list">
+              <li><Icon name="chart-line" /><span><strong>Three developments</strong> affecting hotels this week, from visitor trends and booking channels to airline capacity and the supply pipeline.</span></li>
+              <li><Icon name="target" /><span><strong>One opportunity</strong> your hotel can act on.</span></li>
+              <li><Icon name="megaphone" /><span><strong>HAZ activity</strong>: what the association is doing for members.</span></li>
+            </ul>
+          </div>
+        )}
+
+        {hotelPulse && (
+          <aside class="hp-box">
+            <div class="hp-head"><h3 class="h4">{hotelPulse.data.name}</h3><StatusPill status={hotelPulse.data.status} /></div>
+            <p>{hotelPulse.data.summary}</p>
+            <a class="link-arrow" href="/programmes/hotel-pulse/">About Hotel Pulse <Icon name="arrow-right" /></a>
+          </aside>
+        )}
+      </div>
+
+      <aside class="mp-signup" aria-labelledby="signup-title">
+        <form
+          class="signup"
+          name="market-pulse"
+          method="POST"
+          action="/thank-you/"
+          data-netlify="true"
+          netlify-honeypot="company_website"
+          data-netlify-ajax
+          data-success="Thank you. You will receive Market Pulse when it launches."
+        >
+          <input type="hidden" name="form-name" value="market-pulse" />
+          <p class="hp"><label>Leave this empty <input name="company_website" tabindex="-1" autocomplete="off" /></label></p>
+          <h2 class="h3" id="signup-title">Get Market Pulse</h2>
+          <p class="signup-p">Included in HAZ membership. Tell us where to send it.</p>
+          <div class="field"><label for="mp-name">Name</label><input id="mp-name" name="name" autocomplete="name" required /></div>
+          <div class="field"><label for="mp-hotel">Hotel or organisation</label><input id="mp-hotel" name="organisation" autocomplete="organization" required /></div>
+          <div class="field"><label for="mp-email">Email</label><input id="mp-email" type="email" name="email" autocomplete="email" required /></div>
+          <div class="field"><label for="mp-wa">WhatsApp number <span class="muted">(optional)</span></label><input id="mp-wa" type="tel" name="whatsapp" autocomplete="tel" placeholder="+255" /></div>
+          <button class="btn" type="submit">Sign up <Icon name="arrow-right" class="icon-arrow" /></button>
+          <p class="caption">We use your details only to send Market Pulse. <a href="/privacy/">Privacy</a></p>
+          <p class="form-status" data-form-status tabindex="-1" role="status" aria-live="polite"></p>
+        </form>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .mp { row-gap: 3rem; align-items: start; }
+  .mp-issues { grid-column: 1 / span 7; display: grid; gap: 2rem; align-content: start; }
+  .mp-signup { grid-column: 9 / span 4; position: sticky; top: calc(var(--header-h) + 2rem); }
+  .issues { list-style: none; padding: 0; border-top: 1px solid var(--anthracite); }
+  .issue { padding: 1.5rem 0; border-bottom: 1px solid var(--rule); }
+  .issue-title { font-family: var(--font-display); font-size: 1.75rem; margin: 0.3rem 0 0.4rem; line-height: 1.15; }
+  .issue-title a { color: var(--anthracite); text-decoration: none; }
+  .issue-title a:hover { color: var(--gold-deep); }
+  .what { display: grid; gap: 1.5rem; }
+  .what-list { list-style: none; padding: 0; display: grid; gap: 1rem; }
+  .what-list li { display: grid; grid-template-columns: 2rem 1fr; gap: 0.75rem; padding: 1rem 0; border-top: 1px solid var(--rule); }
+  .what-list :global(.icon) { width: 1.6rem; height: 1.6rem; color: var(--gold-deep); }
+  .hp-box { padding: 1.5rem; background: var(--ivory); display: grid; gap: 0.6rem; }
+  .hp-head { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: space-between; }
+  .signup { display: grid; gap: 1rem; padding: 1.75rem; background: var(--ivory); border-top: 2px solid var(--haz-gold); }
+  .signup .btn { justify-self: start; }
+  .form-status:empty { display: none; }
+  .form-status { padding: 0.85rem 1rem; background: #fff; border-left: 2px solid var(--haz-gold); font-weight: 500; }
+  :global(.signup.is-sent) .field, :global(.signup.is-sent) .btn { display: none; }
+  @media (max-width: 1023px) { .mp-issues, .mp-signup { grid-column: 1 / -1; } .mp-signup { position: static; } }
+</style>

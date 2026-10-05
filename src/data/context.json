@@ -1,0 +1,7 @@
+{
+  "items": [
+    { "value": 917167, "prefix": "", "suffix": "", "label": "International arrivals in 2025, a record", "source": "OCGS and ZCT, via The Citizen" },
+    { "value": 60, "prefix": "", "suffix": "%+", "label": "Estimated hospitality share of the national economy, counting direct, indirect and induced impact", "source": "HAZ estimate" }
+  ],
+  "pressures": ["Water", "Waste", "Power", "Skills"]
+}

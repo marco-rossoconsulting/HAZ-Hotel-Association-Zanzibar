@@ -1,0 +1,57 @@
+---
+/**
+ * "Tell me when it launches" sign-up for programmes that are not live yet.
+ * One Netlify form ("notify") reused across the site; the programme travels as a hidden field.
+ */
+import Icon from './Icon.astro';
+interface Props { programme: string; heading?: string; text?: string; compact?: boolean }
+const { programme, heading = 'Be the first to know', text, compact = false } = Astro.props;
+const uid = programme.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+---
+
+<form
+  class:list={['notify', { compact }]}
+  name="notify"
+  method="POST"
+  action="/thank-you/"
+  data-netlify="true"
+  netlify-honeypot="company_website"
+  data-netlify-ajax
+  data-success={`Thank you. We will tell you when ${programme} launches.`}
+>
+  <input type="hidden" name="form-name" value="notify" />
+  <input type="hidden" name="programme" value={programme} />
+  <p class="hp"><label>Leave this empty <input name="company_website" tabindex="-1" autocomplete="off" /></label></p>
+  {!compact && <p class="h4 notify-h">{heading}</p>}
+  {text && <p class="notify-text">{text}</p>}
+  <div class="notify-row">
+    <div class="field">
+      <label for={`notify-email-${uid}`}>Email address</label>
+      <input id={`notify-email-${uid}`} type="email" name="email" required autocomplete="email" />
+    </div>
+    <div class="field">
+      <label for={`notify-org-${uid}`}>Hotel or organisation <span class="muted">(optional)</span></label>
+      <input id={`notify-org-${uid}`} type="text" name="organisation" autocomplete="organization" />
+    </div>
+    <button class="btn" type="submit">Notify me <Icon name="bell" /></button>
+  </div>
+  <p class="caption notify-privacy">We use your email only to tell you about {programme}. <a href="/privacy/">Privacy</a></p>
+  <p class="form-status" data-form-status tabindex="-1" role="status" aria-live="polite"></p>
+</form>
+
+<style>
+  .notify { border-top: 1px solid var(--haz-gold); padding-top: 1.5rem; }
+  .notify-h { margin-bottom: 0.4rem; }
+  .notify-text { color: var(--ink); max-width: 56ch; margin-bottom: 1rem; }
+  .notify-row { display: grid; grid-template-columns: 1.2fr 1fr auto; gap: 1rem; align-items: end; }
+  .notify-privacy { margin-top: 0.75rem; }
+  .form-status:empty { display: none; }
+  .form-status { margin-top: 1rem; padding: 0.85rem 1rem; background: #fff; border-left: 2px solid var(--haz-gold); font-weight: 500; }
+  .form-status[data-state='error'] { border-left-color: #a1321f; }
+  :global(.on-dark) .notify .field label { color: var(--ivory-on-dark); }
+  :global(.on-dark) .notify-text { color: var(--ivory-on-dark); }
+  :global(.on-dark) .form-status { color: var(--anthracite); }
+  .compact .notify-row { grid-template-columns: minmax(0, 1fr); }
+  .compact .notify-row .btn { justify-self: start; }
+  @media (max-width: 860px) { .notify-row { grid-template-columns: 1fr; } .notify-row .btn { justify-self: start; } }
+</style>

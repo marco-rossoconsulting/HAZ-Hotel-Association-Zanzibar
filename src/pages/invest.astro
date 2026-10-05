@@ -1,0 +1,83 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import StatusPill from '@/components/StatusPill.astro';
+import EnquiryForm from '@/components/EnquiryForm.astro';
+import Icon from '@/components/Icon.astro';
+import { getEntry } from 'astro:content';
+import { getPhoto } from '@/lib/site';
+import context from '@/data/context.json';
+
+const photo = await getPhoto('coast');
+const prog = await getEntry('programmes', 'invest-zanzibar');
+const offers = [
+  { icon: 'compass', title: 'A roadmap', text: 'A clear route in for investors and developers, from first enquiry to opening.' },
+  { icon: 'target', title: 'Opportunities', text: 'Where Zanzibar\u2019s hotel sector sees room to grow.' },
+  { icon: 'chart-line', title: 'Honest market intelligence', text: 'Aggregated hotel-sector data from Market Pulse and Hotel Pulse. No single hotel’s performance is ever identified.' },
+];
+---
+
+<BaseLayout title="Invest Zanzibar" description="Invest with the industry's knowledge behind you: a clear route in for hotel investors and developers in Zanzibar, with honest market intelligence from Hotel Association Zanzibar (HAZ).">
+  <PageHero
+    label="Invest Zanzibar"
+    title="Invest with the industry's knowledge behind you"
+    lead="A clear route in for investors and developers, and honest market intelligence from the hotels that operate here."
+    image={{ src: photo.image, alt: photo.alt }}
+  >
+    {prog && <StatusPill status={prog.data.status} />}
+  </PageHero>
+
+  <section class="section bg-white" aria-labelledby="offer-title">
+    <div class="container">
+      <SectionHead id="offer-title" title="What Invest Zanzibar will offer" intro="Hotels are profitable, investment is confident and more of the money stays in Zanzibar. That is the Prosperity pillar, and this is how we will support it." />
+      <ul role="list" class="offers">
+        {offers.map((o, i) => (
+          <li data-reveal style={`--i:${i}`}>
+            <Icon name={o.icon} class="o-icon" />
+            <h3 class="h4">{o.title}</h3>
+            <p>{o.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section-tight bg-ocean on-dark" aria-label="Zanzibar visitor economy">
+    <div class="container ctx">
+      {context.items.map((s) => (
+        <div class="ctx-item">
+          <p class="ctx-v" data-count={s.value}>{s.prefix}<span data-count-value>{s.value.toLocaleString('en-GB')}</span>{s.suffix}</p>
+          <p class="ctx-l">{s.label}</p>
+          <p class="ctx-s">Source: {s.source}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section bg-ivory" aria-labelledby="enq-title">
+    <div class="container grid-12 enq">
+      <div class="enq-text">
+        <SectionHead id="enq-title" title="Talk to HAZ" intro="Planning a hotel, an acquisition or a partnership in Zanzibar? Tell us what you are working on and we will point you to the right people." />
+      </div>
+      <div class="enq-form">
+        <EnquiryForm name="invest-enquiry" topics={['New hotel development', 'Acquisition or investment in an existing hotel', 'Partnership with member hotels', 'Market information', 'Other']} messageLabel="What are you working on?" success="Thank you. We have received your enquiry and will reply soon." />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .offers { margin-top: 3rem; list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; }
+  .offers li { display: grid; gap: 0.6rem; align-content: start; padding-top: 1.5rem; border-top: 1px solid var(--anthracite); }
+  :global(.o-icon) { width: 2rem; height: 2rem; color: var(--gold-deep); }
+  .ctx { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3rem; }
+  .ctx-v { font-family: var(--font-display); font-size: clamp(3rem, 2rem + 3vw, 4.5rem); font-weight: 600; color: var(--bronze); line-height: 1; }
+  .ctx-l { margin-top: 0.6rem; max-width: 40ch; }
+  .ctx-s { margin-top: 0.4rem; font-size: 0.8rem; color: var(--muted-on-dark); }
+  .enq { row-gap: 2.5rem; align-items: start; }
+  .enq-text { grid-column: 1 / span 4; }
+  .enq-form { grid-column: 6 / span 7; }
+  @media (max-width: 1023px) { .offers { grid-template-columns: minmax(0, 1fr); } .enq-text, .enq-form { grid-column: 1 / -1; } }
+  @media (max-width: 600px) { .offers, .ctx { grid-template-columns: minmax(0, 1fr); } }
+</style>

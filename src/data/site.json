@@ -1,0 +1,32 @@
+{
+  "name": "Hotel Association Zanzibar",
+  "shortName": "HAZ",
+  "corporateLine": "Better business. Better Zanzibar.",
+  "narrativeLine": "A hotel is only as strong as the island around it.",
+  "oneLine": "Hotel Association Zanzibar (HAZ) is the association of Zanzibar's hotels, working together for better business and a better Zanzibar.",
+  "description50": "Hotel Association Zanzibar (HAZ) unites the island's hotels to grow their business, speak with one credible voice and show what hospitality gives back. Founded in June 2021 by professional hoteliers, HAZ provides member benefits, market intelligence and industry representation, while measuring the sector's contribution to Zanzibar's people, environment and economy.",
+  "founded": "2021-06",
+  "email": "info@haz.or.tz",
+  "applicationsEmail": "chairman@haz.or.tz",
+  "address": {
+    "street": "No. 5 Chukwani Street",
+    "poBox": "P.O. Box 4024",
+    "locality": "Zanzibar",
+    "country": "Tanzania"
+  },
+  "contacts": [
+    { "role": "Executive Chairman", "name": "Graham Stewart Leslie", "email": "chairman@haz.or.tz", "whatsapp": "+255 778 169 101" },
+    { "role": "Chief Executive Officer", "name": "Wilfred Shirima", "email": "ceo@haz.or.tz", "whatsapp": "+255 768 363 289" }
+  ],
+  "social": {
+    "facebook": "https://www.facebook.com/HotelAssociationOfZanzibar/",
+    "instagram": "https://www.instagram.com/hotelassociationzanzibar/",
+    "linkedin": "",
+    "youtube": "",
+    "whatsappChannel": ""
+  },
+  "hero": {
+    "headline": "Better business. Better Zanzibar.",
+    "intro": "The association of Zanzibar's hotels: joint promotion, market intelligence and one credible voice."
+  }
+}

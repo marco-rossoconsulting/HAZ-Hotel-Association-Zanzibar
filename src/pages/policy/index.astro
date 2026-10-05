@@ -1,0 +1,135 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import StatusPill from '@/components/StatusPill.astro';
+import NotifyForm from '@/components/NotifyForm.astro';
+import Icon from '@/components/Icon.astro';
+import { getEntry } from 'astro:content';
+import { getPositions, formatDate, isoDate, site } from '@/lib/site';
+
+const positions = await getPositions();
+const regCentre = await getEntry('programmes', 'regulation-centre');
+const areas = [
+  { icon: 'drop', title: 'Water', text: 'Reliable, safe supply for hotels and for the communities around them.' },
+  { icon: 'trash', title: 'Waste', text: 'Collection, recycling and disposal that keep reefs, beaches and towns clean.' },
+  { icon: 'lightning', title: 'Power', text: 'Stable, affordable energy, with more of it renewable.' },
+  { icon: 'graduation-cap', title: 'Skills', text: 'Trained Zanzibari staff. Skills tie directly to jobs and employment for Zanzibaris.' },
+];
+const principles = [
+  { title: 'Facts, not complaints', text: 'A number, a name or a date beats an adjective. We cite the date range, unit and source.' },
+  { title: 'Solutions, not demands', text: 'We name the problem, its cost and a workable solution. We never complain without a proposal.' },
+  { title: 'One informed counterpart', text: 'Government gets one hotel-sector voice, reliable aggregated data and workable proposals.' },
+];
+---
+
+<BaseLayout title="Policy and positions" description="HAZ represents Zanzibar's hotels with government: data-led positions on water, waste, power and skills, and the regulation that affects hotel operations and investment.">
+  <PageHero
+    label="Policy"
+    title="One credible voice for Zanzibar's hotels"
+    lead="Data-led representation with government on the issues that affect hotel operations and investment. Facts, not complaints; solutions, not demands."
+    tone="ocean"
+  />
+
+  <section class="section bg-white" aria-labelledby="areas-title">
+    <div class="container">
+      <SectionHead id="areas-title" title="Where collective action matters most" intro="Growth has outpaced the systems around it. Water, waste, power and skills are now the critical gaps in Zanzibar's growth, for hotels and residents alike." />
+      <ul role="list" class="areas">
+        {areas.map((a, i) => (
+          <li class="area" data-reveal style={`--i:${i}`}>
+            <Icon name={a.icon} class="area-icon" />
+            <h3 class="area-title">{a.title}</h3>
+            <p>{a.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section bg-ivory" aria-labelledby="pos-title">
+    <div class="container grid-12 pos">
+      <div class="pos-head">
+        <SectionHead id="pos-title" title="HAZ Positions" intro="Our published positions, each with its evidence and a recommended way forward." />
+        <ul role="list" class="principles">
+          {principles.map((p) => (
+            <li><h3 class="h4">{p.title}</h3><p>{p.text}</p></li>
+          ))}
+        </ul>
+      </div>
+      <div class="pos-list">
+        {positions.length > 0 ? (
+          <ul role="list" class="positions">
+            {positions.map((p) => (
+              <li>
+                <p class="label">{p.data.topic} · <time datetime={isoDate(p.data.date)}>{formatDate(p.data.date)}</time></p>
+                <h3 class="pos-title"><a href={`/policy/${p.id}/`}>{p.data.title}</a></h3>
+                <p>{p.data.summary}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div class="pos-empty">
+            <Icon name="file-text" class="pos-empty-icon" />
+            <p class="h4">Positions will be published here</p>
+            <p>Each HAZ Position states the problem, its cost and the solutions HAZ recommends, with dated and sourced evidence.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-white" aria-labelledby="reg-title">
+    <div class="container grid-12 reg">
+      <div class="reg-text">
+        <div class="reg-status">{regCentre && <StatusPill status={regCentre.data.status} />}</div>
+        <h2 class="h2" id="reg-title">Regulation Centre</h2>
+        <p class="lead">Regulatory guidance for hotels in one place, with a last-updated date on every page.</p>
+        <aside class="licence">
+          <h3 class="h4">Hotel licensing</h3>
+          <p>The Zanzibar Commission for Tourism (ZCT) requires every hotel to show evidence of association membership before a hotel licence is issued. HAZ membership meets this requirement.</p>
+          <a class="link-arrow" href="/join/">Join HAZ <Icon name="arrow-right" /></a>
+        </aside>
+      </div>
+      <div class="reg-form">
+        {regCentre && regCentre.data.status !== 'live' && <NotifyForm programme="the Regulation Centre" heading="Hear when the Regulation Centre opens" />}
+        <div class="gov">
+          <h3 class="h4">For government and regulators</h3>
+          <p>One informed counterpart, reliable data and workable solutions. Contact the Executive Chairman at <a href={`mailto:${site.contacts[0].email}`}>{site.contacts[0].email}</a>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .areas { margin-top: 3rem; list-style: none; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--anthracite); }
+  .area { padding: 2rem 1.75rem 2rem 0; display: grid; gap: 0.5rem; align-content: start; }
+  .area + .area { padding-left: 1.75rem; border-left: 1px solid var(--rule); }
+  :global(.area-icon) { width: 2.25rem; height: 2.25rem; color: var(--lagoon); }
+  .area:nth-child(4) :global(.area-icon) { color: var(--clove); }
+  .area-title { font-family: var(--font-display); font-size: 2.25rem; font-weight: 600; line-height: 1; margin-top: 0.5rem; }
+  .pos { row-gap: 2.5rem; align-items: start; }
+  .pos-head { grid-column: 1 / span 5; display: grid; gap: 2rem; }
+  .principles { list-style: none; padding: 0; display: grid; gap: 1.25rem; }
+  .principles li { border-left: 2px solid var(--haz-gold); padding-left: 1rem; }
+  .principles p { margin-top: 0.25rem; font-size: 0.975rem; }
+  .pos-list { grid-column: 7 / span 6; }
+  .positions { list-style: none; padding: 0; border-top: 1px solid var(--anthracite); }
+  .positions li { padding: 1.5rem 0; border-bottom: 1px solid var(--rule); }
+  .pos-title { font-family: var(--font-display); font-size: 1.75rem; line-height: 1.15; margin: 0.3rem 0; }
+  .pos-title a { color: var(--anthracite); text-decoration: none; }
+  .pos-title a:hover { color: var(--gold-deep); }
+  .pos-empty { padding: 2rem; background: var(--paper); display: grid; gap: 0.6rem; }
+  :global(.pos-empty-icon) { width: 2rem; height: 2rem; color: var(--gold-deep); }
+  .reg { row-gap: 2.5rem; align-items: start; }
+  .reg-text { grid-column: 1 / span 5; display: grid; gap: 1.1rem; }
+  .reg-form { grid-column: 7 / span 6; display: grid; gap: 2rem; }
+  .licence { padding: 1.25rem; background: var(--ivory); border-left: 2px solid var(--haz-gold); display: grid; gap: 0.5rem; }
+  .gov { padding: 1.25rem; border: 1px solid var(--rule); display: grid; gap: 0.4rem; }
+  @media (max-width: 1023px) {
+    .areas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .area:nth-child(3) { padding-left: 0; border-left: 0; }
+    .pos-head, .pos-list, .reg-text, .reg-form { grid-column: 1 / -1; }
+  }
+  @media (max-width: 520px) { .areas { grid-template-columns: minmax(0, 1fr); } .area + .area { padding-left: 0; border-left: 0; border-top: 1px solid var(--rule); } }
+</style>

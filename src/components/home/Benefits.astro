@@ -1,0 +1,70 @@
+---
+import Icon from '../Icon.astro';
+import fees from '@/data/fees.json';
+import { usd } from '@/lib/site';
+
+const minFee = Math.min(...fees.hotel.map((r) => r.economy));
+const benefits = [
+  { title: 'Joint promotions', text: 'Seasonal and event packages negotiated with airlines and partners. Partners promote member hotels; your hotel opts in with its own offers.', icon: 'airplane-tilt' },
+  { title: 'Shared exhibition stands', text: 'A place at trade fairs at a fraction of the cost of going alone.', icon: 'storefront' },
+  { title: 'Negotiated terms', text: 'Preferential conditions on digital systems, from guest journey and door locks to maintenance management and web services, and service-level agreements with Affiliate Members.', icon: 'handshake' },
+  { title: 'Market intelligence', text: 'The weekly HAZ Market Pulse and quarterly Hotel Pulse benchmark: visitor trends, booking channels, airline capacity and supply pipeline.', icon: 'chart-line' },
+  { title: 'One credible voice', text: 'Data-led representation with government on the issues that affect hotel operations and investment, including water, waste, power and skills.', icon: 'megaphone' },
+  { title: 'Skills and careers', text: 'Careers, training and recruitment support that develops Zanzibari talent for member hotels.', icon: 'graduation-cap' },
+  { title: 'Forums and working groups', text: 'Owners, General Managers and specialists solving common problems together.', icon: 'users' },
+];
+---
+
+<section class="section benefits bg-ivory" aria-labelledby="benefits-title">
+  <div class="container grid-12">
+    <div class="b-aside">
+      <div class="b-sticky">
+        <span class="accent-rule" data-rule aria-hidden="true"></span>
+        <h2 class="h2 b-title" id="benefits-title" data-reveal>Together we win business no hotel wins alone.</h2>
+        <p class="b-text" data-reveal style="--i:1">
+          HAZ creates value by organising hotels and their partners around shared goals, not by promising blanket discounts.
+        </p>
+        <p class="b-fee" data-reveal style="--i:2">
+          Hotel membership from <strong>{usd(minFee)}</strong> a year, set by rooms and rate band.
+        </p>
+        <div class="b-ctas" data-reveal style="--i:3">
+          <a class="btn" href="/join/">See fees and apply <Icon name="arrow-right" class="icon-arrow" /></a>
+        </div>
+      </div>
+    </div>
+
+    <ol class="b-list" role="list">
+      {benefits.map((b, i) => (
+        <li class="b-item" data-reveal style={`--i:${i % 3}`}>
+          <span class="b-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <div>
+            <h3 class="h4 b-h"><Icon name={b.icon} class="b-icon" />{b.title}</h3>
+            <p class="b-p">{b.text}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .b-aside { grid-column: 1 / span 5; }
+  .b-sticky { position: sticky; top: calc(var(--header-h) + 2.5rem); }
+  .b-title { margin-top: 1.1rem; max-width: 14ch; }
+  .b-text { margin-top: 1.25rem; max-width: 42ch; }
+  .b-fee { margin-top: 1.25rem; padding: 1rem 1.1rem; background: var(--paper); border-left: 2px solid var(--haz-gold); max-width: 42ch; }
+  .b-ctas { margin-top: 1.75rem; }
+  .b-list { grid-column: 7 / span 6; list-style: none; padding: 0; counter-reset: b; }
+  .b-item { display: grid; grid-template-columns: 4.25rem 1fr; gap: 0.5rem; padding: 1.6rem 0; border-top: 1px solid var(--rule); }
+  .b-item:last-child { border-bottom: 1px solid var(--rule); }
+  .b-num { font-family: var(--font-display); font-weight: 600; font-size: 2.1rem; line-height: 1; color: var(--gold-deep); font-variant-numeric: lining-nums; }
+  .b-h { display: flex; align-items: center; gap: 0.55rem; }
+  .b-icon { color: var(--gold-deep); width: 1.3rem; height: 1.3rem; }
+  .b-p { margin-top: 0.4rem; color: var(--ink); max-width: 56ch; }
+  @media (max-width: 1023px) {
+    .b-aside { grid-column: 1 / -1; margin-bottom: 2.5rem; }
+    .b-sticky { position: static; }
+    .b-list { grid-column: 1 / -1; }
+  }
+  @media (max-width: 520px) { .b-item { grid-template-columns: 3rem 1fr; } .b-num { font-size: 1.7rem; } }
+</style>

@@ -1,0 +1,148 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import { Image } from 'astro:assets';
+import badgeDark from '@/assets/brand/badge-dark.png';
+import badgeLight from '@/assets/brand/badge-light.png';
+
+const code = `<a href="https://www.haz.or.tz" target="_blank" rel="noopener" title="Member of Hotel Association Zanzibar">
+  <img src="/images/HAZ_Hotel_Member_Badge_Dark_160px.png"
+       srcset="/images/HAZ_Hotel_Member_Badge_Dark_160px.png 1x, /images/HAZ_Hotel_Member_Badge_Dark_320px.png 2x"
+       width="160" height="160" loading="lazy"
+       alt="Member of Hotel Association Zanzibar"
+       style="width:160px;height:auto;display:inline-block;border:0;">
+</a>`;
+
+const badges = [
+  { name: 'Dark badge', use: 'For light or white backgrounds. Use this one in most cases.', img: badgeDark, file: 'Dark', bg: 'light' },
+  { name: 'Light badge', use: 'For dark backgrounds.', img: badgeLight, file: 'Light', bg: 'dark' },
+];
+---
+
+<BaseLayout title="Member badge" description="Download the HAZ member badge for your hotel's website, email signature and proposals.">
+  <PageHero
+    label="For member hotels"
+    title="Show that your hotel is part of HAZ"
+    lead="Your member badge tells guests, partners and investors that your hotel belongs to the association of Zanzibar's hotels. Add it to your website, email signature and proposals."
+  />
+
+  <section class="section-tight bg-white" aria-labelledby="files-title">
+    <div class="container">
+      <h2 class="h2" id="files-title">Choose your badge</h2>
+      <div class="badges">
+        {badges.map((b) => (
+          <article class="badge-card">
+            <div class:list={['badge-stage', `stage-${b.bg}`]}>
+              <Image src={b.img} alt={`HAZ hotel member badge, ${b.name.toLowerCase()}`} width={200} />
+            </div>
+            <div class="badge-info">
+              <h3 class="h4">{b.name}</h3>
+              <p>{b.use}</p>
+              <ul role="list" class="dl">
+                {[160, 320, 500].map((s) => (
+                  <li>
+                    <a href={`/brand/HAZ_Hotel_Member_Badge_${b.file}_${s}px.png`} download>
+                      <Icon name="download-simple" /> PNG {s} px
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        ))}
+      </div>
+      <p class="caption files-note">Need the SVG, WebP or print PDF files? Write to <a href="mailto:info@haz.or.tz">info@haz.or.tz</a>.</p>
+    </div>
+  </section>
+
+  <section class="section-tight bg-ivory" aria-labelledby="use-title">
+    <div class="container grid-12 use">
+      <div class="use-col">
+        <h2 class="h3" id="use-title">Which file to use</h2>
+        <dl class="rules">
+          <div><dt>Website</dt><dd>The 160 px PNG, plus the 320 px PNG for sharp display on high-resolution screens (see the code below).</dd></div>
+          <div><dt>Email signature</dt><dd>The 160 px PNG.</dd></div>
+          <div><dt>Print</dt><dd>Proposals, door stickers and brochures: ask the Secretariat for the print PDF or the SVG.</dd></div>
+        </dl>
+      </div>
+      <div class="use-col">
+        <h2 class="h3">How to display it</h2>
+        <ul class="ticks" role="list">
+          <li><Icon name="check" /> Show it 160 px wide on screen, never smaller than 140 px, and never stretched.</li>
+          <li><Icon name="check" /> Place it in your website footer or on your About page, beside other affiliations and awards.</li>
+          <li><Icon name="check" /> Link it to www.haz.or.tz.</li>
+          <li><Icon name="check" /> Alt text: "Member of Hotel Association Zanzibar".</li>
+        </ul>
+      </div>
+      <div class="use-col">
+        <h2 class="h3">Who may use it</h2>
+        <ul class="ticks" role="list">
+          <li><Icon name="check" /> Only members with a current, paid-up HAZ membership may show the badge.</li>
+          <li><Icon name="check" /> Remove it from your website and materials if your membership lapses.</li>
+          <li><Icon name="check" /> HAZ may ask for the badge to be removed where it is used by a non-member.</li>
+        </ul>
+        <h3 class="h4 dont-h">Please do not</h3>
+        <ul class="crosses" role="list">
+          <li><Icon name="x" /> Change its colours, crop it or add text to it.</li>
+          <li><Icon name="x" /> Place it over busy photographs.</li>
+          <li><Icon name="x" /> Use the badge as your own logo, or the HAZ logo on its own without permission.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight bg-white" aria-labelledby="code-title">
+    <div class="container">
+      <h2 class="h3" id="code-title">Website code</h2>
+      <p class="code-intro">Upload the two PNG files to your website, paste this code where the badge should appear and update the file paths.</p>
+      <div class="code-wrap">
+        <button class="btn btn-sm btn-secondary copy" type="button" data-copy><Icon name="copy" /> <span>Copy code</span></button>
+        <pre><code id="badge-code">{code}</code></pre>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .badges { margin-top: 2rem; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+  .badge-card { display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: center; border: 1px solid var(--rule); padding: 1.25rem; }
+  .badge-stage { padding: 1.5rem; display: grid; place-items: center; }
+  .stage-light { background: var(--paper); border: 1px solid var(--rule); }
+  .stage-dark { background: var(--anthracite); }
+  .badge-stage :global(img) { width: 160px; height: auto; }
+  .badge-info { display: grid; gap: 0.5rem; }
+  .dl { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+  .dl a { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.75rem; border: 1px solid var(--anthracite); border-radius: var(--radius); color: var(--anthracite); text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+  .dl a:hover { background: var(--anthracite); color: #fff; }
+  .files-note { margin-top: 1.25rem; }
+  .use { row-gap: 2.5rem; }
+  .use-col { grid-column: span 4; }
+  .rules { display: grid; gap: 1rem; margin-top: 1rem; }
+  .rules dt { font-weight: 600; }
+  .ticks, .crosses { list-style: none; padding: 0; display: grid; gap: 0.75rem; margin-top: 1rem; }
+  .ticks li, .crosses li { display: grid; grid-template-columns: 1.4rem 1fr; gap: 0.5rem; }
+  .ticks :global(.icon) { color: #2f5d36; margin-top: 0.2rem; }
+  .crosses :global(.icon) { color: #a1321f; margin-top: 0.2rem; }
+  .dont-h { margin-top: 1.75rem; }
+  .code-intro { margin-top: 0.5rem; max-width: 66ch; }
+  .code-wrap { position: relative; margin-top: 1.25rem; }
+  pre { background: var(--anthracite); color: #f3eee3; padding: 1.5rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.6; border-radius: var(--radius); }
+  .copy { position: absolute; top: 0.75rem; right: 0.75rem; --btn-fg: #fff; --btn-bd: rgba(255,255,255,0.4); background: var(--anthracite); }
+  @media (max-width: 1023px) { .use-col { grid-column: 1 / -1; } .badges { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 520px) { .badge-card { grid-template-columns: minmax(0, 1fr); } .copy { position: static; margin-bottom: 0.75rem; } }
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-copy]');
+  btn?.addEventListener('click', async () => {
+    const text = document.getElementById('badge-code')?.textContent ?? '';
+    try {
+      await navigator.clipboard.writeText(text);
+      const label = btn.querySelector('span');
+      if (label) { label.textContent = 'Copied'; setTimeout(() => (label.textContent = 'Copy code'), 2000); }
+    } catch {
+      /* clipboard unavailable: the code stays selectable */
+    }
+  });
+</script>

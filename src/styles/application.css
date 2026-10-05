@@ -1,0 +1,57 @@
+/* Shared styles for the online membership applications (brand: numbered sections, Anthracite headers, gold accents, Gold Deep submit) */
+  .app-page .narrow { max-width: calc(880px + 2 * var(--margin)); }
+  .app-page .app-hero { padding-block: clamp(2.5rem, 2rem + 3vw, 4.5rem); }
+  .app-page .crumbs { font-size: 0.9rem; color: var(--taupe-deep); display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+  .app-page .app-title { margin: 0.75rem 0 1rem; font-size: var(--step-h1); }
+  .app-page .app-needs { list-style: none; padding: 0; margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+  .app-page .app-needs li { display: flex; align-items: center; gap: 0.4rem; font-size: 0.95rem; }
+  .app-page .app-needs .icon { color: var(--gold-deep); }
+  .app-page .req { color: var(--gold-deep); }
+  .app-page .cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .app-page .contacts { display: grid; gap: 1.5rem; }
+  .app-page .contact { border: 0; padding: 1.25rem; margin: 0; background: var(--ivory); min-width: 0; }
+  .app-page .contact legend { float: left; width: 100%; margin-bottom: 0.9rem; font-size: 1.05rem; }
+  .app-page .hint-inline { font-weight: 400; color: var(--taupe-deep); font-size: 0.9rem; }
+  .app-page .contact-row { clear: both; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .app-page .help { margin-top: 0.75rem; }
+  .app-page .band { border: 0; padding: 0; margin: 0; }
+  .app-page .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .app-page .seg-opt { position: relative; cursor: pointer; }
+  .app-page .seg-opt input { position: absolute; opacity: 0; inset: 0; }
+  .app-page .seg-opt span { display: grid; gap: 0.1rem; padding: 0.8rem 1rem; border: 1px solid #8f877b; border-radius: var(--radius); }
+  .app-page .seg-opt small { font-size: 0.85rem; color: var(--taupe-deep); }
+  .app-page .seg-opt input:checked + span { border-color: var(--anthracite); background: var(--ivory); box-shadow: inset 0 0 0 1px var(--anthracite); }
+  .app-page .seg-opt input:focus-visible + span { outline: 2px solid var(--gold-deep); outline-offset: 2px; }
+  .app-page .decl-intro { margin-top: 1rem; }
+  .app-page .decl { margin: 0.75rem 0 1.25rem; padding-left: 1.25rem; display: grid; gap: 0.4rem; }
+  .app-page .agree { margin-bottom: 1.5rem; padding: 1rem; background: var(--ivory); }
+  .app-page .submit-row { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--anthracite); display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; }
+  .app-page .submit-row .caption { max-width: 48ch; }
+  .app-page .form-status:empty { display: none; }
+  .app-page .form-status { margin-top: 1.5rem; padding: 1.25rem; background: var(--ivory); border-left: 3px solid var(--haz-gold); font-weight: 500; }
+  .app-page .form-status[data-state='error'] { border-left-color: #a1321f; }
+  .app-page .app-form.is-sent > :not([data-form-status]):not(input[type='hidden']) { display: none; }
+  @media (max-width: 760px) {
+    .app-page .cols-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .app-page .contact-row { grid-template-columns: minmax(0, 1fr); }
+  }
+
+/* Affiliate application */
+.app-page .checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem 1.5rem; }
+.app-page .levels { display: grid; gap: 0.75rem; }
+.app-page .level { position: relative; display: block; cursor: pointer; }
+.app-page .level input { position: absolute; opacity: 0; inset: 0; }
+.app-page .level-card {
+  display: grid; grid-template-columns: 1fr auto; gap: 0.5rem 1.5rem; padding: 1.1rem 1.25rem;
+  border: 1px solid #b9b1a4; border-radius: var(--radius); transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+.app-page .level-name { font-weight: 600; font-size: 1.075rem; }
+.app-page .level-fee { font-size: 0.9rem; color: var(--taupe-deep); text-align: right; }
+.app-page .level-benefits { grid-column: 1 / -1; margin: 0; padding-left: 1.1rem; color: var(--ink); font-size: 0.95rem; display: grid; gap: 0.15rem; }
+.app-page .level-benefits li::marker { color: var(--haz-gold); }
+.app-page .level input:checked + .level-card { border-color: var(--anthracite); box-shadow: inset 0 0 0 1px var(--anthracite); background: var(--ivory); }
+.app-page .level input:focus-visible + .level-card { outline: 2px solid var(--gold-deep); outline-offset: 2px; }
+.app-page .files { display: grid; gap: 1rem; }
+.app-page input[type='file'] { padding: 0.6rem; background: var(--ivory); border-style: dashed; }
+@media (max-width: 760px) { .app-page .checks { grid-template-columns: minmax(0, 1fr); } }
+.app-page .contact .form-grid { clear: both; }

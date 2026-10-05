@@ -1,0 +1,35 @@
+---
+/**
+ * Phosphor "regular" icons (1.5px stroke at 24px, rounded joins) rendered inline.
+ * Brand rule: linear icons, Anthracite or Gold Deep, no fills, no clip-art.
+ * To use a new icon, add its file name to the glob below.
+ */
+const files = import.meta.glob(
+  '/node_modules/@phosphor-icons/core/assets/regular/{airplane-tilt,anchor,arrow-right,arrow-up-right,bell,briefcase,buildings,calendar-blank,caret-down,chart-line,check,clock,cloud-sun,copy,door-open,download-simple,drop,envelope,facebook-logo,file-text,globe,graduation-cap,handshake,house-line,instagram-logo,leaf,lightning,linkedin-logo,list,magnifying-glass,map-pin,megaphone,minus,newspaper,phone,plant,plus,presentation-chart,scales,storefront,sun,trash,users,waves,whatsapp-logo,x,youtube-logo,chats-circle,calculator,seal-check,quotes,compass,target}.svg',
+  { query: '?raw', import: 'default', eager: true },
+) as Record<string, string>;
+
+interface Props {
+  name: string;
+  class?: string;
+  label?: string;
+  [key: string]: unknown;
+}
+// Spread the rest so the parent's scoped-style attribute (data-astro-cid-*) reaches the svg
+const { name, class: cls = '', label, ...rest } = Astro.props;
+const raw = files[`/node_modules/@phosphor-icons/core/assets/regular/${name}.svg`];
+if (!raw) throw new Error(`Icon "${name}" is not registered in Icon.astro`);
+const inner = raw.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
+---
+
+<svg
+  {...rest}
+  class:list={['icon', `icon-${name}`, cls]}
+  viewBox="0 0 256 256"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden={label ? undefined : 'true'}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  focusable="false"
+  set:html={inner}
+/>

@@ -1,0 +1,56 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Article from '@/components/Article.astro';
+import Icon from '@/components/Icon.astro';
+import { Image } from 'astro:assets';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { getNews, site } from '@/lib/site';
+
+export async function getStaticPaths() {
+  const all = await getCollection('news', ({ data }) => !data.draft);
+  return all.map((n) => ({ params: { slug: n.id }, props: { n } }));
+}
+interface Props { n: CollectionEntry<'news'> }
+const { n } = Astro.props;
+const { Content } = await render(n);
+const more = (await getNews()).filter((x) => x.id !== n.id).slice(0, 3);
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsArticle',
+  headline: n.data.title,
+  description: n.data.excerpt,
+  datePublished: n.data.date.toISOString(),
+  inLanguage: 'en-GB',
+  author: { '@id': `${Astro.site}#organization` },
+  publisher: { '@id': `${Astro.site}#organization` },
+  mainEntityOfPage: new URL(`/news/${n.id}/`, Astro.site).toString(),
+};
+---
+
+<BaseLayout title={n.data.title} description={n.data.excerpt} type="article" schema={[schema]}>
+  <Article crumbs={{ label: 'All news', href: '/news/' }} label={n.data.pillar} title={n.data.title} date={n.data.date} standfirst={n.data.excerpt}>
+    {n.data.image && <Image src={n.data.image} alt={n.data.imageAlt ?? ''} widths={[600, 900, 1200]} sizes="(min-width: 900px) 720px, 100vw" />}
+    <Content />
+    <Fragment slot="aside">
+      {more.length > 0 && (
+        <nav class="more" aria-labelledby="more-title">
+          <h2 class="h4" id="more-title">More news</h2>
+          <ul role="list">{more.map((m) => <li><a href={`/news/${m.id}/`}>{m.data.title}</a></li>)}</ul>
+        </nav>
+      )}
+      <div class="media-box">
+        <p class="h4">Media enquiries</p>
+        <p>Write to <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+        <a class="link-arrow" href="/media/">Media kit <Icon name="arrow-right" /></a>
+      </div>
+    </Fragment>
+  </Article>
+</BaseLayout>
+
+<style>
+  .more ul { list-style: none; padding: 0; margin-top: 0.75rem; }
+  .more li { padding: 0.75rem 0; border-top: 1px solid var(--rule); }
+  .more a { color: var(--anthracite); font-weight: 600; text-decoration: none; }
+  .more a:hover { color: var(--gold-deep); }
+  .media-box { padding: 1.25rem; background: var(--ivory); display: grid; gap: 0.5rem; }
+</style>

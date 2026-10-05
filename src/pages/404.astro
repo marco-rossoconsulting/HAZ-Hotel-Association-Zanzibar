@@ -1,0 +1,25 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+---
+
+<BaseLayout title="Page not found" noindex>
+  <section class="section bg-ivory nf">
+    <div class="container">
+      <p class="label">404</p>
+      <h1 class="nf-title">This door is closed.</h1>
+      <p class="lead">The page you are looking for has moved or no longer exists. The HAZ website was rebuilt in 2026, so some older links have changed.</p>
+      <div class="nf-actions">
+        <a class="btn" href="/">Homepage <Icon name="arrow-right" class="icon-arrow" /></a>
+        <a class="btn btn-secondary" href="/members/">Member hotels</a>
+        <a class="btn btn-secondary" href="/contact/">Contact</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf { min-height: 65vh; display: grid; align-items: center; }
+  .nf-title { font-size: var(--step-display); margin: 0.75rem 0 1rem; }
+  .nf-actions { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+</style>

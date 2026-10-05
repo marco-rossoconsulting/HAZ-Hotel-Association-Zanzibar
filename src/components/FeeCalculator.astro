@@ -1,0 +1,171 @@
+---
+/**
+ * Hotel membership fee calculator. Figures come from src/data/fees.json (editable in the CMS).
+ * The full table is always rendered for screen readers, no-JS and print.
+ */
+import fees from '@/data/fees.json';
+import { usd } from '@/lib/site';
+import Icon from './Icon.astro';
+
+const rows = fees.hotel;
+const range = (r: (typeof rows)[number]) => (r.max ? `${r.min}–${r.max}` : `${r.min}+`);
+const maxRooms = 260;
+---
+
+<div class="fee-calc" data-fee-calc data-rows={JSON.stringify(rows)}>
+  <div class="fc-panel" aria-labelledby="fc-title">
+    <h3 class="h4" id="fc-title">Find your annual fee</h3>
+
+    <div class="fc-controls">
+      <div class="field">
+        <label for="fc-rooms">Rooms (keys)</label>
+        <div class="fc-rooms">
+          <input id="fc-rooms" type="range" min="5" max={maxRooms} step="1" value="40" data-fc-range aria-describedby="fc-rooms-out" />
+          <input type="number" min="1" max="2000" value="40" inputmode="numeric" data-fc-number aria-label="Number of rooms" class="fc-number" />
+        </div>
+      </div>
+
+      <fieldset class="field fc-band">
+        <legend>Your published rates</legend>
+        <div class="seg">
+          {fees.bands.map((b, i) => (
+            <label class="seg-opt">
+              <input type="radio" name="fc-band" value={b.key} checked={i === 0} data-fc-band />
+              <span><strong>{b.label}</strong><small>{b.detail}</small></span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="fc-result" aria-live="polite">
+      <p class="fc-result-label" id="fc-rooms-out" data-fc-summary>40 rooms, Economy rates</p>
+      <p class="fc-amount"><span class="fc-cur">USD</span> <span data-fc-amount>400</span></p>
+      <p class="caption">per membership year ({fees.year})</p>
+      <p class="fc-small" data-fc-small hidden>Hotels with fewer than 5 rooms: please <a href="/contact/">contact the Secretariat</a>.</p>
+      <a class="btn fc-cta" href="/join/hotel/" data-fc-cta>Apply now <Icon name="arrow-right" class="icon-arrow" /></a>
+    </div>
+  </div>
+
+  <details class="fc-table-wrap">
+    <summary>See the full fee table</summary>
+    <table class="fc-table tabular">
+      <caption class="sr-only">Hotel membership fees {fees.year}, US dollars per membership year</caption>
+      <thead>
+        <tr>
+          <th scope="col">Rooms</th>
+          {fees.bands.map((b) => <th scope="col">{b.label}<span>{b.detail}</span></th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr>
+            <th scope="row">{range(r)}</th>
+            <td>{usd(r.economy)}</td>
+            <td>{usd(r.standard)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </details>
+</div>
+
+<style>
+  .fee-calc { display: grid; gap: 1.25rem; }
+  .fc-panel {
+    display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 2rem 2.5rem;
+    background: var(--paper); padding: clamp(1.5rem, 1rem + 2vw, 2.75rem);
+    border-top: 2px solid var(--haz-gold);
+  }
+  .fc-panel > h3 { grid-column: 1 / -1; }
+  .fc-controls { display: grid; gap: 1.75rem; align-content: start; }
+  .fc-rooms { display: grid; grid-template-columns: 1fr 96px; gap: 1rem; align-items: center; }
+  .fc-number { text-align: center; font-variant-numeric: tabular-nums; }
+  input[type='range'] { width: 100%; accent-color: var(--gold-deep); height: 28px; }
+  .fc-band { border: 0; padding: 0; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .seg-opt { position: relative; cursor: pointer; }
+  .seg-opt input { position: absolute; opacity: 0; inset: 0; }
+  .seg-opt span {
+    display: grid; gap: 0.1rem; padding: 0.8rem 1rem; border: 1px solid #b9b1a4; border-radius: var(--radius);
+    transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+  }
+  .seg-opt small { font-size: 0.85rem; color: var(--taupe-deep); }
+  .seg-opt input:checked + span { border-color: var(--anthracite); background: var(--ivory); box-shadow: inset 0 0 0 1px var(--anthracite); }
+  .seg-opt input:focus-visible + span { outline: 2px solid var(--gold-deep); outline-offset: 2px; }
+
+  .fc-result { min-width: 0; background: var(--anthracite); color: var(--ivory-on-dark); padding: 1.5rem; display: grid; align-content: start; gap: 0.3rem; }
+  .fc-result .caption { color: var(--muted-on-dark); }
+  .fc-result-label { font-size: 0.95rem; color: var(--muted-on-dark); }
+  .fc-amount { font-family: var(--font-display); font-weight: 600; font-size: clamp(3rem, 2rem + 3vw, 4.25rem); line-height: 1; color: #fff; font-variant-numeric: lining-nums tabular-nums; }
+  .fc-cur { font-family: var(--font-sans); font-size: 1rem; font-weight: 600; letter-spacing: 0.12em; color: var(--bronze); vertical-align: 0.9em; }
+  .fc-small { font-size: 0.9rem; }
+  .fc-small a { color: var(--bronze); }
+  .fc-cta { margin-top: 1.25rem; justify-self: start; }
+
+  .fc-table-wrap summary { cursor: pointer; font-weight: 600; color: var(--gold-deep); padding: 0.5rem 0; }
+  .fc-table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; background: var(--paper); }
+  .fc-table th, .fc-table td { padding: 0.7rem 1rem; text-align: left; border-bottom: 1px solid var(--rule); }
+  .fc-table thead th { font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--taupe-deep); border-bottom: 1px solid var(--anthracite); vertical-align: bottom; }
+  .fc-table thead th span { display: block; text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .fc-table tbody th { font-weight: 600; }
+  @media (max-width: 860px) { .fc-panel { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<script>
+  type Row = { min: number; max: number | null; economy: number; standard: number };
+  const fmt = (n: number) => n.toLocaleString('en-GB');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-fee-calc]').forEach((root) => {
+    const rows: Row[] = JSON.parse(root.dataset.rows!);
+    const range = root.querySelector<HTMLInputElement>('[data-fc-range]')!;
+    const number = root.querySelector<HTMLInputElement>('[data-fc-number]')!;
+    const bands = Array.from(root.querySelectorAll<HTMLInputElement>('[data-fc-band]'));
+    const amount = root.querySelector<HTMLElement>('[data-fc-amount]')!;
+    const summary = root.querySelector<HTMLElement>('[data-fc-summary]')!;
+    const small = root.querySelector<HTMLElement>('[data-fc-small]')!;
+    const cta = root.querySelector<HTMLAnchorElement>('[data-fc-cta]')!;
+    let shown = Number(amount.textContent?.replace(/\D/g, '')) || 0;
+    let raf = 0;
+
+    const animateTo = (target: number) => {
+      cancelAnimationFrame(raf);
+      if (reduce) { amount.textContent = fmt(target); shown = target; return; }
+      const from = shown, start = performance.now(), dur = 450;
+      const step = (t: number) => {
+        const p = Math.min(1, (t - start) / dur);
+        shown = Math.round(from + (target - from) * (1 - Math.pow(1 - p, 3)));
+        amount.textContent = fmt(shown);
+        if (p < 1) raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+    };
+
+    const update = (rooms: number) => {
+      const band = (bands.find((b) => b.checked)?.value ?? 'economy') as 'economy' | 'standard';
+      const bandLabel = band === 'economy' ? 'Economy rates (below USD 150)' : 'Standard rates (from USD 150)';
+      const row = rows.find((r) => rooms >= r.min && (r.max === null || rooms <= r.max));
+      small.hidden = rooms >= 5;
+      cta.hidden = !row;
+      summary.textContent = `${rooms} ${rooms === 1 ? 'room' : 'rooms'}, ${bandLabel}`;
+      if (row) {
+        animateTo(row[band]);
+        cta.href = `/join/hotel/?rooms=${rooms}&band=${band}`;
+      } else {
+        amount.textContent = 'On request';
+        shown = 0;
+      }
+    };
+
+    range.addEventListener('input', () => { number.value = range.value; update(Number(range.value)); });
+    number.addEventListener('input', () => {
+      const v = Math.max(1, Math.min(2000, Math.round(Number(number.value) || 0)));
+      if (!number.value) return;
+      range.value = String(Math.min(v, Number(range.max)));
+      update(v);
+    });
+    bands.forEach((b) => b.addEventListener('change', () => update(Number(number.value) || 5)));
+    update(Number(number.value));
+  });
+</script>
