@@ -13,6 +13,8 @@ const pillars = [
   {
     name: 'People',
     photo: await getPhoto('hospitality'),
+    // Portrait photo: lift the face above the text shade
+    focus: '50% 100%',
     aim: 'Zanzibaris build careers, not just jobs, in hospitality; communities share in its success.',
     message: 'Every career that starts in a Zanzibar hotel should be able to finish in its management office.',
     href: '/careers/',
@@ -53,7 +55,7 @@ const pillars = [
     <div class="panels" data-panels>
       {pillars.map((p, i) => (
         <article class:list={['panel', { 'is-active': i === 0 }]} data-panel tabindex="-1">
-          <Image src={p.photo.image} alt="" widths={[480, 760, 1000]} sizes="(min-width: 1024px) 50vw, 100vw" class="panel-img" />
+          <Image src={p.photo.image} alt="" widths={[480, 760, 1000]} sizes="(min-width: 1024px) 50vw, 100vw" class="panel-img" style={p.focus && `object-position: ${p.focus}`} />
           <div class="panel-shade" aria-hidden="true"></div>
           <button class="panel-tab" type="button" aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`panel-body-${i}`} data-panel-tab>
             <span class="panel-name">{p.name}</span>

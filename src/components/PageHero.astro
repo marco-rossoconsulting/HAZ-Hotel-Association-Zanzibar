@@ -1,18 +1,19 @@
 ---
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import ArchEdge from './ArchEdge.astro';
 
 interface Props {
   label?: string;
   title: string;
   lead?: string;
   image?: { src: ImageMetadata; alt: string; credit?: string };
-  /** 'arch' frames the hero image with the Mlango arch (once per layout) */
+  /** 'arch' (default) frames the hero image with the Mlango arch and its dark edge, as on the homepage */
   frame?: 'arch' | 'plain';
   tone?: 'ivory' | 'white' | 'anthracite' | 'ocean';
   updated?: Date;
 }
-const { label, title, lead, image, frame = 'plain', tone = 'ivory', updated } = Astro.props;
+const { label, title, lead, image, frame = 'arch', tone = 'ivory', updated } = Astro.props;
 const dark = tone === 'anthracite' || tone === 'ocean';
 ---
 
@@ -33,6 +34,7 @@ const dark = tone === 'anthracite' || tone === 'ocean';
       <figure class:list={['ph-figure', { 'is-arch': frame === 'arch' }]}>
         <div class:list={['ph-img', { arch: frame === 'arch' }]}>
           <Image src={image.src} alt={image.alt} widths={[480, 720, 960, 1200]} sizes="(min-width: 1024px) 40vw, 92vw" loading="eager" fetchpriority="high" />
+          {frame === 'arch' && <ArchEdge />}
         </div>
       </figure>
     )}
@@ -56,7 +58,7 @@ const dark = tone === 'anthracite' || tone === 'ocean';
   .ph-slot { margin-top: 2rem; }
   .ph-figure { grid-column: 9 / span 4; }
   .ph-figure.is-arch { grid-column: 8 / span 5; }
-  .ph-img { aspect-ratio: 4 / 5; overflow: hidden; background: var(--ivory-2); }
+  .ph-img { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: var(--ivory-2); }
   .ph-img :global(img) { width: 100%; height: 100%; object-fit: cover; }
   @media (max-width: 767px) {
     .ph-img { aspect-ratio: 5 / 4; }
