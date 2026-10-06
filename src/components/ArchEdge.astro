@@ -1,0 +1,17 @@
+---
+// Dark cut-out edge for an .arch image frame. Place inside the clipped, position: relative container:
+// the clip trims the outer half of the stroke, so 6px draws 3px inside the arch.
+import { ARCH_PATH } from '@/lib/arch';
+---
+
+<svg class="arch-edge" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+  <path d={ARCH_PATH} vector-effect="non-scaling-stroke" />
+</svg>
+
+<style>
+  .arch-edge { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  .arch-edge path { fill: none; stroke: var(--anthracite); stroke-width: 6px; }
+  @media (max-width: 767px) {
+    .arch-edge path { stroke-width: 4px; }
+  }
+</style>
