@@ -90,7 +90,7 @@ The corporate line, narrative line and logo are locked: they need Board approval
 
 ## 5. Open items before launch
 
-1. **Photography.** All seven photo slots use interim Unsplash photographs (credited on /media/). Replace them with commissioned HAZ photography in *Site photography*.
+1. **Photography.** All seven photo slots now use supplied Zanzibar photography. Confirm the photographer credits (only Roberto Patti is credited so far) and log each photo in the media rights register.
 2. **Affiliate fees.** Not set; the site shows "Fee on application". Add them in *Settings → Membership fees*.
 3. **Membership figures.** Add member hotels, rooms and employees from the membership database in *Settings → Membership figures*.
 4. **Member hotels and Board.** Seeded from the old website (2024). Review in the editor. Kinasi Lodge (Mafia Island) is listed under "Beyond Zanzibar". I Grandi Viaggi and Veratour are listed as Affiliate Members (tour operators).
