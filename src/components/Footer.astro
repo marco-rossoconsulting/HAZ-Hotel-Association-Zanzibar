@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import logoGold from '@/assets/brand/haz-logo-gold.png';
 import Icon from './Icon.astro';
+import AstiaCredit from './AstiaCredit.astro';
 import { footerNav, site } from '@/lib/site';
 
 const year = new Date().getFullYear();
@@ -70,9 +71,12 @@ const socials = [
 
     <div class="footer-bottom">
       <p class="pillar-signature">People · Place · Prosperity · Together</p>
-      <p class="legal">
-        © {year} Hotel Association Zanzibar · <a href="/privacy/">Privacy</a> · <a href="/media/">Media kit</a>
-      </p>
+      <div class="footer-meta">
+        <p class="legal">
+          © {year} Hotel Association Zanzibar · <a href="/privacy/">Privacy</a> · <a href="/media/">Media kit</a>
+        </p>
+        <AstiaCredit site="hotel-association-zanzibar" tone="paper" size={18} class="footer-credit" />
+      </div>
     </div>
   </div>
 </footer>
@@ -105,6 +109,11 @@ const socials = [
   .socials a:hover { border-color: var(--bronze); background: rgba(213, 167, 68, 0.12); text-decoration: none; }
   .footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; padding-top: 2rem; font-size: 0.875rem; }
   .legal a { color: var(--muted-on-dark); text-decoration: underline; text-underline-offset: 0.2em; }
+  .footer-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; }
+  /* Label matches the muted legal text. The credit's padding is its clear space (height of the "a" at 18px);
+     the negative margin keeps that space without shifting the credit off the text edges when it wraps. */
+  .site-footer .footer-meta :global(.footer-credit) { color: var(--muted-on-dark); margin: calc(-1 * 18px * 0.516); }
+  .site-footer .footer-meta :global(.footer-credit:hover) { color: var(--ivory-on-dark); text-decoration: none; }
   @media (max-width: 1023px) {
     .footer-brand { grid-column: 1 / -1; }
     .footer-col, .footer-col:nth-of-type(1) { grid-column: span 4; }
