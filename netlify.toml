@@ -79,6 +79,16 @@
   to = "/news/"
   status = 301
 
+# HAZ Green Certification replaced the HAZ Responsible Hotel Standard (brand guidelines v4) and has its own page
+[[redirects]]
+  from = "/programmes/responsible-hotel-standard/"
+  to = "/green/"
+  status = 301
+[[redirects]]
+  from = "/programmes/haz-green-certification/"
+  to = "/green/"
+  status = 301
+
 # ---------------------------------------------------------------------------
 # Headers
 # ---------------------------------------------------------------------------

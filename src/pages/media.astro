@@ -7,6 +7,9 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import logoGold from '@/assets/brand/haz-logo-gold.png';
 import logoWhite from '@/assets/brand/haz-logo-white.png';
+import greenGold from '@/assets/brand/haz-green-lockup-gold.png';
+import greenWhite from '@/assets/brand/haz-green-lockup-white.png';
+import greenBlack from '@/assets/brand/haz-green-lockup-black.png';
 import { getNews, site, formatDate, isoDate } from '@/lib/site';
 import context from '@/data/context.json';
 
@@ -20,6 +23,12 @@ const logos = [
   { name: 'Gold, transparent', note: 'Primary version on ivory or white', file: '/brand/HAZ_Logo_Gold_Transparent.png', img: logoGold, bg: 'ivory' },
   { name: 'White, transparent', note: 'On Anthracite, dark panels and photography', file: '/brand/HAZ_Logo_White_Transparent.png', img: logoWhite, bg: 'dark' },
   { name: 'Black, transparent', note: 'Formal, press, legal and monochrome print', file: '/brand/HAZ_Logo_Black_Transparent.png', img: null, bg: 'white' },
+];
+// HAZ Green Certification: the emblem never stands alone, so only the lockup with the HAZ logo is offered
+const greenLockups = [
+  { name: 'Gold, transparent', note: 'Documents, forms and web pages on ivory or white; also gold on Indian Ocean', file: '/brand/HAZ_Logo_with_Green_Emblem_Gold_Transparent.png', img: greenGold, bg: 'ivory' },
+  { name: 'White, transparent', note: 'Indian Ocean or Anthracite panels and mastheads', file: '/brand/HAZ_Logo_with_Green_Emblem_White_Transparent.png', img: greenWhite, bg: 'dark' },
+  { name: 'Black, transparent', note: 'Formal, press and monochrome print', file: '/brand/HAZ_Logo_with_Green_Emblem_Black_Transparent.png', img: greenBlack, bg: 'white' },
 ];
 ---
 
@@ -70,6 +79,26 @@ const logos = [
       <div class="rules">
         <p><strong>Clear space:</strong> the height of the H on all four sides. <strong>Minimum size:</strong> 160 px wide on screen, 35 mm in print.</p>
         <p><strong>Please do not</strong> stretch, recolour, outline or add effects to the logo, place it over busy backgrounds, or lock it up with slogans. For other formats, write to <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+      </div>
+
+      <h3 class="h3 green-title" id="green-logo-title">HAZ Green Certification lockup</h3>
+      <p class="green-intro">The HAZ Green emblem, a mangrove under the Mlango arch, always appears beside the HAZ logo, separated by a thin rule and in the same colour version. <a href="/green/">About HAZ Green</a></p>
+      <ul role="list" class="logos" aria-labelledby="green-logo-title">
+        {greenLockups.map((l) => (
+          <li class="logo-card">
+            <div class:list={['logo-stage', `stage-${l.bg}`]}>
+              <Image src={l.img} alt={`HAZ logo with the HAZ Green emblem, ${l.name.toLowerCase()}`} widths={[280, 560]} sizes="280px" class="green-img" />
+            </div>
+            <div class="logo-info">
+              <h4 class="h4">{l.name}</h4>
+              <p class="caption">{l.note}</p>
+              <a href={l.file} download class="link-arrow"><Icon name="download-simple" /> PNG</a>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <div class="rules">
+        <p><strong>Never</strong> use the emblem without the HAZ logo, place it before or larger than the logo, colour its parts differently, or use it as a pattern or a frame. <strong>Minimum size:</strong> emblem 40 px wide on screen, 12 mm in print. Level badges are for certified hotels only.</p>
       </div>
     </div>
   </section>
@@ -154,6 +183,9 @@ const logos = [
   .stage-dark { background: var(--anthracite); }
   .stage-white { background: #fff; border-bottom: 1px solid var(--rule); }
   .logo-info { padding: 1.25rem; display: grid; gap: 0.35rem; justify-items: start; }
+  .logo-stage :global(.green-img) { width: 280px; max-width: 100%; }
+  .green-title { margin-top: clamp(3rem, 2rem + 3vw, 4.5rem); padding-top: 2rem; border-top: 1px solid var(--rule); }
+  .green-intro { margin-top: 0.6rem; max-width: 70ch; }
   .rules { margin-top: 2rem; display: grid; gap: 0.6rem; max-width: 80ch; }
   .facts { display: grid; }
   .facts > div { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 1.5rem; padding: 1rem 0; border-top: 1px solid var(--rule); }

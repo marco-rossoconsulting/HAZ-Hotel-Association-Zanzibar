@@ -5,6 +5,7 @@ import SectionHead from '@/components/SectionHead.astro';
 import EnquiryForm from '@/components/EnquiryForm.astro';
 import StatusPill from '@/components/StatusPill.astro';
 import Icon from '@/components/Icon.astro';
+import { programmeHref } from '@/lib/site';
 import { Image } from 'astro:assets';
 import { getCollection, getEntry } from 'astro:content';
 
@@ -32,7 +33,7 @@ const opps = (await Promise.all(ids.map((id) => getEntry('programmes', id)))).fi
             <div class="opp-top"><span class="label">{o.data.pillar}</span><StatusPill status={o.data.status} /></div>
             <h3 class="opp-name">{o.data.name}</h3>
             <p>{o.data.summary}</p>
-            <a class="link-arrow" href={`/programmes/${o.id}/`}>About this programme <Icon name="arrow-right" /></a>
+            <a class="link-arrow" href={programmeHref(o)}>About this programme <Icon name="arrow-right" /></a>
           </li>
         ))}
       </ul>

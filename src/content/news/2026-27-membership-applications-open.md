@@ -14,13 +14,15 @@ Hotel membership gives your hotel joint promotions with airlines and partners, a
 
 The annual fee is set by your number of rooms and your rate band. It starts at USD 250 for hotels of 5 to 20 rooms with rates below USD 150. [Find your fee](/join/).
 
+HAZ Green Certification, the HAZ sustainability certification, is included in hotel membership. [How HAZ Green works](/green/).
+
 Each application needs two HAZ member hotels to propose it. The Zanzibar Commission for Tourism (ZCT) requires every hotel to show evidence of association membership before a hotel licence is issued; HAZ membership meets this requirement.
 
 [Apply as a hotel](/join/hotel/)
 
 ## For suppliers and service providers
 
-Affiliate membership gives your organisation credibility, visibility and direct access to the people who make hotel decisions. There are five levels, from Standard to Principal Affiliate.
+Affiliate membership gives your organisation credibility, visibility and direct access to the people who make hotel decisions. There are six levels, from Directory Listing at USD 150 a year, for suppliers recommended by a HAZ member hotel, to Principal Affiliate at USD 3,000 a year. [Compare the levels](/affiliates/#levels).
 
 [Apply as an Affiliate Member](/join/affiliate/)
 

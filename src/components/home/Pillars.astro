@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Icon from '../Icon.astro';
 import SectionHead from '../SectionHead.astro';
-import { getPhoto } from '@/lib/site';
+import { getPhoto, programmeHref } from '@/lib/site';
 
 const programmes = await getCollection('programmes');
 const byPillar = (p: string) =>
@@ -66,7 +66,7 @@ const pillars = [
             <blockquote class="panel-quote">“{p.message}”</blockquote>
             {p.programmes.length > 0 && (
               <ul role="list" class="panel-programmes">
-                {p.programmes.map((x) => <li><a href={`/programmes/${x.id}/`}>{x.data.name}</a></li>)}
+                {p.programmes.map((x) => <li><a href={programmeHref(x)}>{x.data.name}</a></li>)}
               </ul>
             )}
             <a class="link-arrow" href={p.href}>Explore {p.name.toLowerCase()} <Icon name="arrow-right" /></a>

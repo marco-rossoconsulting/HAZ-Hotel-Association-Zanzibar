@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import StatusPill from './StatusPill.astro';
 import Icon from './Icon.astro';
+import { programmeHref } from '@/lib/site';
 import { PILLARS } from '@/content.config';
 
 interface Props {
@@ -30,7 +31,7 @@ const groups = groupByPillar
       <ul role="list" class="pi-list">
         {g.items.map((p, i) => (
           <li class="pi-item" data-reveal style={`--i:${i % 4}`}>
-            <a href={`/programmes/${p.id}/`} class="pi-link">
+            <a href={programmeHref(p)} class="pi-link">
               <span class="pi-name">{p.data.name}</span>
               <span class="pi-summary">{p.data.summary}</span>
               <span class="pi-meta">

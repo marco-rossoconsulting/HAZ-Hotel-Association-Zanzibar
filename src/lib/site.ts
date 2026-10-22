@@ -24,6 +24,7 @@ export const nav: NavItem[] = [
     children: [
       { label: 'Member hotels', href: '/members/', description: 'Directory and map of member hotels' },
       { label: 'Why join', href: '/join/', description: 'Benefits, fees and how to apply' },
+      { label: 'HAZ Green Certification', href: '/green/', description: 'Sustainability certification for member hotels' },
       { label: 'Member badge', href: '/members/badge/', description: 'Show your hotel is part of HAZ' },
       { label: 'Market Pulse', href: '/market-pulse/', description: 'Weekly market intelligence' },
     ],
@@ -60,6 +61,7 @@ export const footerNav: NavItem[] = [
     href: '/programmes/',
     children: [
       { label: 'Programmes', href: '/programmes/' },
+      { label: 'HAZ Green Certification', href: '/green/' },
       { label: 'Market Pulse', href: '/market-pulse/' },
       { label: 'Policy and positions', href: '/policy/' },
       { label: 'Invest Zanzibar', href: '/invest/' },
@@ -87,6 +89,9 @@ export const formatDate = (d: Date, opts: Intl.DateTimeFormatOptions = {}) =>
 
 export const formatShortDate = (d: Date) =>
   new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'Africa/Dar_es_Salaam' }).format(d);
+
+/** Brand naming: "Directory Listing", then "Standard Affiliate" … "Principal Affiliate" (brand section 07). */
+export const affiliateLevelName = (level: string) => (level === 'Directory Listing' ? level : `${level} Affiliate`);
 
 /** Brand number style: USD 1,000 */
 export const usd = (n: number) => `USD ${n.toLocaleString('en-GB')}`;
@@ -121,6 +126,9 @@ export async function getPhoto(id: string) {
   if (!p) throw new Error(`Photo slot "${id}" missing in src/content/photos`);
   return p.data;
 }
+
+/** Where a programme lives: its dedicated page if it has one, otherwise /programmes/<id>/. */
+export const programmeHref = (p: CollectionEntry<'programmes'>) => p.data.page ?? `/programmes/${p.id}/`;
 
 export const statusLabel: Record<'live' | 'launching' | 'development', string> = {
   live: 'Live',

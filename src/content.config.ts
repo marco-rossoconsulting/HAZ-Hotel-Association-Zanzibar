@@ -16,7 +16,7 @@ export const REGIONS = [
   'Pemba',
   'Beyond Zanzibar',
 ] as const;
-export const AFFILIATE_LEVELS = ['Standard', 'Preferred', 'Corporate', 'Strategic', 'Principal'] as const;
+export const AFFILIATE_LEVELS = ['Directory Listing', 'Standard', 'Preferred', 'Corporate', 'Strategic', 'Principal'] as const;
 export const BUSINESS_TYPES = [
   'Food & beverage / supplies',
   'Hotel equipment / OS&E / FF&E',
@@ -101,6 +101,8 @@ const programmes = defineCollection({
     order: z.number().default(100),
     ctaLabel: opt(z.string()),
     ctaUrl: opt(z.string()),
+    /** A programme with its own page (such as HAZ Green Certification at /green/) links there instead */
+    page: opt(z.string()),
   }),
 });
 

@@ -1,0 +1,303 @@
+---
+/**
+ * HAZ Green Certification (brand guidelines v4.1, section 15; Hotel Introduction, October 2026).
+ * Writing rules: "HAZ Green Certification" on first mention, then "HAZ Green"; the number leads ("Level 2 · Roots");
+ * hotels are certified, never accredited; never "eco-friendly" or "green" as a bare adjective.
+ * The emblem only ever appears in the lockup with the HAZ logo, in the same colour version.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import NotifyForm from '@/components/NotifyForm.astro';
+import JoinBand from '@/components/JoinBand.astro';
+import StatusPill from '@/components/StatusPill.astro';
+import Icon from '@/components/Icon.astro';
+import GreenLevels from '@/components/green/GreenLevels.astro';
+import { Image } from 'astro:assets';
+import { getEntry } from 'astro:content';
+import { greenLevels, badgeAlt } from '@/lib/green';
+import { site } from '@/lib/site';
+import lockupGold from '@/assets/brand/haz-green-lockup-gold.png';
+
+const programme = await getEntry('programmes', 'haz-green-certification');
+const observatory = await getEntry('programmes', 'impact-observatory');
+
+const steps = [
+  { title: 'Name a HAZ Green Champion', text: 'Every HAZ Hotel Member takes part, and each hotel appoints the person who leads its HAZ Green work.' },
+  { title: 'Assessment against the standard', text: 'Qualified assessors evaluate the hotel’s evidence against the HAZ Green standard.' },
+  { title: 'An independent decision', text: 'An independent Certification Decision Panel decides every award, at the level the evidence supports.' },
+  { title: 'Certified for 12 months', text: 'The hotel is listed on the public HAZ Green register and displays the badge for the level it holds.' },
+];
+
+const principles = [
+  { icon: 'seal-check', title: 'Included in membership', text: 'Participation and standard Secretariat support are included in the annual HAZ membership fee.' },
+  { icon: 'scales', title: 'Built on Zanzibar regulation', text: 'HAZ Green follows the mandatory regulations of the Zanzibar Commission for Tourism (ZCT), including those on waste and recycling, and is aligned with the goals of the GSTC Hotel Standard.' },
+  { icon: 'handshake', title: 'Supported by Blue Impact Network', text: 'Under a memorandum of understanding with HAZ, Blue Impact Network provides technical oversight, practical guidance and ongoing support from November 2026. HAZ keeps ownership and final certification authority.' },
+];
+
+const measures = [
+  { icon: 'drop', label: 'Water saved' },
+  { icon: 'recycle', label: 'Waste diverted' },
+  { icon: 'lightning', label: 'Renewable power' },
+  { icon: 'trash', label: 'Plastics cut' },
+  { icon: 'waves', label: 'Mangrove and coral projects' },
+  { icon: 'buildings', label: 'Heritage support' },
+];
+
+const badgeRules = [
+  'Only hotels with a current HAZ Green certificate show a badge, and only for the level they hold.',
+  'Every badge is dated with the award year and linked to the hotel’s entry on the public HAZ Green register.',
+  'A badge is removed when the certificate expires or is suspended, downgraded or withdrawn.',
+];
+
+const faqs = [
+  { q: 'Is HAZ Green Certification mandatory for member hotels?', a: 'Yes. Every HAZ Hotel Member takes part, and each hotel appoints a HAZ Green Champion.' },
+  { q: 'Does HAZ Green cost extra?', a: 'No. Participation and standard Secretariat support are included in the annual HAZ membership fee.' },
+  { q: 'Does every hotel start at Level 1?', a: 'No. Hotels are assessed against the standard and certified at the level their evidence supports. Certification is earned, never automatic.' },
+  { q: 'How long is a certificate valid?', a: 'Each award is valid for 12 months. Each level also requires all the mandatory controls of the levels below it.' },
+  { q: 'Who decides each award?', a: 'Qualified assessors evaluate the evidence and an independent Certification Decision Panel decides every award. HAZ owns the scheme and keeps final certification authority; Blue Impact Network provides technical oversight and support.' },
+  { q: 'Is HAZ Green a GSTC certification?', a: 'No. HAZ Green is aligned with the goals of the Global Sustainable Tourism Council (GSTC) Hotel Standard. This alignment does not imply GSTC certification, recognition, endorsement or accreditation.' },
+  { q: 'How can a hotel take part?', a: `HAZ Green Certification is for HAZ member hotels. Join HAZ, or write to ${site.email} with questions.` },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+
+<BaseLayout
+  title="HAZ Green Certification"
+  description="HAZ Green Certification is the sustainability certification for Hotel Association Zanzibar (HAZ) member hotels, in four levels from Level 1 · Shoots to Level 4 · Legends. Included in hotel membership."
+  schema={[faqSchema]}
+>
+  <!-- Hero: Indian Ocean, the primary HAZ Green colour version (gold lockup), as on HAZ Green covers -->
+  <section class="g-hero bg-ocean on-dark" aria-labelledby="g-title">
+    <div class="container grid-12 gh-grid">
+      <div class="gh-text">
+        <Image src={lockupGold} alt="Hotel Association Zanzibar logo with the HAZ Green Certification emblem" widths={[320, 440, 640, 880]} sizes="(min-width: 768px) 440px, 300px" class="gh-lockup" loading="eager" fetchpriority="high" data-reveal />
+        <p class="label gh-label" data-reveal style="--i:1">Included in HAZ hotel membership</p>
+        <h1 class="gh-title" id="g-title" data-reveal style="--i:1">HAZ Green Certification</h1>
+        <p class="lead gh-lead" data-reveal style="--i:2">The HAZ sustainability certification for every member hotel, from first commitments to conservation leadership.</p>
+        <p class="gh-sub" data-reveal style="--i:2">Built for the practical realities of Zanzibar hospitality: aligned with the goals of the Global Sustainable Tourism Council (GSTC) Hotel Standard, and following the mandatory regulations of the Zanzibar Commission for Tourism (ZCT).</p>
+        <div class="gh-actions" data-reveal style="--i:3">
+          <a class="btn" href="#levels">See the four levels <Icon name="arrow-right" class="icon-arrow" /></a>
+          <a class="btn btn-secondary" href="/join/">Join HAZ</a>
+        </div>
+        {programme && <div class="gh-status" data-reveal style="--i:4"><StatusPill status={programme.data.status} /> <span>Rolling out to member hotels with Blue Impact Network from November 2026</span></div>}
+      </div>
+
+      <ol role="list" class="gh-badges" aria-label="The four HAZ Green levels">
+        {greenLevels.map((l, i) => (
+          <li class="gh-badge" style={`--i:${i}`}>
+            <Image src={l.badge.light} alt={badgeAlt(l)} width={200} densities={[1, 2]} loading="eager" />
+          </li>
+        ))}
+      </ol>
+    </div>
+    <div class="container gh-foot">
+      <p class="gh-line">{site.corporateLine}</p>
+    </div>
+  </section>
+
+  <!-- The four levels -->
+  <section class="section bg-ivory" id="levels" aria-labelledby="levels-title">
+    <div class="container">
+      <div class="lv-head">
+        <SectionHead id="levels-title" title="Four levels, each earned with evidence" intro="Hotels are certified at the level their evidence supports, rather than all starting at Level 1. Each level also requires all the mandatory controls of the levels below it." />
+        <blockquote class="lv-why" data-reveal style="--i:2">
+          <p>Mangroves protect Zanzibar’s coastline, and their life cycle maps onto the four levels: from a propagule taking root to a mature tree on its stilt roots.</p>
+        </blockquote>
+      </div>
+      <div class="lv-body">
+        <GreenLevels />
+      </div>
+      <p class="caption lv-note">Entry scores are out of 100. A score alone does not award a level: assessors evaluate the evidence and the Certification Decision Panel decides. Badges shown for the {greenLevels[0].year} award year.</p>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section bg-white" aria-labelledby="how-title">
+    <div class="container">
+      <SectionHead id="how-title" title="Evidence-led, independent and built for Zanzibar" intro="HAZ owns the scheme. Qualified assessors evaluate the evidence, and a separate panel decides every award." />
+      <div class="steps-wrap">
+      <span class="steps-rule" data-rule aria-hidden="true"></span>
+      <ol role="list" class="steps">
+        {steps.map((s, i) => (
+          <li class="step" data-reveal style={`--i:${i}`}>
+            <span class="step-n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="h4">{s.title}</h3>
+            <p>{s.text}</p>
+          </li>
+        ))}
+      </ol>
+      </div>
+      <ul role="list" class="principles">
+        {principles.map((p, i) => (
+          <li class="principle" data-reveal style={`--i:${i}`}>
+            <Icon name={p.icon} class="pr-icon" />
+            <h3 class="h4">{p.title}</h3>
+            <p>{p.text}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="caption gstc">GSTC: Global Sustainable Tourism Council. Alignment with the goals of the GSTC Hotel Standard does not imply GSTC certification, recognition, endorsement or accreditation.</p>
+    </div>
+  </section>
+
+  <!-- Collective impact -->
+  <section class="section bg-anthracite on-dark" aria-labelledby="impact-title">
+    <div class="container grid-12 impact">
+      <div class="im-head">
+        <span class="accent-rule" data-rule aria-hidden="true"></span>
+        <h2 class="h2 im-title" id="impact-title" data-reveal>The combined impact of Zanzibar’s hotels</h2>
+        <p class="im-text" data-reveal style="--i:1">Member activities are collated in the HAZ CSR &amp; Sustainability Impact Observatory, to show what Zanzibar’s hotels achieve together for the island’s people and place.</p>
+        <p class="im-text" data-reveal style="--i:2">Results will be published with date, unit and source, with member-declared figures labelled apart from verified ones.</p>
+        {observatory && <a class="link-arrow" href={`/programmes/${observatory.id}/`} data-reveal style="--i:3">About the Impact Observatory <Icon name="arrow-right" /></a>}
+      </div>
+      <div class="im-list">
+        <p class="label">What will be measured</p>
+        <ul role="list" class="measures">
+          {measures.map((m, i) => (
+            <li data-reveal style={`--i:${i % 3}`}><Icon name={m.icon} class="m-icon" /><span>{m.label}</span></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- The badge and the public register -->
+  <section class="section bg-white" aria-labelledby="badge-title">
+    <div class="container grid-12 badge-sec">
+      <div class="bd-text">
+        <SectionHead id="badge-title" title="Every badge says exactly what was earned" intro="Guests and partners read the HAZ Green badges as HAZ at a glance: they share the seal of the HAZ member badge." />
+        <ul role="list" class="bd-rules">
+          {badgeRules.map((r, i) => <li data-reveal style={`--i:${i}`}><Icon name="check" /><span>{r}</span></li>)}
+        </ul>
+      </div>
+      <div class="bd-register" data-reveal style="--i:1">
+        <p class="label">Public register</p>
+        <h3 class="h3 reg-title">Get notified when the public register opens</h3>
+        <NotifyForm programme="the public HAZ Green register" text="Certified hotels will be listed on a public register, so anyone can check a hotel’s level." compact />
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section bg-ivory" aria-labelledby="faq-title">
+    <div class="container grid-12">
+      <div class="faq-head">
+        <SectionHead id="faq-title" title="Questions hotels ask about HAZ Green" />
+      </div>
+      <div class="faqs">
+        {faqs.map((f) => (
+          <details class="faq">
+            <summary><span>{f.q}</span><Icon name="plus" class="faq-icon" /></summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <JoinBand title="Join the hotels shaping Zanzibar’s future." text="For member hotels, HAZ Green is the direction of your association. For hotels considering membership, it is an invitation to join programmes that benefit your hotel and Zanzibar." />
+</BaseLayout>
+
+<style>
+  /* ---------- Hero ---------- */
+  .g-hero { position: relative; overflow: hidden; padding-block: clamp(3rem, 2rem + 4vw, 6rem) 0; }
+  .gh-grid { align-items: center; row-gap: 3rem; }
+  .gh-text { grid-column: 1 / span 7; }
+  .gh-text :global(.gh-lockup) { width: clamp(300px, 22vw + 140px, 440px); height: auto; }
+  .gh-label { display: block; margin-top: clamp(2rem, 1.5rem + 2vw, 3rem); }
+  .gh-title { margin-top: 0.75rem; font-size: var(--step-display); line-height: 1.02; color: #fff; max-width: 14ch; }
+  .gh-lead { margin-top: 1.25rem; color: var(--ivory-on-dark); }
+  .gh-sub { margin-top: 0.85rem; max-width: 56ch; color: var(--muted-on-dark); }
+  .gh-actions { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .gh-status { margin-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; font-size: 0.9rem; color: var(--muted-on-dark); }
+
+  /* Four light badges step up from Level 1 to Level 4, like the tree they show */
+  .gh-badges { grid-column: 8 / span 5; display: grid; grid-template-columns: repeat(2, minmax(0, 200px)); gap: 1.25rem 1.5rem; justify-content: center; }
+  /* Reading order, Level 1 to Level 4; the right-hand column sits higher so each row climbs */
+  .gh-badge:nth-child(even) { transform: translateY(-40px); }
+  .gh-badge :global(img) { width: 100%; height: auto; }
+  @media (prefers-reduced-motion: no-preference) {
+    .gh-badge :global(img) { animation: badge-rise 1.1s var(--ease-out) both; animation-delay: calc(250ms + var(--i) * 160ms); }
+    .gh-badge :global(img) { transition: transform 0.5s var(--ease-out); }
+    .gh-badge:hover :global(img) { transform: translateY(-6px); }
+  }
+  @keyframes badge-rise { from { opacity: 0; transform: translateY(36px) scale(0.92); } }
+
+  .gh-foot { padding-block: 2.5rem 2.25rem; margin-top: clamp(2rem, 1rem + 3vw, 4rem); border-top: 1px solid rgba(213, 167, 68, 0.35); }
+  .gh-line { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 1.75rem; line-height: 1.2; color: var(--bronze); }
+
+  /* ---------- Levels ---------- */
+  .lv-head { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 2rem 4rem; align-items: end; }
+  .lv-why { border-left: 2px solid var(--haz-gold); padding-left: 1.25rem; font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 1.45rem; line-height: 1.3; max-width: 32ch; }
+  .lv-body { margin-top: clamp(2.5rem, 2rem + 2vw, 4rem); }
+  .lv-note { margin-top: 1.25rem; max-width: 80ch; }
+
+  /* ---------- How it works ---------- */
+  .steps-wrap { position: relative; margin-top: clamp(2.5rem, 2rem + 2vw, 4rem); }
+  .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2rem; padding-top: 2.25rem; }
+  .steps-rule { position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--haz-gold); transform-origin: left; }
+  .step { position: relative; display: grid; gap: 0.5rem; align-content: start; }
+  .step::before { content: ''; position: absolute; top: calc(-2.25rem - 4px); left: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--paper); border: 1px solid var(--haz-gold); }
+  .step-n { font-family: var(--font-display); font-weight: 600; font-size: 2.25rem; line-height: 1; color: var(--gold-deep); font-variant-numeric: lining-nums; }
+  .step p { font-size: 0.975rem; }
+  .principles { margin-top: clamp(3rem, 2rem + 3vw, 4.5rem); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .principle { background: var(--ivory); padding: 1.75rem; display: grid; gap: 0.55rem; align-content: start; }
+  .principle p { font-size: 0.975rem; }
+  .principle :global(.pr-icon) { width: 1.9rem; height: 1.9rem; color: var(--gold-deep); margin-bottom: 0.35rem; }
+  .gstc { margin-top: 1rem; max-width: 80ch; }
+
+  /* ---------- Impact ---------- */
+  .impact { row-gap: 3rem; align-items: start; }
+  .im-head { grid-column: 1 / span 6; display: grid; gap: 1rem; justify-items: start; }
+  .im-title { margin-top: 0.1rem; color: #fff; max-width: 18ch; }
+  .im-text { color: var(--ivory-on-dark); max-width: 52ch; }
+  .im-list { grid-column: 8 / span 5; }
+  .measures { margin-top: 1rem; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1.5rem; border-top: 1px solid rgba(213, 167, 68, 0.45); }
+  .measures li { display: flex; gap: 0.75rem; align-items: center; padding: 1.1rem 0; border-bottom: 1px solid rgba(246, 242, 233, 0.14); font-weight: 500; color: #fff; }
+  .measures :global(.m-icon) { width: 1.5rem; height: 1.5rem; color: var(--bronze); }
+
+  /* ---------- Badge and register ---------- */
+  .badge-sec { row-gap: 3rem; align-items: start; }
+  .bd-text { grid-column: 1 / span 6; }
+  .bd-rules { margin-top: 2rem; display: grid; }
+  .bd-rules li { display: grid; grid-template-columns: 1.5rem 1fr; gap: 0.6rem; padding: 0.9rem 0; border-top: 1px solid var(--rule); }
+  .bd-rules li:last-child { border-bottom: 1px solid var(--rule); }
+  .bd-rules :global(.icon) { color: var(--gold-deep); margin-top: 0.2rem; }
+  .bd-register { grid-column: 8 / span 5; background: var(--ivory); padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); }
+  .bd-register :global(.notify) { margin-top: 1rem; }
+  .reg-title { margin-top: 0.4rem; }
+
+  /* ---------- FAQ (as on /join/) ---------- */
+  .faq-head { grid-column: 1 / span 4; }
+  .faqs { grid-column: 6 / span 7; border-top: 1px solid var(--anthracite); }
+  .faq { border-bottom: 1px solid var(--rule); }
+  .faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 1rem; padding: 1.25rem 0; font-weight: 600; font-size: 1.075rem; }
+  .faq summary::-webkit-details-marker { display: none; }
+  :global(.faq-icon) { color: var(--gold-deep); transition: transform 0.3s var(--ease-out); flex: none; margin-top: 0.2rem; }
+  .faq[open] :global(.faq-icon) { transform: rotate(45deg); }
+  .faq p { padding-bottom: 1.25rem; max-width: 62ch; }
+
+  @media (max-width: 1023px) {
+    .gh-text, .gh-badges { grid-column: 1 / -1; }
+    .gh-badges { grid-template-columns: repeat(4, 140px); justify-content: start; gap: 1rem; padding-top: 1rem; } /* badges never below 140 px */
+    .gh-badge:nth-child(n) { transform: translateY(calc((3 - var(--i)) * 14px)); }
+    .lv-head { grid-template-columns: minmax(0, 1fr); }
+    .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 3rem; }
+    .step::before { display: none; }
+    .principles { grid-template-columns: minmax(0, 1fr); }
+    .im-head, .im-list, .bd-text, .bd-register, .faq-head, .faqs { grid-column: 1 / -1; }
+  }
+  @media (max-width: 680px) {
+    .gh-badges { grid-template-columns: repeat(2, 150px); justify-content: center; }
+    .gh-badge:nth-child(n) { transform: none; }
+  }
+  @media (max-width: 640px) {
+    .steps { grid-template-columns: minmax(0, 1fr); }
+    .measures { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

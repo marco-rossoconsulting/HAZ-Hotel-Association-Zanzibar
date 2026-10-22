@@ -5,9 +5,11 @@ import NotifyForm from '@/components/NotifyForm.astro';
 import StatusPill from '@/components/StatusPill.astro';
 import Icon from '@/components/Icon.astro';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { programmeHref } from '@/lib/site';
 
 export async function getStaticPaths() {
-  const all = await getCollection('programmes');
+  // Programmes with a dedicated page (HAZ Green Certification) are not rendered here
+  const all = await getCollection('programmes', ({ data }) => !data.page);
   return all.map((p) => ({ params: { slug: p.id }, props: { p } }));
 }
 interface Props { p: CollectionEntry<'programmes'> }
@@ -44,7 +46,7 @@ const statusText = {
           <h2 class="h4" id="rel-title">More under {p.data.pillar}</h2>
           <ul role="list">
             {related.map((r) => (
-              <li><a href={`/programmes/${r.id}/`}>{r.data.name}</a> <StatusPill status={r.data.status} /></li>
+              <li><a href={programmeHref(r)}>{r.data.name}</a> <StatusPill status={r.data.status} /></li>
             ))}
           </ul>
         </nav>

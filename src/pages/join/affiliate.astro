@@ -4,7 +4,8 @@ import FormSection from '@/components/FormSection.astro';
 import Icon from '@/components/Icon.astro';
 import fees from '@/data/fees.json';
 import { BUSINESS_TYPES } from '@/content.config';
-import { site, usd } from '@/lib/site';
+import { affiliateLevelName, site, usd } from '@/lib/site';
+import { getCollection } from 'astro:content';
 import '@/styles/application.css';
 
 const interests = [
@@ -15,6 +16,7 @@ const interests = [
   'Procurement and preferred-supplier opportunities', 'Sustainability and community initiatives',
 ];
 const slug = (x: string) => x.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+const memberHotels = (await getCollection('members', ({ data }) => !data.hidden)).map((m) => m.data.name).sort((a, b) => a.localeCompare(b, 'en-GB'));
 const docs = [
   { key: 'doc_incorporation', label: 'Certificate of incorporation / business registration' },
   { key: 'doc_licence', label: 'Business licence / relevant operating licence' },
@@ -93,14 +95,21 @@ const docs = [
             <div class="levels" role="radiogroup" aria-label="Membership level">
               {fees.affiliate.map((l) => (
                 <label class="level">
-                  <input type="radio" name="membership_level" value={`${l.level} Affiliate`} required />
+                  <input type="radio" name="membership_level" value={affiliateLevelName(l.level)} required data-recommended={'note' in l ? 'true' : undefined} />
                   <span class="level-card">
-                    <span class="level-name">{l.level} Affiliate</span>
+                    <span class="level-name">{affiliateLevelName(l.level)}</span>
                     <span class="level-fee">{l.fee ? `${usd(l.fee)} a year` : 'Fee on application'}</span>
+                    {'note' in l && <span class="level-note">{l.note}</span>}
                     <ul class="level-benefits">{l.benefits.map((b) => <li>{b}</li>)}</ul>
                   </span>
                 </label>
               ))}
+            </div>
+            <div class="field recommend">
+              <label for="recommending_hotel">Recommending HAZ member hotel <span class="req" data-recommend-req hidden>*</span></label>
+              <p class="hint" id="recommending_hint">Required for Directory Listing, which is for suppliers recommended by a HAZ member hotel.</p>
+              <input id="recommending_hotel" name="recommending_member_hotel" list="member-hotels" autocomplete="off" aria-describedby="recommending_hint" data-recommend-input />
+              <datalist id="member-hotels">{memberHotels.map((h) => <option value={h} />)}</datalist>
             </div>
           </FormSection>
 
@@ -160,6 +169,17 @@ const docs = [
 </BaseLayout>
 
 <script>
+  // Directory Listing is for suppliers recommended by a member hotel: the recommending hotel becomes required.
+  const recommendInput = document.querySelector<HTMLInputElement>('[data-recommend-input]');
+  const recommendReq = document.querySelector<HTMLElement>('[data-recommend-req]');
+  document.querySelectorAll<HTMLInputElement>('input[name="membership_level"]').forEach((radio) =>
+    radio.addEventListener('change', () => {
+      const needed = radio.dataset.recommended === 'true';
+      if (recommendInput) recommendInput.required = needed;
+      if (recommendReq) recommendReq.hidden = !needed;
+    }),
+  );
+
   const today = document.querySelector<HTMLInputElement>('[data-today]');
   if (today && !today.value) today.value = new Date().toISOString().slice(0, 10);
 </script>

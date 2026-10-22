@@ -18,10 +18,11 @@
     { "min": 201, "max": null, "economy": 2500, "standard": 5000 }
   ],
   "affiliate": [
-    { "level": "Standard", "fee": null, "benefits": ["HAZ Affiliate membership and directory listing", "HAZ industry information and updates", "General networking access"] },
-    { "level": "Preferred", "fee": null, "benefits": ["Enhanced directory profile and website visibility", "Selected HAZ forums and networking", "Submit member offers and promotions"] },
-    { "level": "Corporate", "fee": null, "benefits": ["Enhanced company profile and newsletter exposure", "Supplier introductions", "Relevant procurement and preferred-supplier opportunities", "Workshops and knowledge-sharing"] },
-    { "level": "Strategic", "fee": null, "benefits": ["Priority supplier introductions and selected events", "Increased communications exposure", "Selected co-branded initiatives", "Opportunities to present products and services to HAZ members"] },
-    { "level": "Principal", "fee": null, "benefits": ["Highest Affiliate profile and priority positioning", "Principal Affiliate recognition", "Priority access to major HAZ events and initiatives", "Strategic engagement with HAZ leadership", "Priority sponsorship and co-branding opportunities"] }
+    { "level": "Directory Listing", "fee": 150, "note": "For suppliers recommended by a HAZ member hotel", "benefits": ["Listing in the HAZ Affiliate directory"] },
+    { "level": "Standard", "fee": 380, "benefits": ["HAZ Affiliate membership and directory listing", "HAZ industry information and updates", "General networking access"] },
+    { "level": "Preferred", "fee": 750, "benefits": ["Enhanced directory profile and website visibility", "Selected HAZ forums and networking", "Submit member offers and promotions"] },
+    { "level": "Corporate", "fee": 1500, "benefits": ["Enhanced company profile and newsletter exposure", "Supplier introductions", "Relevant procurement and preferred-supplier opportunities", "Workshops and knowledge-sharing"] },
+    { "level": "Strategic", "fee": 2000, "benefits": ["Priority supplier introductions and selected events", "Increased communications exposure", "Selected co-branded initiatives", "Opportunities to present products and services to HAZ members"] },
+    { "level": "Principal", "fee": 3000, "benefits": ["Highest Affiliate profile and priority positioning", "Principal Affiliate recognition", "Priority access to major HAZ events and initiatives", "Strategic engagement with HAZ leadership", "Priority sponsorship and co-branding opportunities"] }
   ]
 }
