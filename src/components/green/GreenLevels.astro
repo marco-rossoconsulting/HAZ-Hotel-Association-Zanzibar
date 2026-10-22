@@ -1,0 +1,263 @@
+---
+/**
+ * HAZ Green Certification level explorer.
+ * Choose a level, or move an assessment score, to see the level it reaches, its badge and its mangrove stage.
+ * Without JavaScript the four level cards still carry every fact; the explorer only adds the interaction.
+ * Data style (brand section 13): the track starts at zero, gold marks the one value that matters.
+ */
+import { Image } from 'astro:assets';
+import { greenLevels, levelTitle, badgeAlt } from '@/lib/green';
+
+const first = greenLevels[0];
+const data = greenLevels.map((l) => ({ n: l.n, name: l.name, focus: l.focus, entry: l.entry, stage: l.stage }));
+---
+
+<div class="gl" data-green-levels data-levels={JSON.stringify(data)}>
+  <div class="gl-stage">
+    <figure class="gl-badge" data-reveal>
+      {greenLevels.map((l, i) => (
+        <Image
+          src={l.badge.dark}
+          alt={badgeAlt(l)}
+          width={300}
+          densities={[1, 2]}
+          class:list={['gl-badge-img', { 'is-on': i === 0 }]}
+          data-gl-badge={i}
+          aria-hidden={i === 0 ? undefined : 'true'}
+        />
+      ))}
+    </figure>
+
+    <div class="gl-detail">
+      <div class="gl-current" aria-live="polite" aria-atomic="true" data-reveal style="--i:1">
+        <p class="gl-num" data-gl-swap>Level <span data-gl-n>{first.n}</span></p>
+        <p class="label gl-name" data-gl-swap><span data-gl-name>{first.name}</span></p>
+        <p class="gl-focus" data-gl-swap data-gl-focus>{first.focus}</p>
+        <p class="gl-tree" data-gl-swap><span class="gl-tree-k">The mangrove at this level</span> <span class="gl-tree-v" data-gl-stage>{first.stage}</span></p>
+      </div>
+
+      <div class="gl-score" data-reveal style="--i:2">
+        <div class="gl-score-head">
+          <label for="gl-range" class="gl-score-label">Explore an assessment score</label>
+          <output for="gl-range" class="gl-out tabular"><span data-gl-score>{first.entry}</span><span class="gl-of">/100</span></output>
+        </div>
+        <div class="gl-track">
+          <div class="gl-rail" aria-hidden="true">
+            <span class="gl-fill" data-gl-fill style={`--s:${first.entry}`}></span>
+            {greenLevels.map((l) => (
+              <span class="gl-tick" style={`--at:${l.entry}`} data-gl-tick={l.n}>
+                <span class="gl-tick-n">{l.entry}</span>
+              </span>
+            ))}
+          </div>
+          <input id="gl-range" type="range" min="0" max="100" step="1" value={first.entry} data-gl-range aria-describedby="gl-result" aria-valuetext={`${first.entry} out of 100: ${levelTitle(first)}`} />
+        </div>
+        <p class="gl-result" id="gl-result" data-gl-result>
+          A score of {first.entry} reaches {levelTitle(first)}. {greenLevels[1].entry - first.entry} more points to {levelTitle(greenLevels[1])}.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <ol role="list" class="gl-cards" aria-label="The four levels">
+    {greenLevels.map((l, i) => (
+      <li data-reveal style={`--i:${i}`}>
+        <button type="button" class="gl-card" aria-pressed={i === 0 ? 'true' : 'false'} data-gl-level={i}>
+          <span class="gl-card-n">Level {l.n}</span>
+          <span class="label gl-card-name">{l.name}</span>
+          <span class="gl-card-focus">{l.focus}</span>
+          <span class="gl-card-foot">
+            <span class="gl-dots" aria-hidden="true">{greenLevels.map((d) => <i class:list={{ on: d.n <= l.n }} />)}</span>
+            <span class="gl-card-entry tabular">Entry score {l.entry}/100</span>
+          </span>
+        </button>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<style>
+  .gl { display: grid; gap: clamp(2.5rem, 2rem + 2vw, 3.5rem); }
+  .gl-stage { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: center; }
+
+  /* Badge: the four badges share one slot and cross-fade */
+  .gl-badge { position: relative; width: min(100%, 300px); aspect-ratio: 1; justify-self: center; }
+  .gl-badge :global(.gl-badge-img) {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    opacity: 0; transform: scale(0.94) translateY(8px);
+    transition: opacity 0.6s var(--ease-out), transform 0.8s var(--ease-out);
+  }
+  .gl-badge :global(.gl-badge-img.is-on) { opacity: 1; transform: none; }
+  /* Below Level 1 there is no badge to show (badges are never recoloured or dimmed): an empty ring instead */
+  .gl-badge::after {
+    content: 'Not yet certified'; position: absolute; inset: 0; display: grid; place-items: center; border-radius: 50%;
+    border: 1px dashed var(--taupe); font-size: 0.9rem; font-weight: 500; color: var(--taupe-deep);
+    opacity: 0; transition: opacity 0.4s var(--ease-out); pointer-events: none;
+  }
+  .gl-badge.is-empty::after { opacity: 1; }
+
+  /* Current level: the number leads */
+  .gl-num { font-family: var(--font-display); font-weight: 600; font-size: clamp(3.5rem, 2.5rem + 4vw, 6rem); line-height: 0.95; letter-spacing: -0.015em; font-variant-numeric: lining-nums; }
+  .gl-name { margin-top: 0.75rem; }
+  .gl-focus { margin-top: 0.4rem; font-size: var(--step-lead); line-height: 1.45; max-width: 34ch; }
+  .gl-current { transition: opacity 0.4s var(--ease-out); }
+  .gl-current.is-below { opacity: 0.45; }
+  .gl-tree { margin-top: 1.1rem; padding-left: 0.9rem; border-left: 1px solid var(--haz-gold); display: grid; gap: 0.1rem; }
+  .gl-tree-k { font-size: var(--step-caption); color: var(--taupe-deep); }
+  .gl-tree-v { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 1.6rem; line-height: 1.2; }
+  @media (prefers-reduced-motion: no-preference) {
+    .gl-current.is-swapping [data-gl-swap] { animation: gl-in 0.55s var(--ease-out) both; }
+    .gl-current.is-swapping [data-gl-swap]:nth-child(2) { animation-delay: 40ms; }
+    .gl-current.is-swapping [data-gl-swap]:nth-child(3) { animation-delay: 80ms; }
+    .gl-current.is-swapping [data-gl-swap]:nth-child(4) { animation-delay: 120ms; }
+  }
+  @keyframes gl-in { from { opacity: 0; transform: translateY(10px); } }
+
+  /* Score explorer */
+  .gl-score { margin-top: 2.25rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); }
+  .gl-score-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+  .gl-score-label { font-weight: 600; }
+  .gl-out { font-family: var(--font-display); font-weight: 600; font-size: 2.25rem; line-height: 1; }
+  .gl-of { font-family: var(--font-sans); font-size: 0.9rem; font-weight: 500; color: var(--taupe-deep); margin-left: 0.15rem; }
+  .gl-track { position: relative; height: 44px; margin-top: 0.75rem; margin-bottom: 1.75rem; }
+  /* The rail is inset by half the thumb so ticks and fill line up with the thumb's centre */
+  .gl-rail { position: absolute; left: 11px; right: 11px; top: 50%; height: 6px; margin-top: -3px; background: var(--ivory-2); box-shadow: inset 0 0 0 1px var(--grey); }
+  .gl-fill { position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--s) * 1%); background: var(--anthracite); transition: width 0.25s var(--ease-out); }
+  .gl-tick { position: absolute; top: -7px; left: calc(var(--at) * 1%); width: 1px; height: 20px; background: var(--taupe-deep); }
+  .gl-tick.is-reached { background: var(--haz-gold); width: 2px; margin-left: -0.5px; }
+  .gl-tick-n { position: absolute; top: 26px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; font-weight: 600; color: var(--taupe-deep); font-variant-numeric: tabular-nums; }
+  .gl-tick.is-reached .gl-tick-n { color: var(--gold-deep); }
+
+  .gl-track input[type='range'] {
+    -webkit-appearance: none; appearance: none; position: absolute; inset: 0; width: 100%; height: 44px;
+    margin: 0; background: transparent; cursor: pointer; touch-action: pan-y;
+  }
+  .gl-track input[type='range']:focus { outline: none; }
+  .gl-track input[type='range']::-webkit-slider-runnable-track { height: 44px; background: transparent; }
+  .gl-track input[type='range']::-moz-range-track { height: 44px; background: transparent; }
+  .gl-track input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 22px; height: 22px; margin-top: 11px; border-radius: 50%;
+    background: var(--haz-gold); border: 3px solid #fff; box-shadow: 0 0 0 1px var(--gold-deep), 0 4px 12px rgba(48, 50, 52, 0.25);
+    transition: transform 0.2s var(--ease-out);
+  }
+  .gl-track input[type='range']::-moz-range-thumb {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--haz-gold); border: 3px solid #fff; box-shadow: 0 0 0 1px var(--gold-deep), 0 4px 12px rgba(48, 50, 52, 0.25);
+  }
+  .gl-track input[type='range']:active::-webkit-slider-thumb { transform: scale(1.15); }
+  .gl-track input[type='range']:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--gold-deep); outline-offset: 3px; }
+  .gl-track input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid var(--gold-deep); outline-offset: 3px; }
+  .gl-result { font-weight: 500; min-height: 3.3em; max-width: 52ch; }
+
+  /* Level cards: also the level selector */
+  .gl-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .gl-cards li { display: flex; }
+  .gl-card {
+    position: relative; width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem;
+    padding: 1.5rem 1.4rem 1.35rem; background: var(--paper); border: 0; text-align: left; color: var(--anthracite);
+    transition: background-color 0.3s var(--ease-out);
+  }
+  .gl-card::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--haz-gold); transform: scaleX(0); transform-origin: left; transition: transform 0.5s var(--ease-out); }
+  .gl-card:hover { background: var(--ivory); }
+  .gl-card[aria-pressed='true'] { background: var(--ivory); }
+  .gl-card[aria-pressed='true']::before { transform: scaleX(1); }
+  .gl-card:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: -4px; }
+  .gl-card-n { font-family: var(--font-display); font-weight: 600; font-size: 2rem; line-height: 1; font-variant-numeric: lining-nums; }
+  .gl-card-focus { font-size: 0.95rem; line-height: 1.45; flex: 1; }
+  .gl-card-foot { margin-top: 0.6rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.75rem; }
+  .gl-card-entry { font-size: 0.85rem; color: var(--taupe-deep); }
+  .gl-dots { display: inline-flex; gap: 4px; }
+  .gl-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--grey); }
+  .gl-dots i.on { background: var(--haz-gold); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gl-badge :global(.gl-badge-img), .gl-fill, .gl-card::before { transition: none; }
+  }
+  /* Narrow screens: badge beside the level, explorer below, so a change is always in view */
+  @media (max-width: 899px) {
+    .gl-stage { grid-template-columns: minmax(140px, 200px) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+    .gl-detail { display: contents; }
+    .gl-badge { width: 100%; }
+    .gl-score { grid-column: 1 / -1; margin-top: 0; }
+    .gl-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 480px) {
+    .gl-stage { grid-template-columns: 140px minmax(0, 1fr); gap: 1rem; }
+    .gl-num { font-size: 2.6rem; }
+    .gl-focus { font-size: 1rem; }
+    .gl-tree-v { font-size: 1.3rem; }
+    .gl-card { padding: 1.1rem 1rem; }
+    .gl-card-n { font-size: 1.6rem; }
+  }
+</style>
+
+<script>
+  type Level = { n: number; name: string; focus: string; entry: number; stage: string };
+
+  document.querySelectorAll<HTMLElement>('[data-green-levels]').forEach((root) => {
+    const levels = JSON.parse(root.dataset.levels ?? '[]') as Level[];
+    const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+    const badges = Array.from(root.querySelectorAll<HTMLElement>('[data-gl-badge]'));
+    const cards = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-gl-level]'));
+    const ticks = Array.from(root.querySelectorAll<HTMLElement>('[data-gl-tick]'));
+    const range = q<HTMLInputElement>('[data-gl-range]');
+    const current = q<HTMLElement>('.gl-current');
+    const figure = q<HTMLElement>('.gl-badge');
+    const out = { n: q('[data-gl-n]'), name: q('[data-gl-name]'), focus: q('[data-gl-focus]'), stage: q('[data-gl-stage]'), score: q('[data-gl-score]'), result: q('[data-gl-result]'), fill: q('[data-gl-fill]') };
+    const title = (l: Level) => `Level ${l.n} · ${l.name}`;
+    // The highest level whose entry score the score reaches; -1 below Level 1
+    const levelFor = (score: number) => levels.reduce((acc, l, i) => (score >= l.entry ? i : acc), -1);
+    let shown = 0;
+
+    const render = (score: number, announceLevel: boolean) => {
+      const idx = levelFor(score);
+      out.score.textContent = String(score);
+      out.fill.style.setProperty('--s', String(score));
+      ticks.forEach((t, i) => t.classList.toggle('is-reached', i <= idx));
+      cards.forEach((c, i) => c.setAttribute('aria-pressed', String(i === idx)));
+
+      const next = levels[idx + 1];
+      if (idx < 0) {
+        out.result.textContent = `A score of ${score} is below the Level 1 entry score of ${levels[0].entry}. Certification is earned, never automatic.`;
+      } else if (!next) {
+        out.result.textContent = `A score of ${score} reaches ${title(levels[idx])}, the highest level.`;
+      } else {
+        const gap = next.entry - score;
+        out.result.textContent = `A score of ${score} reaches ${title(levels[idx])}. ${gap} more ${gap === 1 ? 'point' : 'points'} to ${title(next)}.`;
+      }
+      range.setAttribute('aria-valuetext', `${score} out of 100: ${idx < 0 ? 'below Level 1' : title(levels[idx])}`);
+
+      const show = Math.max(idx, 0);
+      badges.forEach((b, i) => {
+        const on = i === idx;
+        b.classList.toggle('is-on', on);
+        if (on) b.removeAttribute('aria-hidden');
+        else b.setAttribute('aria-hidden', 'true');
+      });
+      figure.classList.toggle('is-empty', idx < 0);
+      // Below Level 1 the panel shows Level 1, dimmed, as the level to aim for
+      current.classList.toggle('is-below', idx < 0);
+      if (idx !== shown || announceLevel) {
+        const l = levels[show];
+        out.n.textContent = String(l.n);
+        out.name.textContent = l.name;
+        out.focus.textContent = l.focus;
+        out.stage.textContent = l.stage;
+        if (show !== Math.max(shown, 0) || announceLevel) {
+          current.classList.remove('is-swapping');
+          void current.offsetWidth; // restart the entrance animation
+          current.classList.add('is-swapping');
+        }
+        shown = idx;
+      }
+    };
+
+    range.addEventListener('input', () => render(Number(range.value), false));
+    cards.forEach((c, i) =>
+      c.addEventListener('click', () => {
+        range.value = String(levels[i].entry);
+        render(levels[i].entry, true);
+      }),
+    );
+  });
+</script>

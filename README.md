@@ -1,6 +1,6 @@
 # Hotel Association Zanzibar (HAZ) website
 
-The website of Hotel Association Zanzibar (HAZ), **haz.or.tz**. Built to the *HAZ Brand Guidelines & Standards 2026*.
+The website of Hotel Association Zanzibar (HAZ), **haz.or.tz**. Built to the *HAZ Brand Guidelines & Standards 2026* (version 4.1, October 2026).
 
 **Stack:** [Astro 7](https://astro.build) (static) · [Sveltia CMS](https://sveltiacms.app) for editing · hosted on [Netlify](https://www.netlify.com) with Netlify Forms.
 
@@ -67,31 +67,32 @@ Editors can also sign in with a GitHub personal access token from the login scre
 | **Events** | /events/, homepage, "Zanzibar today" strip |
 | **Market Pulse** | /market-pulse/; the newest issue is linked from the homepage hero |
 | **HAZ Positions** | /policy/ |
-| **Programmes** | /programmes/, pillar panels. Set **Status** to *Live* when a programme launches |
+| **Programmes** | /programmes/, pillar panels. Set **Status** to *Live* when a programme launches. *Dedicated page* sends a programme to its own page (HAZ Green Certification → /green/) |
 | **Member hotels** | /members/ directory, map and member pages (`/members/<name>/`, the page the member badge links to) |
 | **Affiliate Members** | /affiliates/ |
 | **Leadership** | /about/leadership/ (photos optional) |
 | **Corporate Sponsors** | /sponsors/ (the partner band appears once a sponsor is added) |
 | **Site photography** | Fixed photo slots used across the site |
 | **Settings → Membership figures** | Member hotels, rooms, employees. Hidden until a value is entered |
-| **Settings → Membership fees** | Hotel fee table and calculator, Affiliate levels and fees |
+| **Settings → Membership fees** | Hotel fee table and calculator, the six Affiliate levels and their fees |
 | **Settings → Site and contacts** | Contacts, address, social links, homepage hero text |
 
-The corporate line, narrative line and logo are locked: they need Board approval to change (brand section 15).
+The corporate line, narrative line, logo and HAZ Green emblem are locked: they need Board approval to change (brand section 16). The HAZ Green levels, entry scores and badges live in `src/lib/green.ts` and change only with the standard.
 
 ## 4. Content rules for editors (from the brand guidelines)
 
 - British English; sentence-case headings; "Hotel Association Zanzibar (HAZ)" on first mention, then "HAZ" (never "the HAZ" for the organisation, never "Hotel Association of Zanzibar").
 - Lead with the outcome. A number, a name or a date beats an adjective. Every figure has a date, unit and source.
 - Say "Zanzibaris", "residents", "communities", never "locals". Avoid "paradise", "exotic", "world-class".
-- Membership terms: Hotel Member, Affiliate Member (Standard, Preferred, Corporate, Strategic, Principal Affiliate), Corporate Sponsor. Never "Corporate Partner".
+- Membership terms: Hotel Member, Affiliate Member, Corporate Sponsor. Affiliate levels: Directory Listing, Standard, Preferred, Corporate, Strategic and Principal Affiliate. Never "Corporate Partner".
+- HAZ Green Certification on first mention, then "HAZ Green" (never "HAZ GREEN" in running text). The number leads: "Level 2 · Roots". Hotels are *certified*, never accredited. Never "eco-friendly", or "green" as a bare adjective. GSTC alignment never implies GSTC certification.
 - Photography: real Zanzibar, real people, real work. Written consent from every identifiable person. At least 1,600 px on the long edge.
 - Never promise savings across the board. When a negotiated term exists, name the partner, the term and who qualifies.
 
 ## 5. Open items before launch
 
 1. **Photography.** All seven photo slots now use supplied Zanzibar photography. Confirm the photographer credits (only Roberto Patti is credited so far) and log each photo in the media rights register.
-2. **Affiliate fees.** Not set; the site shows "Fee on application". Add them in *Settings → Membership fees*.
+2. **HAZ Green Certification.** The level badges on the site are reproduced from the vector artwork in brand guidelines v4.1 (2026/27 award year). Replace them with the master badge files from the Secretariat when available (`src/assets/brand/haz-green-level-*`). Link the "public register" when it opens.
 3. **Membership figures.** Add member hotels, rooms and employees from the membership database in *Settings → Membership figures*.
 4. **Member hotels and Board.** Seeded from the old website (2024). Review in the editor. Kinasi Lodge (Mafia Island) is listed under "Beyond Zanzibar". I Grandi Viaggi and Veratour are listed as Affiliate Members (tour operators).
 5. **Social channels.** Only Facebook and Instagram are known. Add LinkedIn, YouTube and the WhatsApp Channel in *Settings → Site and contacts*.
@@ -103,18 +104,20 @@ The corporate line, narrative line and logo are locked: they need Board approval
 ```
 public/
   admin/            Sveltia CMS (index.html, config.yml)
-  brand/            Logo and member badge downloads
+  brand/            Logo, HAZ Green lockup and member badge downloads
   uploads/          Files uploaded through the editor (PDFs)
 src/
-  assets/brand/     Logo, compact mark and badges (optimised by Astro)
+  assets/brand/     Logo, compact mark, member badges, HAZ Green lockups and level badges (optimised by Astro)
   assets/photos/    Site photography (photo slots)
   assets/uploads/   Images uploaded through the editor
   components/       Header, Footer, MemberMap, FeeCalculator, forms …
   components/home/  Homepage sections
+  components/green/ HAZ Green Certification level explorer
   content/          Markdown and YAML content (edited in the CMS)
   content.config.ts Content schemas (keep in sync with public/admin/config.yml)
   data/             Site settings, fees, figures (JSON, edited in the CMS)
   layouts/          BaseLayout (SEO, schema.org, fonts)
+  lib/green.ts      HAZ Green levels, entry scores and badges
   pages/            Routes
   scripts/          Motion and form enhancement
   styles/           Design tokens and global styles
@@ -129,6 +132,7 @@ Tokens live in `src/styles/global.css`, taken from brand sections 10 to 13:
 - **Type:** Cormorant Garamond 500/600 for display (never below 28 px), Inter for everything else. Self-hosted.
 - **Graphic language:** 1 px gold or grey hairlines, small gold labels, one arch-framed image per page (the Mlango arch, images only), 12-column grid with a 1,200 px content width.
 - **Logo versions:** white on Anthracite (header), gold on Indian Ocean (footer). Minimum 160 px wide on screen.
+- **HAZ Green:** the emblem only appears in the lockup with the HAZ logo (gold on Indian Ocean or ivory, white on dark). Dark level badges on light grounds, light badges on dark ones. Mangrove appears only inside the light badges.
 - **Motion:** motivated and quiet (door-opening hero reveal, rules that draw in, figures that count up), all disabled under `prefers-reduced-motion`.
 - **Accessibility:** WCAG 2.2 AA (checked with axe-core), 16 px minimum text, visible focus states, keyboard-operable menus, map and calculators.
 

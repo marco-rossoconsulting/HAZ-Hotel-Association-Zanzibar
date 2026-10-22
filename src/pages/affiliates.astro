@@ -7,12 +7,13 @@ import StatusPill from '@/components/StatusPill.astro';
 import Icon from '@/components/Icon.astro';
 import { Image } from 'astro:assets';
 import { getCollection, getEntry } from 'astro:content';
-import { getPhoto, usd } from '@/lib/site';
+import { affiliateLevelName, getPhoto, usd } from '@/lib/site';
 import fees from '@/data/fees.json';
 
 const photo = await getPhoto('dhow');
 const affiliates = (await getCollection('affiliates', ({ data }) => !data.hidden)).sort((a, b) => a.data.name.localeCompare(b.data.name, 'en-GB'));
 const marketplace = await getEntry('programmes', 'affiliate-marketplace');
+const levels = fees.affiliate.map((l) => ({ ...l, name: affiliateLevelName(l.level), note: 'note' in l ? l.note : undefined }));
 
 const gains = [
   { icon: 'users', title: 'Access', text: 'Direct connection with owners, General Managers, purchasing teams and other decision-makers through forums, meetings and events.' },
@@ -25,7 +26,7 @@ const gains = [
 ];
 ---
 
-<BaseLayout title="Affiliate Members" description="Affiliate membership of Hotel Association Zanzibar (HAZ): credibility, visibility and direct access to the people who make hotel decisions. Five levels, from Standard to Principal Affiliate.">
+<BaseLayout title="Affiliate Members" description="Affiliate membership of Hotel Association Zanzibar (HAZ): credibility, visibility and direct access to the people who make hotel decisions. Six levels, from Directory Listing at USD 150 a year to Principal Affiliate.">
   <PageHero
     label="Affiliate Members"
     title="Be the supplier Zanzibar's hotels choose"
@@ -59,11 +60,11 @@ const gains = [
 
   <section class="section bg-ivory" id="levels" aria-labelledby="levels-title">
     <div class="container">
-      <SectionHead id="levels-title" title="Five levels of Affiliate membership" intro="Each level includes all the benefits of the levels before it. Choose a level to see everything it includes." />
+      <SectionHead id="levels-title" title="Six levels of Affiliate membership" intro={`Each level includes all the benefits of the levels before it. Choose a level to see everything it includes. Fees are in US dollars per membership year (${fees.year}).`} />
       <div class="ladder" data-ladder>
         <div class="rungs" role="group" aria-label="Choose an Affiliate level">
-          {fees.affiliate.map((l, i) => (
-            <button type="button" class="rung" aria-pressed={i === 0 ? 'true' : 'false'} data-level={i} style={`--h:${90 + i * 52}px`}>
+          {levels.map((l, i) => (
+            <button type="button" class="rung" aria-pressed={i === 0 ? 'true' : 'false'} data-level={i} data-name={l.name} data-fee={l.fee ? `${usd(l.fee)} a year` : 'Fee on application'} data-note={l.note ?? ''} style={`--h:${80 + i * 48}px; --w:${34 + i * 13}%`}>
               <span class="rung-bar" aria-hidden="true"></span>
               <span class="rung-name">{l.level}</span>
               <span class="rung-fee">{l.fee ? `${usd(l.fee)} a year` : 'Fee on application'}</span>
@@ -71,14 +72,18 @@ const gains = [
           ))}
         </div>
         <div class="ladder-panel" aria-live="polite">
-          <h3 class="h3" data-ladder-title>{fees.affiliate[0].level} Affiliate</h3>
+          <div class="ladder-head">
+            <h3 class="h3" data-ladder-title>{levels[0].name}</h3>
+            <p class="ladder-fee tabular" data-ladder-fee>{levels[0].fee ? `${usd(levels[0].fee)} a year` : 'Fee on application'}</p>
+          </div>
+          <p class="ladder-note" data-ladder-note hidden={!levels[0].note}>{levels[0].note}</p>
           <ol role="list" class="ladder-list">
-            {fees.affiliate.map((l, i) =>
+            {levels.map((l, i) =>
               l.benefits.map((b) => (
                 <li data-from={i} class:list={{ 'is-on': i === 0, 'is-new': i === 0 }}>
                   <Icon name="check" />
                   <span>{b}</span>
-                  <small>{l.level}</small>
+                  <small>{l.name}</small>
                 </li>
               )),
             )}
@@ -107,7 +112,7 @@ const gains = [
                 {a.data.logo && <Image src={a.data.logo} alt="" width={120} class="aff-logo" />}
                 <div>
                   <p class="aff-name">{a.data.website ? <a href={a.data.website} rel="noopener" target="_blank">{a.data.name} <Icon name="arrow-up-right" /></a> : a.data.name}</p>
-                  <p class="aff-type">{a.data.businessType}{a.data.level ? ` · ${a.data.level} Affiliate` : ''}</p>
+                  <p class="aff-type">{a.data.businessType}{a.data.level ? ` · ${affiliateLevelName(a.data.level)}` : ''}</p>
                   {a.data.description && <p class="aff-desc">{a.data.description}</p>}
                   {a.data.offer && <p class="aff-offer"><strong>Member offer:</strong> {a.data.offer}</p>}
                 </div>
@@ -146,12 +151,12 @@ const gains = [
   :global(.g-icon) { width: 1.75rem; height: 1.75rem; color: var(--gold-deep); margin-top: 0.1rem; }
 
   .ladder { margin-top: 3rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2.5rem; align-items: stretch; }
-  .rungs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.6rem; align-items: end; min-height: 360px; }
+  .rungs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.5rem; align-items: end; min-height: 360px; }
   .rung { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; gap: 0.3rem; background: none; border: 0; padding: 0; text-align: left; color: var(--anthracite); }
   .rung-bar { display: block; height: var(--h); background: var(--paper); border: 1px solid #b9b1a4; border-bottom: 0; transition: background-color 0.35s var(--ease-out), border-color 0.35s; transform-origin: bottom; }
   .rung.is-included .rung-bar { background: var(--ivory-2); border-color: var(--taupe); }
   .rung[aria-pressed='true'] .rung-bar { background: var(--anthracite); border-color: var(--anthracite); box-shadow: inset 0 3px 0 var(--haz-gold); }
-  .rung-name { font-weight: 600; font-size: 0.95rem; padding-top: 0.5rem; border-top: 1px solid var(--anthracite); }
+  .rung-name { font-weight: 600; font-size: 0.95rem; line-height: 1.25; padding-top: 0.5rem; border-top: 1px solid var(--anthracite); min-height: calc(2.5em + 0.5rem); /* "Directory Listing" wraps: keep every bar on one baseline */ }
   .rung-fee { font-size: 0.78rem; color: var(--taupe-deep); line-height: 1.3; }
   .rung:hover .rung-bar { border-color: var(--anthracite); }
   .rung:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 4px; }
@@ -160,6 +165,9 @@ const gains = [
   }
   @keyframes grow { from { transform: scaleY(0.2); opacity: 0; } }
   .ladder-panel { background: var(--paper); padding: 2rem; border-top: 2px solid var(--haz-gold); display: grid; gap: 1.25rem; align-content: start; }
+  .ladder-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.25rem 1rem; }
+  .ladder-fee { font-family: var(--font-display); font-weight: 600; font-size: 1.75rem; line-height: 1.1; color: var(--anthracite); }
+  .ladder-note { margin-top: -0.5rem; padding-left: 0.85rem; border-left: 1px solid var(--haz-gold); color: var(--taupe-deep); font-size: 0.95rem; }
   .ladder-list { list-style: none; padding: 0; display: grid; gap: 0.15rem; }
   .ladder-list li { display: none; grid-template-columns: 1.4rem 1fr auto; gap: 0.6rem; align-items: start; padding: 0.55rem 0; border-bottom: 1px solid var(--rule); }
   .ladder-list li.is-on { display: grid; }
@@ -195,10 +203,17 @@ const gains = [
     .rungs { min-height: 0; }
     .rung-bar { height: calc(var(--h) * 0.6); }
   }
-  @media (max-width: 520px) {
-    .rung-name { font-size: 0.8rem; }
-    .rung-fee { display: none; }
+  /* Phones: six vertical rungs do not fit, so the ladder turns on its side */
+  @media (max-width: 640px) {
+    .rungs { grid-template-columns: minmax(0, 1fr); gap: 0.35rem; }
+    .rung { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 0.85rem; row-gap: 0.1rem; align-items: center; padding: 0.35rem 0; }
+    .rung-bar { grid-column: 2; grid-row: 1 / span 2; height: 14px; width: var(--w); border: 1px solid #b9b1a4; border-left: 0; transform-origin: left; }
+    .rung-name { grid-column: 1; grid-row: 1; padding-top: 0; border-top: 0; font-size: 0.9rem; min-height: 0; }
+    .rung-fee { grid-column: 1; grid-row: 2; }
+    .rung[aria-pressed='true'] .rung-bar { box-shadow: inset 3px 0 0 var(--haz-gold); }
+    :global(.js) .ladder .rung-bar { animation-name: grow-x; }
   }
+  @keyframes grow-x { from { transform: scaleX(0.2); opacity: 0; } }
 </style>
 
 <script>
@@ -206,6 +221,8 @@ const gains = [
     const rungs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-level]'));
     const items = Array.from(root.querySelectorAll<HTMLElement>('[data-from]'));
     const title = root.querySelector<HTMLElement>('[data-ladder-title]')!;
+    const fee = root.querySelector<HTMLElement>('[data-ladder-fee]')!;
+    const note = root.querySelector<HTMLElement>('[data-ladder-note]')!;
     rungs.forEach((r, i) => r.style.setProperty('--d', String(i)));
     const select = (level: number) => {
       rungs.forEach((r, i) => {
@@ -217,7 +234,10 @@ const gains = [
         li.classList.toggle('is-on', from <= level);
         li.classList.toggle('is-new', from === level);
       });
-      title.textContent = `${rungs[level].querySelector('.rung-name')?.textContent} Affiliate`;
+      title.textContent = rungs[level].dataset.name ?? '';
+      fee.textContent = rungs[level].dataset.fee ?? '';
+      note.textContent = rungs[level].dataset.note ?? '';
+      note.hidden = !rungs[level].dataset.note;
     };
     rungs.forEach((r, i) => r.addEventListener('click', () => select(i)));
     root.addEventListener('keydown', (e) => {

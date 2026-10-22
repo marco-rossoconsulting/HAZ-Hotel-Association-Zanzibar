@@ -166,6 +166,7 @@ collections:
       - { name: order, label: Sort order, widget: number, value_type: int, default: 100 }
       - { name: ctaLabel, label: Button label, widget: string, required: false }
       - { name: ctaUrl, label: Button link, widget: string, required: false }
+      - { name: page, label: Dedicated page, widget: string, required: false, hint: 'Only for programmes with their own page, such as /green/. Leave empty otherwise.' }
       - { name: body, label: More detail, widget: markdown, required: false }
 
   # ---------------------------------------------------------------- Members
@@ -217,7 +218,7 @@ collections:
         label: Level
         widget: select
         required: false
-        options: [Standard, Preferred, Corporate, Strategic, Principal]
+        options: [Directory Listing, Standard, Preferred, Corporate, Strategic, Principal]
       - name: businessType
         label: Business type
         widget: select
@@ -424,4 +425,5 @@ collections:
             fields:
               - { name: level, label: Level, widget: string, readonly: true }
               - { name: fee, label: 'Annual fee in USD (leave empty for "on application")', widget: number, value_type: int, required: false }
+              - { name: note, label: Who it is for, widget: string, required: false }
               - { name: benefits, label: Benefits, widget: list, field: { name: benefit, label: Benefit, widget: string } }

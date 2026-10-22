@@ -1,0 +1,67 @@
+---
+/**
+ * Homepage: HAZ Green Certification, included in hotel membership.
+ * Gold lockup on white (the web-page version); dark badges on a light ground. Badges stay at 140 px or wider.
+ */
+import { Image } from 'astro:assets';
+import Icon from '../Icon.astro';
+import { greenLevels, badgeAlt, levelTitle } from '@/lib/green';
+import lockupGold from '@/assets/brand/haz-green-lockup-gold.png';
+---
+
+<section class="section green-band bg-white" aria-labelledby="green-title">
+  <div class="container grid-12 gb-grid">
+    <div class="gb-text">
+      <Image src={lockupGold} alt="Hotel Association Zanzibar logo with the HAZ Green Certification emblem" widths={[320, 480, 640]} sizes="340px" class="gb-lockup" data-reveal />
+      <p class="label gb-label" data-reveal style="--i:1">Included in HAZ hotel membership</p>
+      <h2 class="h2 gb-title" id="green-title" data-reveal style="--i:1">A sustainability certification your hotel earns, level by level.</h2>
+      <p class="gb-p" data-reveal style="--i:2">
+        HAZ Green Certification takes every member hotel from first commitments to conservation leadership.
+        Hotels are certified at the level their evidence supports, by an independent panel, for 12 months.
+      </p>
+      <a class="link-arrow" href="/green/" data-reveal style="--i:3">How HAZ Green works <Icon name="arrow-right" /></a>
+    </div>
+
+    <ol role="list" class="gb-levels">
+      {greenLevels.map((l, i) => (
+        <li class="gb-level" style={`--i:${i}`}>
+          <a href="/green/#levels" data-reveal class="gb-link" aria-label={`${levelTitle(l)}: ${l.focus}`}>
+            <Image src={l.badge.dark} alt={badgeAlt(l)} width={160} densities={[1, 2]} class="gb-badge" />
+            <span class="gb-name">{levelTitle(l)}</span>
+            <span class="gb-focus">{l.focus}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .gb-grid { align-items: center; row-gap: 3rem; }
+  .gb-text { grid-column: 1 / span 5; }
+  .gb-text :global(.gb-lockup) { width: 340px; max-width: 100%; height: auto; }
+  .gb-label { display: block; margin-top: 2.25rem; }
+  .gb-title { margin-top: 0.6rem; max-width: 18ch; }
+  .gb-p { margin-top: 1.1rem; max-width: 46ch; }
+  .gb-text .link-arrow { margin-top: 1.5rem; }
+
+  /* Badges climb from Level 1 to Level 4 */
+  .gb-levels { grid-column: 6 / span 7; display: grid; grid-template-columns: repeat(4, minmax(140px, 1fr)); gap: 1rem; align-items: end; }
+  .gb-level { transform: translateY(calc((3 - var(--i)) * 22px)); }
+  .gb-link { display: grid; justify-items: center; gap: 0.35rem; text-align: center; text-decoration: none; color: var(--anthracite); }
+  .gb-link :global(.gb-badge) { width: 100%; max-width: 160px; min-width: 140px; height: auto; transition: transform 0.5s var(--ease-out); }
+  .gb-link:hover :global(.gb-badge) { transform: translateY(-6px); }
+  .gb-name { margin-top: 0.6rem; font-weight: 600; font-size: 0.95rem; }
+  .gb-focus { font-size: 0.85rem; line-height: 1.35; color: var(--taupe-deep); max-width: 18ch; }
+  .gb-link:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 6px; }
+  @media (prefers-reduced-motion: reduce) { .gb-link :global(.gb-badge) { transition: none; } }
+
+  @media (max-width: 1100px) {
+    .gb-text, .gb-levels { grid-column: 1 / -1; }
+    .gb-levels { max-width: 760px; }
+  }
+  @media (max-width: 680px) {
+    .gb-levels { grid-template-columns: repeat(2, minmax(140px, 1fr)); row-gap: 2rem; }
+    .gb-level { transform: none; }
+  }
+</style>
